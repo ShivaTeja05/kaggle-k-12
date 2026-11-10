@@ -1,0 +1,22 @@
+{
+  "rows": 1500,
+  "teacher_token_cap": 128,
+  "tokenizer_sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+  "root_rows_with_identifiable_cited_line": 994,
+  "first_cited_line_start_at_or_after_cutoff": 115,
+  "first_cited_line_extends_beyond_cutoff": 181,
+  "target_lengths": {
+    "reading": {
+      "median": 114.0,
+      "p90": 225.0,
+      "max": 560,
+      "rows_over_cap": 639
+    },
+    "cause": {
+      "median": 73.5,
+      "p90": 164.0,
+      "max": 273,
+      "rows_over_cap": 345
+    }
+  }
+}

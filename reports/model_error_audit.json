@@ -1,0 +1,705 @@
+{
+  "rows": 301,
+  "fitting_rows": 1199,
+  "fold": 0,
+  "scope": "Reused development fold with aligned prediction IDs. 4B is task-fitted and calibrated. 27B is frozen and its saved artifact provides three ranks only. This compares complete model recipes. Gold labels and annotation flags are audit inputs.",
+  "confidence_routing": {
+    "scope": "Question-group cross-fitting of the router only. The input rankings are fixed development predictions, and the 27B has no test predictions.",
+    "routed_to_fusion": 215,
+    "versus_image": {
+      "map3": 0.6179401993355482,
+      "top1_accuracy": 0.521594684385382,
+      "recall_at_3": 0.7375415282392026,
+      "root_error_map3": 0.4833333333333333,
+      "none_map3": 0.8844884488448844,
+      "root_error_rows_predicted_none_first": 33,
+      "delta_vs_image": 0.010520487264673315,
+      "rows_improved": 39,
+      "rows_regressed": 41,
+      "paired_question_bootstrap_delta_95": [
+        -0.017603217275369912,
+        0.03793103448275862
+      ]
+    },
+    "delta_vs_fixed_fusion": -0.007751937984496123,
+    "paired_question_bootstrap_delta_vs_fixed_fusion_95": [
+      -0.024445686900958465,
+      0.008561643835616436
+    ]
+  },
+  "candidate_reranking": {
+    "scope": "Question-group cross-fitting of the candidate reranker only. Features are fixed development rankings, probabilities and taxonomy families. No OCR features.",
+    "versus_image": {
+      "map3": 0.6500553709856036,
+      "top1_accuracy": 0.5415282392026578,
+      "recall_at_3": 0.7840531561461794,
+      "root_error_map3": 0.51,
+      "none_map3": 0.9273927392739273,
+      "root_error_rows_predicted_none_first": 33,
+      "delta_vs_image": 0.04263565891472868,
+      "rows_improved": 58,
+      "rows_regressed": 40,
+      "paired_question_bootstrap_delta_95": [
+        0.009469857904923766,
+        0.07401926459093273
+      ]
+    },
+    "delta_vs_fixed_fusion": 0.024363233665559245,
+    "paired_question_bootstrap_delta_vs_fixed_fusion_95": [
+      0.005499648325488286,
+      0.04284460620229175
+    ]
+  },
+  "models": {
+    "qwen3_vl_4b_calibrated": {
+      "metrics": {
+        "map3": 0.6074197120708748,
+        "top1_accuracy": 0.5116279069767442,
+        "recall_at_3": 0.7375415282392026,
+        "root_error_map3": 0.45166666666666666,
+        "none_map3": 0.9158415841584159,
+        "root_error_rows_predicted_none_first": 51,
+        "delta_vs_image": 0.0,
+        "rows_improved": 0,
+        "rows_regressed": 0,
+        "paired_question_bootstrap_delta_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "slices": {
+        "none": {
+          "rows": 101,
+          "map3": 0.9158415841584159,
+          "first_correct": 87,
+          "top3_hits": 99,
+          "lost_points": 8.5
+        },
+        "root_error": {
+          "rows": 200,
+          "map3": 0.45166666666666666,
+          "first_correct": 67,
+          "top3_hits": 123,
+          "lost_points": 109.66666666666669
+        },
+        "root_error_with_correct_final_answer": {
+          "rows": 3,
+          "map3": 0.3333333333333333,
+          "first_correct": 0,
+          "top3_hits": 2,
+          "lost_points": 2.0
+        },
+        "root_error_with_other_final_answer": {
+          "rows": 197,
+          "map3": 0.4534686971235195,
+          "first_correct": 67,
+          "top3_hits": 121,
+          "lost_points": 107.66666666666669
+        },
+        "root_error_with_multiple_major_findings": {
+          "rows": 47,
+          "map3": 0.43971631205673756,
+          "first_correct": 16,
+          "top3_hits": 28,
+          "lost_points": 26.333333333333336
+        },
+        "root_error_with_at_most_one_major_finding": {
+          "rows": 153,
+          "map3": 0.4553376906318083,
+          "first_correct": 51,
+          "top3_hits": 95,
+          "lost_points": 83.33333333333334
+        },
+        "root_error_0_to_5_fit_examples": {
+          "rows": 18,
+          "map3": 0.35185185185185186,
+          "first_correct": 5,
+          "top3_hits": 8,
+          "lost_points": 11.666666666666668
+        },
+        "root_error_6_to_20_fit_examples": {
+          "rows": 82,
+          "map3": 0.4776422764227643,
+          "first_correct": 28,
+          "top3_hits": 55,
+          "lost_points": 42.83333333333334
+        },
+        "root_error_above_20_fit_examples": {
+          "rows": 100,
+          "map3": 0.4483333333333333,
+          "first_correct": 34,
+          "top3_hits": 60,
+          "lost_points": 55.16666666666667
+        },
+        "root_error_with_question_diagram": {
+          "rows": 27,
+          "map3": 0.49382716049382713,
+          "first_correct": 10,
+          "top3_hits": 18,
+          "lost_points": 13.666666666666668
+        },
+        "root_error_without_question_diagram": {
+          "rows": 173,
+          "map3": 0.44508670520231214,
+          "first_correct": 57,
+          "top3_hits": 105,
+          "lost_points": 96.0
+        },
+        "root_error_seen_question": {
+          "rows": 178,
+          "map3": 0.4803370786516854,
+          "first_correct": 65,
+          "top3_hits": 114,
+          "lost_points": 92.5
+        },
+        "root_error_unseen_question": {
+          "rows": 22,
+          "map3": 0.2196969696969697,
+          "first_correct": 2,
+          "top3_hits": 9,
+          "lost_points": 17.166666666666664
+        }
+      },
+      "rank_one_failures": {
+        "false_error_on_none": {
+          "rows": 14,
+          "lost_points": 8.5
+        },
+        "root_missed_as_none": {
+          "rows": 51,
+          "lost_points": 41.66666666666667
+        },
+        "wrong_root_family": {
+          "rows": 66,
+          "lost_points": 56.5
+        },
+        "wrong_code_in_correct_family": {
+          "rows": 16,
+          "lost_points": 11.5
+        }
+      },
+      "wrong_first_matches_annotated_downstream_major": 3,
+      "largest_repeated_confusions": [
+        {
+          "gold_code": "WOP-01",
+          "gold_name": "Wrong operation inferred from word-problem misreading",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 6
+        },
+        {
+          "gold_code": "ANS-01",
+          "gold_name": "Stopped at an intermediate quantity / wrong answer form",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 4
+        },
+        {
+          "gold_code": "OTH-00",
+          "gold_name": "Other / uncategorized",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 4
+        },
+        {
+          "gold_code": "EXP-07",
+          "gold_name": "Surd multiplication/simplification error",
+          "first_code": "EXP-04",
+          "first_name": "Roots/fractional exponents",
+          "rows": 4
+        },
+        {
+          "gold_code": "INT-04",
+          "gold_name": "Sign handling in integer +/\u2212",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 4
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "INT-04",
+          "first_name": "Sign handling in integer +/\u2212",
+          "rows": 3
+        },
+        {
+          "gold_code": "KPF-01",
+          "gold_name": "KPK vs FPB (LCM vs GCF) concept confused",
+          "first_code": "KPF-03",
+          "first_name": "Omits a given number when finding FPB/KPK of 3+ numbers",
+          "rows": 3
+        },
+        {
+          "gold_code": "ANS-02",
+          "gold_name": "Misidentifies the role of a computed value (over-answers, or confuses a 'change' with a 'total')",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 3
+        },
+        {
+          "gold_code": "VIS-01",
+          "gold_name": "Misreading a figure/table/chart",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 3
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "FRA-06",
+          "first_name": "Fraction addition procedure applied to a multiplication problem",
+          "rows": 2
+        }
+      ]
+    },
+    "qwen3_5_27b_frozen": {
+      "metrics": {
+        "map3": 0.5897009966777409,
+        "top1_accuracy": 0.5149501661129569,
+        "recall_at_3": 0.6843853820598007,
+        "root_error_map3": 0.4725,
+        "none_map3": 0.8217821782178217,
+        "root_error_rows_predicted_none_first": 18,
+        "delta_vs_image": -0.017718715393133994,
+        "rows_improved": 66,
+        "rows_regressed": 69,
+        "paired_question_bootstrap_delta_95": [
+          -0.07248976964152974,
+          0.03075187194618945
+        ]
+      },
+      "slices": {
+        "none": {
+          "rows": 101,
+          "map3": 0.8217821782178217,
+          "first_correct": 82,
+          "top3_hits": 84,
+          "lost_points": 18.0
+        },
+        "root_error": {
+          "rows": 200,
+          "map3": 0.4725,
+          "first_correct": 73,
+          "top3_hits": 122,
+          "lost_points": 105.5
+        },
+        "root_error_with_correct_final_answer": {
+          "rows": 3,
+          "map3": 0.3333333333333333,
+          "first_correct": 1,
+          "top3_hits": 1,
+          "lost_points": 2.0
+        },
+        "root_error_with_other_final_answer": {
+          "rows": 197,
+          "map3": 0.4746192893401015,
+          "first_correct": 72,
+          "top3_hits": 121,
+          "lost_points": 103.5
+        },
+        "root_error_with_multiple_major_findings": {
+          "rows": 47,
+          "map3": 0.4219858156028369,
+          "first_correct": 13,
+          "top3_hits": 28,
+          "lost_points": 27.166666666666668
+        },
+        "root_error_with_at_most_one_major_finding": {
+          "rows": 153,
+          "map3": 0.48801742919389973,
+          "first_correct": 60,
+          "top3_hits": 94,
+          "lost_points": 78.33333333333334
+        },
+        "root_error_0_to_5_fit_examples": {
+          "rows": 18,
+          "map3": 0.35185185185185186,
+          "first_correct": 5,
+          "top3_hits": 8,
+          "lost_points": 11.666666666666668
+        },
+        "root_error_6_to_20_fit_examples": {
+          "rows": 82,
+          "map3": 0.4959349593495935,
+          "first_correct": 29,
+          "top3_hits": 55,
+          "lost_points": 41.333333333333336
+        },
+        "root_error_above_20_fit_examples": {
+          "rows": 100,
+          "map3": 0.475,
+          "first_correct": 39,
+          "top3_hits": 59,
+          "lost_points": 52.50000000000001
+        },
+        "root_error_with_question_diagram": {
+          "rows": 27,
+          "map3": 0.5123456790123456,
+          "first_correct": 11,
+          "top3_hits": 19,
+          "lost_points": 13.166666666666668
+        },
+        "root_error_without_question_diagram": {
+          "rows": 173,
+          "map3": 0.466281310211946,
+          "first_correct": 62,
+          "top3_hits": 103,
+          "lost_points": 92.33333333333334
+        },
+        "root_error_seen_question": {
+          "rows": 178,
+          "map3": 0.49157303370786515,
+          "first_correct": 66,
+          "top3_hits": 115,
+          "lost_points": 90.5
+        },
+        "root_error_unseen_question": {
+          "rows": 22,
+          "map3": 0.3181818181818182,
+          "first_correct": 7,
+          "top3_hits": 7,
+          "lost_points": 15.0
+        }
+      },
+      "rank_one_failures": {
+        "false_error_on_none": {
+          "rows": 19,
+          "lost_points": 18.0
+        },
+        "root_missed_as_none": {
+          "rows": 18,
+          "lost_points": 15.666666666666666
+        },
+        "wrong_root_family": {
+          "rows": 95,
+          "lost_points": 79.00000000000001
+        },
+        "wrong_code_in_correct_family": {
+          "rows": 14,
+          "lost_points": 10.833333333333334
+        }
+      },
+      "wrong_first_matches_annotated_downstream_major": 9,
+      "largest_repeated_confusions": [
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "ANS-01",
+          "first_name": "Stopped at an intermediate quantity / wrong answer form",
+          "rows": 4
+        },
+        {
+          "gold_code": "ALG-04",
+          "gold_name": "Incomplete distribution",
+          "first_code": "CAL-01",
+          "first_name": "Simple arithmetic/copy slip",
+          "rows": 3
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "NOT-01",
+          "first_name": "Imprecise/incomplete notation without affecting correctness",
+          "rows": 3
+        },
+        {
+          "gold_code": "CAL-01",
+          "gold_name": "Simple arithmetic/copy slip",
+          "first_code": "WOP-01",
+          "first_name": "Wrong operation inferred from word-problem misreading",
+          "rows": 2
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "WOP-01",
+          "first_name": "Wrong operation inferred from word-problem misreading",
+          "rows": 2
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "CAL-01",
+          "first_name": "Simple arithmetic/copy slip",
+          "rows": 2
+        },
+        {
+          "gold_code": "OTH-00",
+          "gold_name": "Other / uncategorized",
+          "first_code": "ALG-06",
+          "first_name": "Moving terms without changing sign/operation",
+          "rows": 2
+        },
+        {
+          "gold_code": "ANS-02",
+          "gold_name": "Misidentifies the role of a computed value (over-answers, or confuses a 'change' with a 'total')",
+          "first_code": "WOP-01",
+          "first_name": "Wrong operation inferred from word-problem misreading",
+          "rows": 2
+        },
+        {
+          "gold_code": "CAL-01",
+          "gold_name": "Simple arithmetic/copy slip",
+          "first_code": "ANS-01",
+          "first_name": "Stopped at an intermediate quantity / wrong answer form",
+          "rows": 2
+        },
+        {
+          "gold_code": "ANS-02",
+          "gold_name": "Misidentifies the role of a computed value (over-answers, or confuses a 'change' with a 'total')",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 2
+        }
+      ]
+    },
+    "fixed_rank_fusion": {
+      "metrics": {
+        "map3": 0.6256921373200444,
+        "top1_accuracy": 0.5249169435215947,
+        "recall_at_3": 0.7508305647840532,
+        "root_error_map3": 0.4916666666666667,
+        "none_map3": 0.8910891089108911,
+        "root_error_rows_predicted_none_first": 34,
+        "delta_vs_image": 0.01827242524916944,
+        "rows_improved": 49,
+        "rows_regressed": 52,
+        "paired_question_bootstrap_delta_95": [
+          -0.015251794706953817,
+          0.050659626266614
+        ]
+      },
+      "slices": {
+        "none": {
+          "rows": 101,
+          "map3": 0.8910891089108911,
+          "first_correct": 86,
+          "top3_hits": 94,
+          "lost_points": 11.0
+        },
+        "root_error": {
+          "rows": 200,
+          "map3": 0.4916666666666667,
+          "first_correct": 72,
+          "top3_hits": 132,
+          "lost_points": 101.66666666666667
+        },
+        "root_error_with_correct_final_answer": {
+          "rows": 3,
+          "map3": 0.3333333333333333,
+          "first_correct": 1,
+          "top3_hits": 1,
+          "lost_points": 2.0
+        },
+        "root_error_with_other_final_answer": {
+          "rows": 197,
+          "map3": 0.4940778341793571,
+          "first_correct": 71,
+          "top3_hits": 131,
+          "lost_points": 99.66666666666666
+        },
+        "root_error_with_multiple_major_findings": {
+          "rows": 47,
+          "map3": 0.425531914893617,
+          "first_correct": 13,
+          "top3_hits": 29,
+          "lost_points": 27.0
+        },
+        "root_error_with_at_most_one_major_finding": {
+          "rows": 153,
+          "map3": 0.5119825708061003,
+          "first_correct": 59,
+          "top3_hits": 103,
+          "lost_points": 74.66666666666667
+        },
+        "root_error_0_to_5_fit_examples": {
+          "rows": 18,
+          "map3": 0.3333333333333333,
+          "first_correct": 4,
+          "top3_hits": 8,
+          "lost_points": 12.0
+        },
+        "root_error_6_to_20_fit_examples": {
+          "rows": 82,
+          "map3": 0.5101626016260162,
+          "first_correct": 30,
+          "top3_hits": 58,
+          "lost_points": 40.16666666666667
+        },
+        "root_error_above_20_fit_examples": {
+          "rows": 100,
+          "map3": 0.505,
+          "first_correct": 38,
+          "top3_hits": 66,
+          "lost_points": 49.5
+        },
+        "root_error_with_question_diagram": {
+          "rows": 27,
+          "map3": 0.5370370370370371,
+          "first_correct": 10,
+          "top3_hits": 20,
+          "lost_points": 12.5
+        },
+        "root_error_without_question_diagram": {
+          "rows": 173,
+          "map3": 0.4845857418111754,
+          "first_correct": 62,
+          "top3_hits": 112,
+          "lost_points": 89.16666666666667
+        },
+        "root_error_seen_question": {
+          "rows": 178,
+          "map3": 0.5102996254681649,
+          "first_correct": 66,
+          "top3_hits": 123,
+          "lost_points": 87.16666666666669
+        },
+        "root_error_unseen_question": {
+          "rows": 22,
+          "map3": 0.3409090909090909,
+          "first_correct": 6,
+          "top3_hits": 9,
+          "lost_points": 14.5
+        }
+      },
+      "rank_one_failures": {
+        "false_error_on_none": {
+          "rows": 15,
+          "lost_points": 11.0
+        },
+        "root_missed_as_none": {
+          "rows": 34,
+          "lost_points": 27.0
+        },
+        "wrong_root_family": {
+          "rows": 80,
+          "lost_points": 65.0
+        },
+        "wrong_code_in_correct_family": {
+          "rows": 14,
+          "lost_points": 9.666666666666666
+        }
+      },
+      "wrong_first_matches_annotated_downstream_major": 5,
+      "largest_repeated_confusions": [
+        {
+          "gold_code": "OTH-00",
+          "gold_name": "Other / uncategorized",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 4
+        },
+        {
+          "gold_code": "ANS-01",
+          "gold_name": "Stopped at an intermediate quantity / wrong answer form",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 3
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "ANS-01",
+          "first_name": "Stopped at an intermediate quantity / wrong answer form",
+          "rows": 3
+        },
+        {
+          "gold_code": "WOP-01",
+          "gold_name": "Wrong operation inferred from word-problem misreading",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 3
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "INT-04",
+          "first_name": "Sign handling in integer +/\u2212",
+          "rows": 2
+        },
+        {
+          "gold_code": "NONE",
+          "gold_name": "No major misconception",
+          "first_code": "FRA-06",
+          "first_name": "Fraction addition procedure applied to a multiplication problem",
+          "rows": 2
+        },
+        {
+          "gold_code": "FRM-01",
+          "gold_name": "Wrong formula chosen / recalled incompletely",
+          "first_code": "NONE",
+          "first_name": "No major misconception",
+          "rows": 2
+        },
+        {
+          "gold_code": "CAL-01",
+          "gold_name": "Simple arithmetic/copy slip",
+          "first_code": "ANS-01",
+          "first_name": "Stopped at an intermediate quantity / wrong answer form",
+          "rows": 2
+        },
+        {
+          "gold_code": "OTH-00",
+          "gold_name": "Other / uncategorized",
+          "first_code": "ALG-06",
+          "first_name": "Moving terms without changing sign/operation",
+          "rows": 2
+        },
+        {
+          "gold_code": "ANS-02",
+          "gold_name": "Misidentifies the role of a computed value (over-answers, or confuses a 'change' with a 'total')",
+          "first_code": "WOP-01",
+          "first_name": "Wrong operation inferred from word-problem misreading",
+          "rows": 2
+        }
+      ]
+    }
+  },
+  "complementarity": {
+    "27b_better_rows": 66,
+    "4b_better_rows": 69,
+    "top3_rescues_27b_of_4b": 35,
+    "top3_rescues_4b_of_27b": 51,
+    "both_miss_top3": 44,
+    "both_miss_top3_root_errors": 43,
+    "both_miss_top3_but_in_4b_top8": 19,
+    "4b_top8_plus_27b_top3_coverage": 0.9169435215946844,
+    "root_errors_outside_combined_candidates": 25,
+    "missing_codes": {
+      "OTH-00": 4,
+      "ALG-06": 2,
+      "OOO-01": 2,
+      "WOP-02": 2,
+      "ANG-02": 1,
+      "ALG-04": 1,
+      "ANS-02": 1,
+      "EXP-01": 1,
+      "EXP-04": 1,
+      "EXP-06": 1,
+      "FRA-03": 1,
+      "FRA-04": 1,
+      "FRA-06": 1,
+      "MEA-03": 1,
+      "REL-01": 1,
+      "SIM-01": 1,
+      "STA-03": 1,
+      "STA-04": 1,
+      "VIS-01": 1
+    },
+    "oracle_choose_better_map3": 0.7403100775193798
+  },
+  "4b_loss_by_correct_label_rank": {
+    "rank_2_or_3": {
+      "rows": 68,
+      "lost_points": 39.16666666666667
+    },
+    "rank_4_to_8": {
+      "rows": 45,
+      "lost_points": 45.0
+    },
+    "outside_top8": {
+      "rows": 34,
+      "lost_points": 34.0
+    }
+  }
+}

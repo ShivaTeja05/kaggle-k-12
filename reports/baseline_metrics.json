@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "model": "hierarchical_prior",
+    "map3_oof": 0.48533333333333334,
+    "fold_map3": [
+      0.4972314507198228,
+      0.5116666666666667,
+      0.4782608695652174,
+      0.46777777777777774,
+      0.4716666666666667
+    ],
+    "train_sha256": "ccf3c92d8add4e3ddb8f193381b801d25fc0336a7a45ca6a9e86a2ede15c79d1",
+    "status": "Real CPU baseline; no image signal; not a top-three model"
+  },
+  "analysis": {
+    "map3": 0.48533333333333334,
+    "accuracy": 0.33866666666666667,
+    "recall3": 0.6726666666666666,
+    "question_bootstrap_95": [
+      0.4577289844839136,
+      0.5128401899449165
+    ],
+    "false_alarm_on_NONE": 0.43873517786561267,
+    "error_missed_as_NONE": 0.4416498993963783,
+    "note": "OOF scores are not leaderboard scores; intervals exclude model-selection uncertainty."
+  }
+}

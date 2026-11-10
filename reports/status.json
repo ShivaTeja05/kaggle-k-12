@@ -1,0 +1,596 @@
+{
+  "updated_at_utc": "2026-11-08T16:32:04.327189+00:00",
+  "budget": "Kaggle free GPU only; maximum 10 of 30 weekly quota hours, counting quota already consumed",
+  "objective": "top 3 final private leaderboard",
+  "objective_achieved": false,
+  "leaderboard_submission_made": true,
+  "competition_deadline_date": "2026-11-17",
+  "internal_final_selection_date": "2026-11-16",
+  "public_leaderboard_snapshot": {
+    "date": "2026-11-08",
+    "scores_top_3": [
+      0.8445,
+      0.842,
+      0.83916
+    ]
+  },
+  "completed": [
+    "Official rules and organizer clarifications reviewed",
+    "Research, related GitHub solutions and four public notebook sources reviewed",
+    "Canonical version-2 metadata downloaded and hashed",
+    "Five-fold CPU baseline fitted: MAP@3 0.48533333333333334",
+    "Baseline error analysis and valid 3498-row CSV generated",
+    "Six contract/leakage/format tests passed",
+    "Offline GPU smoke test completed: 8 fitting rows, 4 validation rows, 4 test rows; functional only, no quality claim",
+    "Ten contract/leakage/budget tests passed after output-format fix"
+  ],
+  "experiments": [
+    {
+      "id": "shivateja005/k12-vision-smoke",
+      "version": 2,
+      "status": "COMPLETE",
+      "smoke_only": true,
+      "gpu_peak_gb": 9.64
+    },
+    {
+      "id": "shivateja005/k12-vision-development",
+      "version": 1,
+      "status": "COMPLETE",
+      "url": "https://www.kaggle.com/code/shivateja005/k12-vision-development",
+      "recipe": "3-epoch Qwen3-VL-4B LoRA classifier, development fold 0, subsequent test inference",
+      "timeout_seconds": 21600,
+      "validated_quality": {
+        "heldout_map3": 0.5952380952380952,
+        "rows": 301,
+        "same_rows_prior": 0.4972314507198228,
+        "NONE_false_alarm_rate": 0.1782178217821782,
+        "error_missed_as_NONE": 0.115,
+        "same_row_prior_delta_95": [
+          0.056842,
+          0.139514
+        ]
+      },
+      "epoch_metrics_from_live_log": [
+        {
+          "epoch": 1,
+          "map3": 0.4335548172757475,
+          "rows": 301,
+          "kind": "held_out_images",
+          "fold": 0
+        },
+        {
+          "epoch": 2,
+          "map3": 0.5863787375415282,
+          "rows": 301,
+          "kind": "held_out_images",
+          "fold": 0
+        },
+        {
+          "epoch": 3,
+          "map3": 0.5952380952380952,
+          "rows": 301,
+          "kind": "held_out_images",
+          "fold": 0
+        }
+      ],
+      "test_predictions_rows": 3498,
+      "submission_format_validated": true
+    },
+    {
+      "id": "shivateja005/k12-taxonomy-development",
+      "version": 2,
+      "status": "COMPLETE",
+      "url": "https://www.kaggle.com/code/shivateja005/k12-taxonomy-development",
+      "recipe": "Offline all-taxonomy image ranker, development fold 0",
+      "timeout_seconds": 7200,
+      "validated_quality": {
+        "heldout_map3": 0.384828349944629,
+        "rows": 301,
+        "same_rows_prior": 0.4972314507198228,
+        "NONE_false_alarm_rate": 0.8514851485148515
+      },
+      "history": [
+        {
+          "version": 1,
+          "status": "ERROR",
+          "cause": "Long taxonomy prompt exceeded single-T4 memory before first prediction",
+          "fix": "Balance FP16 weights over both free T4 GPUs and keep final-token logits only"
+        }
+      ],
+      "decision": "Rejected: worse than baseline; severe over-diagnosis."
+    },
+    {
+      "id": "shivateja005/k12-offline-vllm-wheels",
+      "status": "COMPLETE",
+      "uses_gpu": false,
+      "artifact_gb": 5.5275,
+      "purpose": "Offline vLLM dependency bundle"
+    },
+    {
+      "id": "shivateja005/k12-qwen35-pilot-vllm",
+      "status": "COMPLETE",
+      "rows": 48,
+      "uses_paid_resources": false,
+      "timeout_seconds": 1800,
+      "started_at_utc": "2026-11-08T05:57:36+00:00",
+      "budget_check_worst_case_hours": 8.456111111111111,
+      "validated_quality": {
+        "heldout_map3": 0.5590277777777778,
+        "rows": 48,
+        "same_rows_prior": 0.53125,
+        "NONE_false_alarm_rate": 0.4666666666666667
+      },
+      "decision": "Screening only; one-code outputs in every row, eight truncated explanations. No superiority established on this small sample."
+    },
+    {
+      "id": "shivateja005/k12-qwen35-development-vllm",
+      "version": 1,
+      "status": "COMPLETE",
+      "rows": 301,
+      "recipe": "Qwen3.5-9B code-only regex constrained output, no single-root prompt",
+      "timeout_seconds": 2700,
+      "started_at_utc": "2026-11-08T06:21:55+00:00",
+      "budget_check_worst_case_hours": 8.992777777777777,
+      "validated_quality": {
+        "heldout_map3": 0.45514950166112955,
+        "rows": 301,
+        "same_rows_prior": 0.4972314507198228,
+        "NONE_false_alarm_rate": 0.297029702970297,
+        "error_missed_as_NONE": 0.535
+      },
+      "decision": "Rejected: code formatting repaired, but diagnosis worse than prior. No test inference."
+    },
+    {
+      "id": "shivateja005/k12-qwen35-27b-int4-development-vllm-gated",
+      "version": 1,
+      "status": "CANCEL_ACKNOWLEDGED",
+      "started_at_utc": "2026-11-08T11:45:13+00:00",
+      "recipe": "Frozen Qwen3.5-27B compressed-tensors W4A16, structured brief evidence plus three ranked codes",
+      "validation_rows": 301,
+      "min_validation_for_test": 0.65,
+      "test_runtime_forecast_margin": 1.3,
+      "timeout_seconds": 10800,
+      "post_install_runtime_admission_budget_seconds": 9000,
+      "budget_check_worst_case_hours": 9.35,
+      "validated_quality": null,
+      "uses_paid_resources": false,
+      "quality": null,
+      "execution_failure": "XGrammar regex compilation exceeded the five-second request limit before any predictions. Model loading and engine initialization succeeded.",
+      "stop_action": "Stopped through authenticated Kaggle active-events panel to conserve GPU quota; CLI confirmed CANCEL_ACKNOWLEDGED."
+    },
+    {
+      "id": "shivateja005/k12-adaptive-features",
+      "version": 1,
+      "status": "CANCEL_ACKNOWLEDGED",
+      "started_at_utc": "2026-11-08T12:03:29+00:00",
+      "timeout_seconds": 1080,
+      "budget_check_worst_case_hours": 9.92,
+      "recipe": "One frozen checkpoint pass over fitting/validation images, followed by local CPU linear-control and residual-output-adapter training",
+      "fitting_rows": 1199,
+      "validation_rows": 301,
+      "test_predictions_requested": false,
+      "quality": null,
+      "source_recipe": "kaggle/adaptive-features/extract.py",
+      "frozen_batched_baseline_map3": 0.5980066445182725,
+      "execution_note": "Reached 18-minute timeout after validation cache and 1120/1199 fitting rows. Only complete validation cache was saved; reused for fitting-only retry."
+    },
+    {
+      "id": "shivateja005/k12-grammar-cpu-preflight",
+      "status": "COMPLETE",
+      "uses_gpu": false,
+      "purpose": "Compile a compact EBNF grammar with the actual Qwen tokenizer before any GPU retry",
+      "result": {
+        "xgrammar": "0.2.7",
+        "model_source": "boristown/qwen3-5-27b-awq-4bit/transformers/default/1",
+        "vocab_size": 248320,
+        "uses_gpu": false,
+        "evidence_grammar_seconds": 0.044912862000046516,
+        "code_regex_seconds": 0.006378874000006363,
+        "passed": true
+      }
+    },
+    {
+      "id": "shivateja005/k12-adaptive-features-fitting",
+      "version": 1,
+      "status": "COMPLETE",
+      "timeout_seconds": 1500,
+      "started_at_utc": "2026-11-08T12:25:22+00:00",
+      "budget_check_worst_case_hours": 7.376666666666667,
+      "recipe": "Fitting-only extraction with partial caches; reuse saved validation cache; train output adapters on local CPU",
+      "extracted_fitting_rows": 1199,
+      "inference_seconds": 860
+    },
+    {
+      "id": "shivateja005/k12-qwen35-27b-compact-grammar-gated",
+      "version": 1,
+      "status": "COMPLETE",
+      "timeout_seconds": 8400,
+      "started_at_utc": "2026-11-08T12:28:07+00:00",
+      "budget_check_worst_case_hours": 9.85,
+      "recipe": "27B frozen inference with CPU-preflight-verified compact EBNF; first-request grammar warmup; validation and runtime gate before test",
+      "quality": null,
+      "validated_quality": {
+        "rows": 301,
+        "fold": 0,
+        "test": false,
+        "inference_seconds": 2171.03,
+        "rows_needing_prior_fill": 4,
+        "rows_hitting_generation_limit": 4,
+        "map3": 0.5897009966777409
+      },
+      "decision": "Rejected by predeclared 0.65 validation gate. No test inference. Larger model did not surpass trained 4B baseline.",
+      "analysis": "artifacts/qwen35-27b-analysis"
+    },
+    {
+      "id": "shivateja005/k12-reading-supervision-smoke",
+      "status": "COMPLETE",
+      "smoke_only": true,
+      "uses_paid_resources": false,
+      "recipe": "Single-device functional reading-supervision test",
+      "metrics": {
+        "rows": 4,
+        "map3": 0.16666666666666666,
+        "smoke_only": true,
+        "fold": 0,
+        "validation_seconds": 2.349074771000005
+      }
+    },
+    {
+      "id": "shivateja005/k12-reading-supervision-ddp-smoke",
+      "status": "COMPLETE",
+      "smoke_only": true,
+      "uses_paid_resources": false,
+      "recipe": "Resume trained internal language LoRA with teacher reading/root-explanation response targets plus image classification; prefix isolation checked; two GPUs",
+      "metrics": {
+        "rows": 4,
+        "map3": 0.08333333333333333,
+        "smoke_only": true,
+        "fold": 0,
+        "validation_seconds": 1.4046105859999898
+      }
+    },
+    {
+      "id": "shivateja005/k12-reading-supervision-ddp-development",
+      "status": "CANCEL_ACKNOWLEDGED",
+      "smoke_only": false,
+      "uses_paid_resources": false,
+      "recipe": "Resume trained internal language LoRA with teacher reading/root-explanation response targets plus image classification; prefix isolation checked; two GPUs",
+      "timeout_seconds": 3900,
+      "post_load_budget_seconds": 3500,
+      "min_validation_for_test": 0.615,
+      "budget_check": {
+        "checked_at_utc": "2026-11-08T16:19:49.820191+00:00",
+        "used_hours": 8.55,
+        "active_reservations": [],
+        "candidate_timeout_seconds": 3900,
+        "projected_worst_case_hours": 9.983333333333334,
+        "hard_cap_hours": 10.0,
+        "admitted": true
+      },
+      "source_sha256": "7071f4d4ed71b41cc4e68553bbc8e040ba4a1b9f720a3521c50e930b95c202f3",
+      "stop_reason": "Cancelled while QUEUED after finding unrelated Gemma 4 K3 Timing job consuming shared quota. User chose CPU-only K-12 work.",
+      "validated_quality": null,
+      "source_frozen_before_cancellation": true
+    }
+  ],
+  "next_required": [
+    "Continue K-12 on CPU under the latest user instruction; do not start GPU jobs or stop Gemma",
+    "Retain public submission 58133839 at MAP@3 0.59800; new CPU correction and text-prior candidates failed screening",
+    "Internal reading-supervision full-quality experiment remains unevaluated: cancelled while queued; smoke tests are functional only"
+  ],
+  "monitoring": "No recurring automation or active K-12 GPU job. Full reading run was cancelled while queued.",
+  "intermediate_target": {
+    "metric": "public MAP@3",
+    "target": 0.82,
+    "achieved": false,
+    "budget": "Kaggle free GPU only"
+  },
+  "live_logs": "runs/live/*.log (official Kaggle live log streams)",
+  "gpu_budget_policy": "reports/gpu_budget.json",
+  "gpu_quota_last_check": {
+    "at_utc": "2026-11-08T16:29:11.529842+00:00",
+    "used_hours": 8.86,
+    "remaining_hours": 21.14,
+    "active_k12_gpu_jobs": 0,
+    "note": "Account usage includes unrelated active Gemma job; K-12 continues on CPU only."
+  },
+  "submissions": [
+    {
+      "ref": 58126216,
+      "submitted_at_utc": "2026-11-08T11:43:30.207+00:00",
+      "model": "Qwen3-VL-4B LoRA epoch 3",
+      "status": "COMPLETE",
+      "public_map3": 0.58216,
+      "private_score": null,
+      "rows": 3498,
+      "source": "runs/vision-development/k12/submission.csv",
+      "sha256": "9a61ab07fbbde3395bb523302787a1f2e4eb32fb44409560541f264b73214f43"
+    },
+    {
+      "ref": 58133839,
+      "submitted_at_utc": "2026-11-08T16:08:51.497+00:00",
+      "model": "Original Qwen3-VL-4B image probabilities, fixed temperature 2 and 25% hierarchical prior",
+      "status": "COMPLETE",
+      "public_map3": 0.598,
+      "private_score": null,
+      "rows": 3498,
+      "source": "artifacts/holdout-calibration/submission.csv",
+      "sha256": "4f9599d69f2981ea11f8cdf48d35d215c9369c7020ef48d0dac4ace02aaa9a65"
+    }
+  ],
+  "best_public_map3": 0.598,
+  "adaptation_plan": "docs/adaptation_strategy.md",
+  "checks_passed": 21,
+  "adaptation_cpu_results": {
+    "baseline_map3": 0.5980066445182725,
+    "gpu_baseline_map3": 0.5980066445182725,
+    "rows": 301,
+    "baseline_fitting_map3": 0.8634973589102031,
+    "fold": 0,
+    "steps": 160,
+    "seed": 2026,
+    "results": {
+      "linear": {
+        "map3": 0.5902547065337763,
+        "delta_vs_baseline": -0.007751937984496138,
+        "training_steps": 160,
+        "fitting_map3": 0.9329997219905477,
+        "trainable_parameters": 197197
+      },
+      "residual": {
+        "map3": 0.5703211517165006,
+        "delta_vs_baseline": -0.027685492801771905,
+        "training_steps": 160,
+        "fitting_map3": 0.9596886294133999,
+        "trainable_parameters": 166401
+      },
+      "conservative": {
+        "map3": 0.5991140642303432,
+        "delta_vs_baseline": 0.001107419712070734,
+        "training_steps": 40,
+        "fitting_map3": 0.8691965526827911,
+        "trainable_parameters": 43521
+      }
+    },
+    "interpretation": "Development fold reused in previous epoch/prompt selection; no untouched audit claim.",
+    "design": "Output bottleneck adapter on frozen trained Qwen features. Not AdaLoRA or transformer-layer fine-tuning.",
+    "training_source_sha256": "71b3eff16318d97c2adfcae2510a2a6de4d0f85223e8c63bb1e01a97103080a4",
+    "feature_manifest_sha256": "623cee100796fe02fd649dae329ae4293505fa522b4b82e104e31209ab166950",
+    "adapter_better_than_linear": true,
+    "candidate_kind": "conservative",
+    "promote_to_test": false,
+    "decision": "Do not promote: conservative delta +0.00111 has paired interval spanning zero, below +0.01 screening threshold; larger adapter overfit."
+  },
+  "calibration_cpu_results": {
+    "rows": 301,
+    "raw_image_map3": 0.5952380952380952,
+    "question_crossfit_calibration_map3": 0.5980066445182725,
+    "full_development_tuned_map3": 0.6074197120708748,
+    "selected_prior_weight": 0.25,
+    "selected_temperature": 2.0,
+    "meta_fold_choices": [
+      {
+        "meta_fold": 0,
+        "prior_weight": 0.25,
+        "temperature": 2.0,
+        "rows": 59
+      },
+      {
+        "meta_fold": 1,
+        "prior_weight": 0.25,
+        "temperature": 2.0,
+        "rows": 67
+      },
+      {
+        "meta_fold": 2,
+        "prior_weight": 0.25,
+        "temperature": 2.0,
+        "rows": 65
+      },
+      {
+        "meta_fold": 3,
+        "prior_weight": 0.5,
+        "temperature": 1.0,
+        "rows": 55
+      },
+      {
+        "meta_fold": 4,
+        "prior_weight": 0.1,
+        "temperature": 2.0,
+        "rows": 55
+      }
+    ],
+    "candidates": [
+      {
+        "prior_weight": 0,
+        "temperature": 1.0,
+        "map3": 0.5952380952380952
+      },
+      {
+        "prior_weight": 0,
+        "temperature": 2.0,
+        "map3": 0.5952380952380952
+      },
+      {
+        "prior_weight": 0.1,
+        "temperature": 1.0,
+        "map3": 0.6002214839424141
+      },
+      {
+        "prior_weight": 0.1,
+        "temperature": 2.0,
+        "map3": 0.6046511627906976
+      },
+      {
+        "prior_weight": 0.25,
+        "temperature": 1.0,
+        "map3": 0.6035437430786268
+      },
+      {
+        "prior_weight": 0.25,
+        "temperature": 2.0,
+        "map3": 0.6074197120708748
+      },
+      {
+        "prior_weight": 0.5,
+        "temperature": 1.0,
+        "map3": 0.606312292358804
+      },
+      {
+        "prior_weight": 0.5,
+        "temperature": 2.0,
+        "map3": 0.5719822812846068
+      }
+    ],
+    "warning": "Calibration cross-fitting is conditional on an image model already selected using this development fold; this is not an untouched audit or full image-model OOF."
+  },
+  "memory_cpu_results": {
+    "rows": 301,
+    "baseline_map3": 0.5980066445182725,
+    "memory_only_map3": 0.5769656699889258,
+    "confidence_gated_memory_map3": 0.5991140642303432,
+    "k": 8,
+    "temperature": 0.03,
+    "scope": "Exploratory reused development fold; fitting-only labelled feature memory; no GPU used",
+    "decision": "reject: insufficient development improvement"
+  },
+  "execution_preference": "CPU only for K-12; leave Gemma timing job running, per latest user instruction",
+  "known_external_gpu_job": {
+    "kernel": "shivateja005/gemma-4-k3-timing",
+    "observed_status": "RUNNING",
+    "belongs_to_this_project": false,
+    "user_instruction": "Do not stop"
+  },
+  "prior_correction_cpu_results": {
+    "rows": 301,
+    "reference_fixed_calibration_map3": 0.6074197120708748,
+    "question_crossfit_map3": 0.6074197120708749,
+    "delta": 0.0,
+    "paired_question_bootstrap_delta_95": [
+      -0.020618700364330122,
+      0.018456421383235326
+    ],
+    "full_development_tuned_map3": 0.6074197120708749,
+    "selected_exponent": 0.25,
+    "selected_temperature": 2.0,
+    "meta_fold_choices": [
+      {
+        "meta_fold": 0,
+        "exponent": 0.25,
+        "temperature": 2.0,
+        "rows": 59
+      },
+      {
+        "meta_fold": 1,
+        "exponent": 0.25,
+        "temperature": 2.0,
+        "rows": 67
+      },
+      {
+        "meta_fold": 2,
+        "exponent": 0.25,
+        "temperature": 2.0,
+        "rows": 65
+      },
+      {
+        "meta_fold": 3,
+        "exponent": 0.25,
+        "temperature": 2.0,
+        "rows": 55
+      },
+      {
+        "meta_fold": 4,
+        "exponent": 0.25,
+        "temperature": 2.0,
+        "rows": 55
+      }
+    ],
+    "candidates": [
+      {
+        "exponent": 0.0,
+        "temperature": 1.0,
+        "map3": 0.5952380952380952
+      },
+      {
+        "exponent": 0.0,
+        "temperature": 2.0,
+        "map3": 0.5952380952380952
+      },
+      {
+        "exponent": 0.25,
+        "temperature": 1.0,
+        "map3": 0.5941306755260243
+      },
+      {
+        "exponent": 0.25,
+        "temperature": 2.0,
+        "map3": 0.6074197120708749
+      },
+      {
+        "exponent": 0.5,
+        "temperature": 1.0,
+        "map3": 0.6074197120708749
+      },
+      {
+        "exponent": 0.5,
+        "temperature": 2.0,
+        "map3": 0.5863787375415282
+      },
+      {
+        "exponent": 1.0,
+        "temperature": 1.0,
+        "map3": 0.5863787375415282
+      },
+      {
+        "exponent": 1.0,
+        "temperature": 2.0,
+        "map3": 0.5310077519379844
+      }
+    ],
+    "promotion_rule": "crossfit delta >= 0.01 and paired question-bootstrap lower bound > 0",
+    "promote": false,
+    "warning": "Exploratory reused development fold, conditional on prior image-epoch selection; not an untouched audit. No public leaderboard feedback used in selection."
+  },
+  "text_prior_cpu_results": {
+    "rows": 301,
+    "text_prior_map3": 0.5049833887043189,
+    "reference_fixed_calibration_map3": 0.6074197120708748,
+    "question_crossfit_blend_map3": 0.5841638981173864,
+    "delta": -0.023255813953488372,
+    "paired_question_bootstrap_delta_95": [
+      -0.04323648017227369,
+      -0.004580348302172528
+    ],
+    "full_development_tuned_map3": 0.6035437430786268,
+    "selected_prior_weight": 0.1,
+    "temperature": 2.0,
+    "meta_fold_weights": [
+      0.1,
+      0.1,
+      0.1,
+      0.25,
+      0.0
+    ],
+    "candidates": [
+      {
+        "prior_weight": 0.0,
+        "map3": 0.5952380952380952
+      },
+      {
+        "prior_weight": 0.1,
+        "map3": 0.6035437430786268
+      },
+      {
+        "prior_weight": 0.25,
+        "map3": 0.5991140642303432
+      },
+      {
+        "prior_weight": 0.5,
+        "map3": 0.5442967884828349
+      }
+    ],
+    "promote": false,
+    "warning": "Exploratory reused development fold, conditional on image-epoch selection. Only test-available context inputs. No public feedback used."
+  },
+  "result_report": "reports/experiment_results_2026-11-08.md"
+}

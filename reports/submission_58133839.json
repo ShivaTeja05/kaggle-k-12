@@ -1,0 +1,11 @@
+{
+  "ref": 58133839,
+  "submitted_at_utc": "2026-11-08T16:08:51.497+00:00",
+  "model": "Original Qwen3-VL-4B image probabilities, fixed temperature 2 and 25% hierarchical prior",
+  "status": "COMPLETE",
+  "public_map3": 0.598,
+  "private_score": null,
+  "rows": 3498,
+  "source": "artifacts/holdout-calibration/submission.csv",
+  "sha256": "4f9599d69f2981ea11f8cdf48d35d215c9369c7020ef48d0dac4ace02aaa9a65"
+}

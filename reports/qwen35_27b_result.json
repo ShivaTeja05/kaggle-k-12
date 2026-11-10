@@ -1,0 +1,29 @@
+{
+  "metrics": {
+    "rows": 301,
+    "fold": 0,
+    "test": false,
+    "inference_seconds": 2171.03,
+    "rows_needing_prior_fill": 4,
+    "rows_hitting_generation_limit": 4,
+    "map3": 0.5897009966777409
+  },
+  "comparison": {
+    "rows": 301,
+    "full_fold_rows": 301,
+    "full_fold_evaluated": true,
+    "fold": 0,
+    "image_map3": 0.5897009966777409,
+    "same_rows_prior_map3": 0.4972314507198228,
+    "delta": 0.09246954595791806,
+    "paired_question_bootstrap_delta_95": [
+      0.04126419241738878,
+      0.14172712672633306
+    ],
+    "target": 0.82,
+    "gap_to_target": 0.23029900332225905,
+    "evaluation": "local held-out images; not public leaderboard",
+    "decision": "review error slices before promotion"
+  },
+  "decision": "Rejected by predeclared 0.65 gate. No test predictions generated."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "shivateja005/k12-model-metadata-inspection",
+  "title": "K12 model metadata inspection",
+  "code_file": "inspect.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": [
+    "boristown/qwen3-5-27b-awq-4bit/transformers/default/1"
+  ]
+}

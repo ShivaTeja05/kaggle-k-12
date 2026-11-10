@@ -1,0 +1,37 @@
+{
+  "rows": 60,
+  "fold": 0,
+  "sample_seed": 2026,
+  "ocr_engine": "tesseract 5.5.1",
+  "language_model": "eng",
+  "page_segmentation_mode": 11,
+  "variants": {
+    "long_side_1024": {
+      "math_token_error_rate": 0.8971518987341772,
+      "number_recall": 0.1168958742632613,
+      "number_precision": 0.4375,
+      "empty_math_token_rows": 11,
+      "median_ocr_seconds": 0.22782637499039993
+    },
+    "native_resolution": {
+      "math_token_error_rate": 0.8971518987341772,
+      "number_recall": 0.1168958742632613,
+      "number_precision": 0.4423791821561338,
+      "empty_math_token_rows": 11,
+      "median_ocr_seconds": 0.23340012502740137
+    },
+    "long_side_1024_autocontrast": {
+      "math_token_error_rate": 0.8934599156118144,
+      "number_recall": 0.11394891944990176,
+      "number_precision": 0.4773662551440329,
+      "empty_math_token_rows": 9,
+      "median_ocr_seconds": 0.18146414548391476
+    }
+  },
+  "images_above_1024_long_side": 1,
+  "images_above_qwen_pixel_budget_before_processor": 48,
+  "median_long_side": 1024.0,
+  "median_megapixels": 0.786432,
+  "gold_math_token_count": 1896,
+  "interpretation": "Symbol and number token edit distance includes reading order and limited LaTeX normalization. English Tesseract is a CPU baseline. No Qwen OCR or MAP@3 result is measured here."
+}

@@ -1,0 +1,90 @@
+{
+  "rows": 301,
+  "reference_fixed_calibration_map3": 0.6074197120708748,
+  "question_crossfit_map3": 0.6074197120708749,
+  "delta": 0.0,
+  "paired_question_bootstrap_delta_95": [
+    -0.020618700364330122,
+    0.018456421383235326
+  ],
+  "full_development_tuned_map3": 0.6074197120708749,
+  "selected_exponent": 0.25,
+  "selected_temperature": 2.0,
+  "meta_fold_choices": [
+    {
+      "meta_fold": 0,
+      "exponent": 0.25,
+      "temperature": 2.0,
+      "rows": 59
+    },
+    {
+      "meta_fold": 1,
+      "exponent": 0.25,
+      "temperature": 2.0,
+      "rows": 67
+    },
+    {
+      "meta_fold": 2,
+      "exponent": 0.25,
+      "temperature": 2.0,
+      "rows": 65
+    },
+    {
+      "meta_fold": 3,
+      "exponent": 0.25,
+      "temperature": 2.0,
+      "rows": 55
+    },
+    {
+      "meta_fold": 4,
+      "exponent": 0.25,
+      "temperature": 2.0,
+      "rows": 55
+    }
+  ],
+  "candidates": [
+    {
+      "exponent": 0.0,
+      "temperature": 1.0,
+      "map3": 0.5952380952380952
+    },
+    {
+      "exponent": 0.0,
+      "temperature": 2.0,
+      "map3": 0.5952380952380952
+    },
+    {
+      "exponent": 0.25,
+      "temperature": 1.0,
+      "map3": 0.5941306755260243
+    },
+    {
+      "exponent": 0.25,
+      "temperature": 2.0,
+      "map3": 0.6074197120708749
+    },
+    {
+      "exponent": 0.5,
+      "temperature": 1.0,
+      "map3": 0.6074197120708749
+    },
+    {
+      "exponent": 0.5,
+      "temperature": 2.0,
+      "map3": 0.5863787375415282
+    },
+    {
+      "exponent": 1.0,
+      "temperature": 1.0,
+      "map3": 0.5863787375415282
+    },
+    {
+      "exponent": 1.0,
+      "temperature": 2.0,
+      "map3": 0.5310077519379844
+    }
+  ],
+  "promotion_rule": "crossfit delta >= 0.01 and paired question-bootstrap lower bound > 0",
+  "promote": false,
+  "warning": "Exploratory reused development fold, conditional on prior image-epoch selection; not an untouched audit. No public leaderboard feedback used in selection."
+}

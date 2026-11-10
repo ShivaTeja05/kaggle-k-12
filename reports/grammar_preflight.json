@@ -1,0 +1,9 @@
+{
+  "xgrammar": "0.2.7",
+  "model_source": "boristown/qwen3-5-27b-awq-4bit/transformers/default/1",
+  "vocab_size": 248320,
+  "uses_gpu": false,
+  "evidence_grammar_seconds": 0.044912862000046516,
+  "code_regex_seconds": 0.006378874000006363,
+  "passed": true
+}

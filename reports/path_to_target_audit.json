@@ -1,0 +1,302 @@
+{
+  "data_sha256": {
+    "taxonomy_v1.csv": "fd1b612149a1fae44bb93e14ad06738cc085ef88e8db53f2fc7550449f005523",
+    "test.csv": "639e15135f9cd9bdec502a99ebd1b2dc5c1d54b6972e07cb64415e2c6466d1cc",
+    "train.csv": "ccf3c92d8add4e3ddb8f193381b801d25fc0336a7a45ca6a9e86a2ede15c79d1"
+  },
+  "dataset": {
+    "train_rows": 1500,
+    "test_rows": 3498,
+    "classes": 76,
+    "duplicate_trace_ids": {
+      "train": 0,
+      "test": 0
+    },
+    "train_test_trace_id_overlap": 0,
+    "train_test_image_filename_overlap": 0,
+    "test_train_only_fields": [],
+    "shared_question_context_conflicts": {
+      "question_text": 1,
+      "correct_answer": 3,
+      "question_image_file": 0,
+      "grade": 88,
+      "topic_name": 3
+    },
+    "test_seen_question_rows": 3348,
+    "test_rows_with_diagram": 606,
+    "question_prior_hard_filter_diagnostic": {
+      "heldout_seen_question_rows": 262,
+      "heldout_seen_question_with_unseen_code_rows": 113,
+      "labelled_questions_with_only_one_seen_code": 135
+    },
+    "support": {
+      "NONE": 506,
+      "OTH-00": 57,
+      "ANS-01": 57,
+      "FRM-01": 57,
+      "WOP-01": 57,
+      "CAL-01": 57,
+      "EXP-04": 47,
+      "VIS-01": 41,
+      "INT-04": 39,
+      "OOO-01": 30,
+      "WOP-02": 28,
+      "ANG-01": 28,
+      "KPF-01": 25,
+      "EXP-07": 25,
+      "ALG-04": 23,
+      "PRO-04": 22,
+      "ANS-02": 21,
+      "MEA-04": 18,
+      "ALG-06": 18,
+      "OPS-01": 16,
+      "FUN-01": 15,
+      "Dec-02": 15,
+      "EXP-02": 14,
+      "STA-01": 13,
+      "FRA-06": 13,
+      "KPF-02": 13,
+      "EXP-01": 13,
+      "INT-03": 12,
+      "KPF-04": 12,
+      "OPS-02": 12,
+      "INV-01": 10,
+      "LOG-02": 10,
+      "INT-02": 10,
+      "PV-01": 10,
+      "SEQ-02": 9,
+      "STA-05": 8,
+      "FRA-05": 8,
+      "EXP-06": 8,
+      "MEA-02": 8,
+      "REL-01": 8,
+      "ALG-05": 8,
+      "FRA-04": 7,
+      "SEQ-01": 7,
+      "UNT-01": 7,
+      "STA-04": 7,
+      "FRA-01": 7,
+      "RAT-02": 6,
+      "Dec-01": 6,
+      "KPF-03": 6,
+      "EXP-03": 5,
+      "OOO-02": 5,
+      "MEA-03": 4,
+      "FRA-03": 3,
+      "ALG-03": 2,
+      "MEA-01": 2,
+      "SIM-01": 2,
+      "QUA-02": 2,
+      "COR-01": 2,
+      "PRO-02": 2,
+      "CHK-01": 2,
+      "MEA-05": 2,
+      "LIN-01": 1,
+      "PRO-01": 1,
+      "ANG-02": 1,
+      "ALG-02": 1,
+      "EXP-05": 1,
+      "RAT-01": 1,
+      "INT-01": 1,
+      "GEO-01": 1,
+      "NOT-01": 1,
+      "SET-01": 1,
+      "FRA-02": 1,
+      "ALG-01": 1,
+      "STA-03": 1
+    },
+    "taxonomy_codes_without_train_examples": [
+      "NOT-02",
+      "PRO-03"
+    ],
+    "train_none_rows": 506,
+    "train_none_with_clean_false": 57,
+    "train_correct_final_but_root_error": 30,
+    "train_wrong_final_but_none": 19,
+    "root_count_mismatch_rows": 0,
+    "root_code_mismatch_rows": 0,
+    "root_findings_referencing_missing_transcript_line": 0,
+    "rows_with_nonfinite_annotation_json_constants": 1,
+    "rows_with_multiple_major_findings": 234,
+    "rows_with_crossed_out_markers": 304,
+    "rows_with_uncertain_transcription_markers": 86,
+    "rows_without_any_recognized_line_marker": 0
+  },
+  "candidates": {
+    "rows": 301,
+    "fold": 0,
+    "previously_used_for_model_selection": true,
+    "calibrated_map3": 0.6074197120708748,
+    "top1": 0.5116279069767442,
+    "diagnostic_with_gold_error_presence": 0.6771871539313399,
+    "diagnostic_with_gold_code_family": 0.919158361018826,
+    "rank_counts": {
+      "1": 154,
+      "2": 37,
+      "3": 31,
+      "4_to_8": 45,
+      "outside_8": 34
+    },
+    "target": 0.82,
+    "target_gap": 0.2125802879291252,
+    "target_gap_as_sum_of_row_scores": 63.986666666666686,
+    "fixed_reciprocal_rank_fusion_map3": 0.6256921373200444,
+    "fusion_delta_vs_calibrated_question_bootstrap_95": [
+      -0.015251794706953817,
+      0.050659626266614
+    ],
+    "error_only_map3_needed_at_current_none_score": 0.7716,
+    "most_common_error_confusions": [
+      {
+        "gold": "WOP-01",
+        "predicted_first": "NONE",
+        "rows": 6
+      },
+      {
+        "gold": "ANS-01",
+        "predicted_first": "NONE",
+        "rows": 4
+      },
+      {
+        "gold": "OTH-00",
+        "predicted_first": "NONE",
+        "rows": 4
+      },
+      {
+        "gold": "EXP-07",
+        "predicted_first": "EXP-04",
+        "rows": 4
+      },
+      {
+        "gold": "INT-04",
+        "predicted_first": "NONE",
+        "rows": 4
+      },
+      {
+        "gold": "KPF-01",
+        "predicted_first": "KPF-03",
+        "rows": 3
+      },
+      {
+        "gold": "ANS-02",
+        "predicted_first": "NONE",
+        "rows": 3
+      },
+      {
+        "gold": "VIS-01",
+        "predicted_first": "NONE",
+        "rows": 3
+      },
+      {
+        "gold": "CAL-01",
+        "predicted_first": "NONE",
+        "rows": 2
+      },
+      {
+        "gold": "FRM-01",
+        "predicted_first": "NONE",
+        "rows": 2
+      }
+    ],
+    "minimum_top1_at_current_recall_at_8_for_target": 0.7529568106312291,
+    "gold_transcript_tfidf_map3_same_rows": 0.5354374307862679,
+    "shortlist": {
+      "3": {
+        "calibrated_recall": 0.7375415282392026,
+        "direct_image_recall": 0.7342192691029901,
+        "union_with_27b_top3_recall": 0.8538205980066446,
+        "mean_union_size": 4.780730897009967,
+        "remaining_gain_if_perfectly_reranked": 0.13012181616832785
+      },
+      "5": {
+        "calibrated_recall": 0.8272425249169435,
+        "direct_image_recall": 0.8006644518272426,
+        "union_with_27b_top3_recall": 0.8903654485049833,
+        "mean_union_size": 6.348837209302325,
+        "remaining_gain_if_perfectly_reranked": 0.21982281284606875
+      },
+      "8": {
+        "calibrated_recall": 0.8870431893687708,
+        "direct_image_recall": 0.8803986710963455,
+        "union_with_27b_top3_recall": 0.9169435215946844,
+        "mean_union_size": 8.877076411960132,
+        "remaining_gain_if_perfectly_reranked": 0.27962347729789605
+      },
+      "10": {
+        "calibrated_recall": 0.9069767441860465,
+        "direct_image_recall": 0.893687707641196,
+        "union_with_27b_top3_recall": 0.9302325581395349,
+        "mean_union_size": 10.700996677740864,
+        "remaining_gain_if_perfectly_reranked": 0.2995570321151717
+      },
+      "12": {
+        "calibrated_recall": 0.9235880398671097,
+        "direct_image_recall": 0.9169435215946844,
+        "union_with_27b_top3_recall": 0.946843853820598,
+        "mean_union_size": 12.617940199335548,
+        "remaining_gain_if_perfectly_reranked": 0.31616832779623494
+      },
+      "20": {
+        "calibrated_recall": 0.9667774086378738,
+        "direct_image_recall": 0.9634551495016611,
+        "union_with_27b_top3_recall": 0.9833887043189369,
+        "mean_union_size": 20.41528239202658,
+        "remaining_gain_if_perfectly_reranked": 0.359357696566999
+      }
+    },
+    "slices": {
+      "none": {
+        "rows": 101,
+        "map3": 0.9158415841584159,
+        "recall_at_8": 1.0,
+        "lost_score_sum": 8.5
+      },
+      "has_root_error": {
+        "rows": 200,
+        "map3": 0.45166666666666666,
+        "recall_at_8": 0.83,
+        "lost_score_sum": 109.66666666666669
+      },
+      "label_support_at_most_5": {
+        "rows": 11,
+        "map3": 0.16666666666666666,
+        "recall_at_8": 0.2727272727272727,
+        "lost_score_sum": 9.166666666666668
+      },
+      "label_support_above_20": {
+        "rows": 225,
+        "map3": 0.6525925925925926,
+        "recall_at_8": 0.9288888888888889,
+        "lost_score_sum": 78.16666666666667
+      },
+      "has_diagram": {
+        "rows": 47,
+        "map3": 0.6843971631205675,
+        "recall_at_8": 0.9361702127659575,
+        "lost_score_sum": 14.833333333333334
+      }
+    }
+  },
+  "unlabelled": {
+    "sha256": "75b842f5e72abc4dd790e2fb522628ac0535cd109e52f7f74602bdcdf7c83698",
+    "rows": 50000,
+    "questions": 284,
+    "duplicate_trace_ids": 0,
+    "unlabelled_train_trace_id_overlap": 0,
+    "unlabelled_test_trace_id_overlap": 0,
+    "unlabelled_rows_on_labelled_questions": 48808,
+    "unlabelled_rows_on_questions_with_any_rare_train_code": 4261,
+    "test_rows_with_question_in_pool": 2511,
+    "test_rows_on_unseen_train_questions_with_question_in_pool": 49,
+    "note": "Question overlap measures sampling opportunity. It does not establish any unlabelled row\u2019s root code."
+  },
+  "family_head": {
+    "rows": 301,
+    "families": 35,
+    "reference_family_top1_accuracy": 0.5415282392026578,
+    "trained_family_top1_accuracy": 0.5382059800664452,
+    "fixed_half_family_blend_map3": 0.5946843853820598,
+    "reference_map3": 0.6074197120708748,
+    "scope": "Exploratory held-out image features. One regularized family classifier on fitting rows. No test features."
+  }
+}

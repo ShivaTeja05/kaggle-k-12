@@ -1,0 +1,34 @@
+{
+  "train_rows": 1500,
+  "test_rows": 3498,
+  "taxonomy_codes": 75,
+  "classes_in_train": 74,
+  "missing_taxonomy_in_train": [
+    "NOT-02",
+    "PRO-03"
+  ],
+  "singleton_codes": [
+    "LIN-01",
+    "PRO-01",
+    "ANG-02",
+    "ALG-02",
+    "EXP-05",
+    "RAT-01",
+    "INT-01",
+    "GEO-01",
+    "NOT-01",
+    "SET-01",
+    "FRA-02",
+    "ALG-01",
+    "STA-03"
+  ],
+  "NONE_train_fraction": 0.3373333333333333,
+  "test_questions_seen_in_train": 0.9571183533447685,
+  "unique_questions_train": 462,
+  "unique_questions_test": 492,
+  "question_diagram_train_fraction": 0.182,
+  "question_diagram_test_fraction": 0.1732418524871355,
+  "exact_duplicate_context_transcripts": 0,
+  "correct_answer_but_root_error": 30,
+  "incorrect_answer_but_NONE": 19
+}

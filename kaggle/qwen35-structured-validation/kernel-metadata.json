@@ -1,0 +1,21 @@
+{
+  "id": "shivateja005/k12-qwen35-development-vllm",
+  "title": "K12 Qwen35 Development Vllm",
+  "code_file": "train.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": false,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [
+    "misconception-detection-in-k-12-student-math-workings"
+  ],
+  "kernel_sources": [
+    "shivateja005/k12-offline-vllm-wheels"
+  ],
+  "model_sources": [
+    "shelterw/qwen3.5/transformers/qwen3.5-9b/1"
+  ]
+}

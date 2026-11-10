@@ -1,0 +1,41 @@
+{
+  "rows": 301,
+  "text_prior_map3": 0.5049833887043189,
+  "reference_fixed_calibration_map3": 0.6074197120708748,
+  "question_crossfit_blend_map3": 0.5841638981173864,
+  "delta": -0.023255813953488372,
+  "paired_question_bootstrap_delta_95": [
+    -0.04323648017227369,
+    -0.004580348302172528
+  ],
+  "full_development_tuned_map3": 0.6035437430786268,
+  "selected_prior_weight": 0.1,
+  "temperature": 2.0,
+  "meta_fold_weights": [
+    0.1,
+    0.1,
+    0.1,
+    0.25,
+    0.0
+  ],
+  "candidates": [
+    {
+      "prior_weight": 0.0,
+      "map3": 0.5952380952380952
+    },
+    {
+      "prior_weight": 0.1,
+      "map3": 0.6035437430786268
+    },
+    {
+      "prior_weight": 0.25,
+      "map3": 0.5991140642303432
+    },
+    {
+      "prior_weight": 0.5,
+      "map3": 0.5442967884828349
+    }
+  ],
+  "promote": false,
+  "warning": "Exploratory reused development fold, conditional on image-epoch selection. Only test-available context inputs. No public feedback used."
+}

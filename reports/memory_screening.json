@@ -1,0 +1,10 @@
+{
+  "rows": 301,
+  "baseline_map3": 0.5980066445182725,
+  "memory_only_map3": 0.5769656699889258,
+  "confidence_gated_memory_map3": 0.5991140642303432,
+  "k": 8,
+  "temperature": 0.03,
+  "scope": "Exploratory reused development fold; fitting-only labelled feature memory; no GPU used",
+  "decision": "reject: insufficient development improvement"
+}

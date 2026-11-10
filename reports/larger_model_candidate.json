@@ -1,0 +1,20 @@
+{
+  "candidate_model_source": "boristown/qwen3-5-27b-awq-4bit/transformers/default/1",
+  "inspection_job": "shivateja005/k12-model-metadata-inspection",
+  "uses_gpu": false,
+  "model_type": "qwen3_5",
+  "architectures": [
+    "Qwen3_5ForConditionalGeneration"
+  ],
+  "quant_method": "compressed-tensors",
+  "bits": 4,
+  "weight_bytes": 20057751376,
+  "vision_weight_count": 333,
+  "inspection_report_sha256": "9e8c480a7a1f0e830e048fe29e1ed1f335e9c717bf75dac0e733f630250add93",
+  "model_instance_license_metadata": "MIT",
+  "base_model": "Qwen/Qwen3.5-27B",
+  "base_model_license": "Apache-2.0",
+  "runtime_compatibility": "not yet tested",
+  "quality": "not evaluated",
+  "note": "Kaggle slug says AWQ, actual config is compressed-tensors W4A16. Preserve the actual config instead of forcing AWQ."
+}

@@ -1,0 +1,72 @@
+{
+  "hard_cap_total_used_hours": 10.0,
+  "minimum_remaining_hours": 4.0,
+  "weekly_total_hours": 30.0,
+  "quota_refresh_at": "2026-11-14T00:00:00",
+  "quota_reset_renews_task_budget": false,
+  "safety_margin_hours": 0.25,
+  "per_session_overhead_hours": 0.1,
+  "quota_snapshot_used_hours": 21.12,
+  "quota_snapshot_remaining_hours": 8.88,
+  "policy": "Count all weekly GPU quota already consumed and reserve the remaining maximum of every active job before admitting a new job. CPU-only dependency jobs do not use GPU quota.",
+  "reservations": [
+    {
+      "kernel": "shivateja005/k12-vision-development",
+      "timeout_seconds": 21600,
+      "progress_log": "runs/live/vision.log"
+    },
+    {
+      "kernel": "shivateja005/k12-taxonomy-development",
+      "timeout_seconds": 7200,
+      "progress_log": "runs/live/taxonomy.log"
+    },
+    {
+      "kernel": "shivateja005/k12-qwen35-pilot-vllm",
+      "timeout_seconds": 1800,
+      "progress_log": "runs/live/k12-qwen35-pilot-vllm.log"
+    },
+    {
+      "kernel": "shivateja005/k12-qwen35-development-vllm",
+      "timeout_seconds": 2700,
+      "progress_log": "runs/live/k12-qwen35-development-vllm.log"
+    },
+    {
+      "kernel": "shivateja005/k12-qwen35-27b-int4-development-vllm-gated",
+      "timeout_seconds": 10800,
+      "progress_log": "runs/live/k12-qwen35-27b-int4-development-vllm-gated.log"
+    },
+    {
+      "kernel": "shivateja005/k12-adaptive-features",
+      "timeout_seconds": 1080,
+      "progress_log": "runs/live/k12-adaptive-features.log"
+    },
+    {
+      "kernel": "shivateja005/k12-adaptive-features-fitting",
+      "timeout_seconds": 1500,
+      "progress_log": "runs/live/k12-adaptive-features-fitting.log"
+    },
+    {
+      "kernel": "shivateja005/k12-qwen35-27b-compact-grammar-gated",
+      "timeout_seconds": 8400,
+      "progress_log": "runs/live/k12-qwen35-27b-compact-grammar-gated.log"
+    },
+    {
+      "kernel": "shivateja005/k12-reading-supervision-smoke",
+      "timeout_seconds": 600,
+      "progress_log": "runs/live/k12-reading-supervision-smoke.log"
+    },
+    {
+      "kernel": "shivateja005/k12-reading-supervision-ddp-smoke",
+      "timeout_seconds": 600,
+      "progress_log": "runs/live/k12-reading-supervision-ddp-smoke.log"
+    },
+    {
+      "kernel": "shivateja005/k12-reading-supervision-ddp-development",
+      "timeout_seconds": 3900,
+      "progress_log": "runs/live/k12-reading-supervision-ddp-development.log"
+    }
+  ],
+  "gpu_launches_allowed": false,
+  "gpu_launch_policy_reason": "2026-11-08 user chose: Keep Gemma running; continue K-12 on CPU",
+  "account_concurrency_audit": "kaggle/budget-audit/budget_check.json"
+}

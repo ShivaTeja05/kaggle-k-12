@@ -1,0 +1,6 @@
+{
+  "canonical": "competition_data/*.csv (data version 2)",
+  "legacy_root_difference": "All topic_name values changed; IDs, labels and all other fields are identical in compared train/test frames.",
+  "train_sha256": "ccf3c92d8add4e3ddb8f193381b801d25fc0336a7a45ca6a9e86a2ede15c79d1",
+  "test_sha256": "639e15135f9cd9bdec502a99ebd1b2dc5c1d54b6972e07cb64415e2c6466d1cc"
+}

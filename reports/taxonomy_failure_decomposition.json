@@ -1,0 +1,8 @@
+{
+  "NONE_rows": 101,
+  "NONE_map3": 0.41584158415841593,
+  "error_rows": 200,
+  "error_only_map3": 0.36916666666666664,
+  "counterfactual_fix_only_NONE_rows": 0.5808416389811738,
+  "counterfactual_note": "Diagnostic using known validation labels, not a deployable rule or a ceiling for other model changes."
+}

@@ -1,0 +1,34 @@
+{
+  "rows": 301,
+  "full_fold_rows": 301,
+  "full_fold_evaluated": true,
+  "fold": 0,
+  "image_map3": 0.384828349944629,
+  "same_rows_prior_map3": 0.4972314507198228,
+  "delta": -0.1124031007751938,
+  "paired_question_bootstrap_delta_95": [
+    -0.16243897760514078,
+    -0.0611817930131884
+  ],
+  "target": 0.82,
+  "gap_to_target": 0.43517165005537095,
+  "evaluation": "local held-out images; not public leaderboard",
+  "decision": "review error slices before promotion",
+  "error_analysis": {
+    "map3": 0.384828349944629,
+    "accuracy": 0.23920265780730898,
+    "recall3": 0.6112956810631229,
+    "question_bootstrap_95": [
+      0.3415828058215658,
+      0.43274903360095157
+    ],
+    "false_alarm_on_NONE": 0.8514851485148515,
+    "error_missed_as_NONE": 0.045,
+    "top1_wrong_and_matches_nonroot_finding": 3,
+    "correct_final_answer_root_error_predicted_NONE": 0,
+    "incorrect_final_answer_NONE_predicted_error": 5,
+    "rows": 301,
+    "prediction_scope": "holdout",
+    "note": "Local scores are not leaderboard scores; intervals exclude model-selection uncertainty."
+  }
+}

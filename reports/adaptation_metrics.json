@@ -1,0 +1,39 @@
+{
+  "baseline_map3": 0.5980066445182725,
+  "gpu_baseline_map3": 0.5980066445182725,
+  "rows": 301,
+  "baseline_fitting_map3": 0.8634973589102031,
+  "fold": 0,
+  "steps": 160,
+  "seed": 2026,
+  "results": {
+    "linear": {
+      "map3": 0.5902547065337763,
+      "delta_vs_baseline": -0.007751937984496138,
+      "training_steps": 160,
+      "fitting_map3": 0.9329997219905477,
+      "trainable_parameters": 197197
+    },
+    "residual": {
+      "map3": 0.5703211517165006,
+      "delta_vs_baseline": -0.027685492801771905,
+      "training_steps": 160,
+      "fitting_map3": 0.9596886294133999,
+      "trainable_parameters": 166401
+    },
+    "conservative": {
+      "map3": 0.5991140642303432,
+      "delta_vs_baseline": 0.001107419712070734,
+      "training_steps": 40,
+      "fitting_map3": 0.8691965526827911,
+      "trainable_parameters": 43521
+    }
+  },
+  "interpretation": "Development fold reused in previous epoch/prompt selection; no untouched audit claim.",
+  "design": "Output bottleneck adapter on frozen trained Qwen features. Not AdaLoRA or transformer-layer fine-tuning.",
+  "training_source_sha256": "71b3eff16318d97c2adfcae2510a2a6de4d0f85223e8c63bb1e01a97103080a4",
+  "feature_manifest_sha256": "623cee100796fe02fd649dae329ae4293505fa522b4b82e104e31209ab166950",
+  "adapter_better_than_linear": true,
+  "candidate_kind": "conservative",
+  "promote_to_test": false
+}

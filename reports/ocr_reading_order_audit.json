@@ -1,0 +1,22 @@
+{
+  "rows": 60,
+  "fold": 0,
+  "sample_seed": 2026,
+  "reader": "English Tesseract, PSM 11, 1024-pixel long side",
+  "ordered_line_math_token_error": 0.9641350210970464,
+  "unordered_line_math_token_error": 0.9472573839662447,
+  "optimistic_token_error_with_free_reordering": 0.8676160337552743,
+  "order_free_math_token_recall": 0.14135021097046413,
+  "counts": {
+    "reference_tokens": 1896,
+    "predicted_tokens": 493,
+    "line_ordered_edits": 1828,
+    "line_unordered_edits": 1796,
+    "math_token_overlap": 268,
+    "minimum_edits_with_free_token_reordering": 1645,
+    "rows_with_order_gain": 15,
+    "rows_with_cited_equation": 27,
+    "cited_equation_exact_ocr_line_matches": 0
+  },
+  "scope": "The two line scores use the same gold and OCR line fragments. Unordered assignment is a diagnostic, with no OCR changes. Token overlap ignores order, grouping and semantic equivalence. Exact cited-equation matching requires all normalized math tokens in one detected line."
+}

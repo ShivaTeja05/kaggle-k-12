@@ -1,0 +1,12 @@
+{
+  "rows": 301,
+  "classifier_map3": 0.5952380952380952,
+  "larger_model_map3": 0.5897009966777409,
+  "oracle_choose_better_per_row": 0.7436323366555925,
+  "oracle_is_deployable": false,
+  "both_miss_top3": 44,
+  "larger_better_rows": 67,
+  "classifier_better_rows": 73,
+  "same_score_rows": 161,
+  "note": "The oracle uses gold development labels to pick the better model per row. It is a diagnostic upper bound for such a two-model selector, not a trained model or submission; it is not an upper bound for re-ranking or new training."
+}

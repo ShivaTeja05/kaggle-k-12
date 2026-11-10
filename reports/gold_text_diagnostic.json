@@ -1,0 +1,26 @@
+{
+  "map3": 0.534,
+  "fold_map3": [
+    0.5354374307862679,
+    0.5638888888888889,
+    0.5228539576365665,
+    0.5377777777777777,
+    0.51
+  ],
+  "deployable": false,
+  "interpretation": "Diagnostic gold text with a simple classifier; not a ceiling for stronger models and not a test-time pipeline.",
+  "analysis": {
+    "map3": 0.534,
+    "accuracy": 0.4033333333333333,
+    "recall3": 0.6993333333333334,
+    "question_bootstrap_95": [
+      0.5090359124742033,
+      0.5586186776970675
+    ],
+    "false_alarm_on_NONE": 0.2549407114624506,
+    "error_missed_as_NONE": 0.41750503018108653,
+    "rows": 1500,
+    "prediction_scope": "full_oof",
+    "note": "Local scores are not leaderboard scores; intervals exclude model-selection uncertainty."
+  }
+}

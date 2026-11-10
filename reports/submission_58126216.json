@@ -1,0 +1,11 @@
+{
+  "ref": 58126216,
+  "submitted_at_utc": "2026-11-08T11:43:30.207+00:00",
+  "model": "Qwen3-VL-4B LoRA epoch 3",
+  "status": "COMPLETE",
+  "public_map3": 0.58216,
+  "private_score": null,
+  "rows": 3498,
+  "source": "runs/vision-development/k12/submission.csv",
+  "sha256": "9a61ab07fbbde3395bb523302787a1f2e4eb32fb44409560541f264b73214f43"
+}

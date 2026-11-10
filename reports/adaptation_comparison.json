@@ -1,0 +1,38 @@
+{
+  "rows": 301,
+  "scope": "Previously-used development fold, not leaderboard or untouched audit",
+  "baseline_map3": 0.5980066445182725,
+  "experiments": {
+    "linear": {
+      "map3": 0.5902547065337763,
+      "delta": -0.007751937984496126,
+      "paired_question_bootstrap_delta_95": [
+        -0.02749719416386083,
+        0.011337868480725622
+      ],
+      "rows_improved": 24,
+      "rows_worsened": 34
+    },
+    "residual": {
+      "map3": 0.5703211517165006,
+      "delta": -0.027685492801771874,
+      "paired_question_bootstrap_delta_95": [
+        -0.057694444444444444,
+        0.0027694814516519965
+      ],
+      "rows_improved": 33,
+      "rows_worsened": 53
+    },
+    "conservative": {
+      "map3": 0.5991140642303432,
+      "delta": 0.0011074197120708746,
+      "paired_question_bootstrap_delta_95": [
+        -0.007478632478632479,
+        0.010450229054647875
+      ],
+      "rows_improved": 5,
+      "rows_worsened": 9
+    }
+  },
+  "decision": "Do not promote any output adapter. The conservative variant restores baseline performance but its tiny gain is not reliable and misses the predeclared +0.01 screening margin."
+}

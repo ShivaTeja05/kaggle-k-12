@@ -1,0 +1,24 @@
+{
+  "scope": "Diagnostic oracle bounds on the already-used 301-row development fold; not deployable scores",
+  "baseline_map3": 0.5952380952380952,
+  "rows": 301,
+  "bounds": [
+    {
+      "perfectly_fixed_support_bands": [
+        "singleton",
+        "2-5"
+      ],
+      "rows": 11,
+      "maximum_map3_if_other_rows_unchanged": 0.6284606866002215
+    },
+    {
+      "perfectly_fixed_support_bands": [
+        "singleton",
+        "2-5",
+        "6-20"
+      ],
+      "rows": 76,
+      "maximum_map3_if_other_rows_unchanged": 0.7364341085271318
+    }
+  ]
+}

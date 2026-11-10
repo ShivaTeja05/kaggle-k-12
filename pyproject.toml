@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "colearn-k12-offline"
+version = "0.1.0"
+requires-python = ">=3.9"
+description = "Reproducible offline K-12 misconception detection experiments"
+
+[tool.setuptools.packages.find]
+where = ["src"]
