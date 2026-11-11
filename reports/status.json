@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-08T16:32:04.327189+00:00",
+  "updated_at_utc": "2026-11-11T02:07:57.212148+00:00",
   "budget": "Kaggle free GPU only; maximum 10 of 30 weekly quota hours, counting quota already consumed",
   "objective": "top 3 final private leaderboard",
   "objective_achieved": false,
@@ -316,9 +316,22 @@
       "rows": 3498,
       "source": "artifacts/holdout-calibration/submission.csv",
       "sha256": "4f9599d69f2981ea11f8cdf48d35d215c9369c7020ef48d0dac4ace02aaa9a65"
+    },
+    {
+      "ref": 58221584,
+      "submitted_at_utc": "2026-11-11T02:07:57.211928+00:00",
+      "model": "Qwen3-VL-8B LoRA with teacher-transcription supervision (RunPod, fold-fit 1,199 rows, epoch 3); 0.7/0.3 geometric blend with original 4B; 10% hierarchical prior",
+      "status": "COMPLETE",
+      "public_map3": 0.62383,
+      "private_score": null,
+      "rows": 3498,
+      "source": "artifacts/submission-8b-read-blend/submission.csv",
+      "sha256": "f473c5440c1b104fa24b657b64dd57b33efe8f963ff53ddd7b64abf0c85d3ff0",
+      "development_map3": 0.6467,
+      "note": "Blend chosen among four on the same 301 development rows"
     }
   ],
-  "best_public_map3": 0.598,
+  "best_public_map3": 0.62383,
   "adaptation_plan": "docs/adaptation_strategy.md",
   "checks_passed": 21,
   "adaptation_cpu_results": {

@@ -57,13 +57,13 @@ def image(data, split, filename, maxside=1024):
     out.thumbnail((maxside,maxside));return out
 
 
-def messages(row, data, split, task='classify'):
+def messages(row, data, split, task='classify', maxside=1024):
     content=[]
     if str(row.question_image_file).strip():
         content += [{'type':'text','text':'Question diagram:'},
-                    {'type':'image','image':image(data,'questions',row.question_image_file)}]
+                    {'type':'image','image':image(data,'questions',row.question_image_file,maxside)}]
     content += [{'type':'text','text':"Student's handwritten working:"},
-                {'type':'image','image':image(data,split,row.image_file)}]
+                {'type':'image','image':image(data,split,row.image_file,maxside)}]
     instruction = ("Read the student's actual reasoning. Identify the root major error that the rest of the work "
         "follows from, which need not be the first written error. NONE means no major error; minor notation "
         "slips can still be NONE. A matching final answer alone does not establish correct reasoning. "
@@ -83,8 +83,17 @@ class VisionSystem:
         self.processor=AutoProcessor.from_pretrained(model_path,local_files_only=True,
                                                     min_pixels=128*128,max_pixels=args.max_pixels)
         self.processor.tokenizer.padding_side='left'
+        # Kaggle T4s need FP16; Ampere pods pass --dtype bfloat16.
+        self.dtype=getattr(torch,getattr(args,'dtype','float16'));self.maxside=getattr(args,'maxside',1024)
+        quantization=None
+        if getattr(args,'load_4bit',False):
+            # QLoRA: NF4 frozen weights so a 32B model fits a 48 GB card.
+            from transformers import BitsAndBytesConfig
+            quantization=BitsAndBytesConfig(load_in_4bit=True,bnb_4bit_quant_type='nf4',
+                            bnb_4bit_use_double_quant=True,bnb_4bit_compute_dtype=self.dtype)
         self.base=AutoModelForImageTextToText.from_pretrained(model_path,local_files_only=True,
-                    dtype=torch.float16,device_map={'':getattr(args,'device_index',0)},attn_implementation='sdpa')
+                    dtype=self.dtype,device_map={'':getattr(args,'device_index',0)},attn_implementation='sdpa',
+                    quantization_config=quantization)
         # Kaggle's 2026 image has PEFT 0.21 but torchao 0.10. We load ordinary
         # FP16 weights, so disable only this unused, incompatible quantizer dispatch.
         import peft.import_utils as peft_imports
@@ -92,7 +101,7 @@ class VisionSystem:
             peft_imports.is_torchao_available()
         except ImportError as exc:
             if 'torchao' not in str(exc):raise
-            if getattr(self.base.config,'quantization_config',None):raise
+            if getattr(self.base.config,'quantization_config',None) and not getattr(args,'load_4bit',False):raise
             import peft.tuners.lora.torchao as peft_torchao
             peft_imports.is_torchao_available=lambda:False
             peft_torchao.is_torchao_available=lambda:False
@@ -106,6 +115,12 @@ class VisionSystem:
                      and 'language_model' in n and n.rsplit('.',1)[-1] in
                      {'q_proj','k_proj','v_proj','o_proj','gate_proj','up_proj','down_proj'}]
             if not targets: raise ValueError('No language-model LoRA targets found')
+            if getattr(args,'lora_vision',False):
+                # Handwriting reading happens in the vision tower and its mergers.
+                vision=[n for n,m in self.base.named_modules() if isinstance(m,nn.Linear)
+                        and '.visual.' in f'.{n}.' and n.rsplit('.',1)[-1] in {'qkv','proj','linear_fc1','linear_fc2'}]
+                if not vision: raise ValueError('No vision LoRA targets found')
+                targets+=vision
             self.model=get_peft_model(self.base,LoraConfig(r=args.rank,lora_alpha=args.rank*2,
                          lora_dropout=.05,target_modules=targets))
         # Seed is set BEFORE constructing either head.
@@ -119,7 +134,7 @@ class VisionSystem:
         self.classes=classes
 
     def encode(self,row,data,split,task='classify'):
-        return self.processor.apply_chat_template(messages(row,data,split,task),tokenize=True,
+        return self.processor.apply_chat_template(messages(row,data,split,task,self.maxside),tokenize=True,
                     add_generation_prompt=True,return_dict=True,return_tensors='pt')
 
     def hidden(self,inp):

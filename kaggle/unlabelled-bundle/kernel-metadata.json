@@ -1,0 +1,14 @@
+{
+  "id": "shivateja005/k12-unlabelled-bundle",
+  "title": "K12 unlabelled bundle",
+  "code_file": "bundle.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "competition_sources": ["misconception-detection-in-k-12-student-math-workings"],
+  "kernel_sources": [],
+  "model_sources": []
+}

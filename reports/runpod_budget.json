@@ -1,0 +1,47 @@
+{
+  "approved_at": "2026-11-10",
+  "approval": "User chose A100 80GB with a $40 cap, then asked to reduce the cap and accept similar or better GPUs: $20 total cap, Secure Cloud, rate at most $1.79/hr; 2026-11-11 user raised the total cap to $50 (\"i'll give you 50 dollars limit\")",
+  "max_cost_per_hr": 1.79,
+  "cap_usd": 50.0,
+  "watchdog_margin_usd": 1.0,
+  "minimum_session_usd": 2.0,
+  "gate": "Stage A: 8B LoRA trained on fold-fit rows only. Continue to full training only if best development fixed-calibration MAP@3 >= 0.68 on the 301 fold-0 rows.",
+  "pods": [
+    {
+      "id": "jktv441e4crx35",
+      "gpu": "RTX A6000",
+      "cost_per_hr": 0.59,
+      "created_at": "2026-11-10T22:20:04.413466+00:00",
+      "terminated_at": null
+    },
+    {
+      "id": "s1as780pwt7dxm",
+      "gpu": "A100 SXM",
+      "cost_per_hr": 1.79,
+      "created_at": "2026-11-10T22:59:35.738411+00:00",
+      "terminated_at": "2026-11-11T02:24:17.101292+00:00"
+    },
+    {
+      "id": "xkakvh2v50n06c",
+      "gpu": "L40S",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-11T02:27:52.429159+00:00",
+      "terminated_at": null
+    },
+    {
+      "id": "ocdo52ziviwftb",
+      "gpu": "RTX A6000",
+      "cost_per_hr": 0.59,
+      "created_at": "2026-11-11T03:11:58.383673+00:00",
+      "terminated_at": null
+    }
+  ],
+  "gpu_types": [
+    "NVIDIA RTX A6000",
+    "NVIDIA L40S",
+    "NVIDIA RTX 6000 Ada Generation",
+    "NVIDIA A100-SXM4-80GB",
+    "NVIDIA A100 80GB PCIe"
+  ],
+  "max_active_pods": 3
+}

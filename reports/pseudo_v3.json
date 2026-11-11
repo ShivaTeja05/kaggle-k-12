@@ -1,0 +1,57 @@
+{
+  "scored_rows": 9602,
+  "kept_rows": 1565,
+  "kept_error_rows": 1265,
+  "kept_none_rows": 300,
+  "distinct_top_codes": 48,
+  "most_common_top_codes": [
+    [
+      "NONE",
+      300
+    ],
+    [
+      "EXP-04",
+      110
+    ],
+    [
+      "OOO-01",
+      101
+    ],
+    [
+      "INT-04",
+      96
+    ],
+    [
+      "WOP-01",
+      96
+    ],
+    [
+      "ANS-01",
+      86
+    ],
+    [
+      "OTH-00",
+      86
+    ],
+    [
+      "KPF-02",
+      65
+    ],
+    [
+      "FRA-06",
+      60
+    ],
+    [
+      "Dec-01",
+      50
+    ]
+  ],
+  "settings": {
+    "output": "data/v3/pseudo_v3.jsonl",
+    "top": 5,
+    "min_confidence": 0.5,
+    "none_share": 0.35,
+    "max_per_code": 300,
+    "weight": 0.5
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "rows": 1500,
+  "flag_counts": {
+    "rows_with_secondary": 203,
+    "multiple_major": 234,
+    "crossed_out": 314,
+    "answer_wrong_but_none": 19,
+    "unclear": 75,
+    "answer_correct_but_error": 30
+  },
+  "families": 35,
+  "upweighted_rows": 29,
+  "target_chars_quantiles": [
+    464.5,
+    778.0,
+    1082.09
+  ],
+  "evidence_head_chars_quantiles": [
+    293.5,
+    528.0,
+    683.04
+  ],
+  "note": "Targets are supervision only. No test rows are read or labelled."
+}
