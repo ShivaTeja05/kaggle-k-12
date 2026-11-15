@@ -26,7 +26,7 @@ echo WAIT_DATA > $ST
 i=0; while [ ! -f $D/ready ]; do i=$((i+1)); [ $i -gt 360 ] && { echo "exit data-timeout" > $ST; exit 1; }; sleep 10; done
 cd /workspace/k12
 export PYTHONPATH=src PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True TOKENIZERS_PARALLELISM=false
-ARGS="--model $M --data /workspace/data/raw --max-length 1280 --claude-rows 0"; TRAIN="--group $GROUP"
+ARGS="--model $M --data /workspace/data/raw --max-length 1280"; TRAIN="--claude-rows 0 --group $GROUP"  # --claude-rows is a train-only flag
 echo SMOKE > $ST
 head -n 12 $D/pw_dev.jsonl > $D/pw_dev12.jsonl
 smoke() { timeout 15m $PY -m k12.pointwise_ranker train $ARGS $TRAIN --train $D/pw_train.jsonl --limit 40 --predict $D/pw_dev12.jsonl \
