@@ -1,0 +1,434 @@
+{
+ "rows": {
+  "train_by_source_phase": {
+   "claude/a": 6107,
+   "gold/b": 2398
+  },
+  "train": 8505,
+  "dev": 301,
+  "test": 3498,
+  "claude_valid_pool": 26176,
+  "claude_picked": 6107,
+  "gold_fit_unique": 1199
+ },
+ "per_code": {
+  "claude_first_code": {
+   "ALG-01": 2,
+   "ALG-02": 7,
+   "ALG-03": 5,
+   "ALG-04": 31,
+   "ALG-05": 6,
+   "ALG-06": 19,
+   "ANS-01": 200,
+   "ANS-02": 120,
+   "CAL-01": 200,
+   "COR-01": 3,
+   "Dec-01": 128,
+   "Dec-02": 103,
+   "EXP-01": 44,
+   "EXP-02": 53,
+   "EXP-03": 12,
+   "EXP-04": 115,
+   "EXP-05": 16,
+   "EXP-06": 20,
+   "EXP-07": 132,
+   "FRA-01": 68,
+   "FRA-02": 18,
+   "FRA-03": 25,
+   "FRA-04": 11,
+   "FRA-05": 44,
+   "FRA-06": 58,
+   "FRM-01": 18,
+   "FUN-01": 19,
+   "GEO-01": 7,
+   "INT-01": 21,
+   "INT-02": 55,
+   "INT-03": 67,
+   "INT-04": 200,
+   "INV-01": 5,
+   "KPF-01": 160,
+   "KPF-02": 200,
+   "KPF-03": 41,
+   "KPF-04": 200,
+   "LOG-02": 24,
+   "MEA-01": 5,
+   "MEA-02": 24,
+   "MEA-03": 3,
+   "MEA-04": 37,
+   "MEA-05": 47,
+   "NONE": 2000,
+   "NOT-01": 22,
+   "NOT-02": 14,
+   "OOO-01": 135,
+   "OOO-02": 50,
+   "OPS-01": 200,
+   "OPS-02": 79,
+   "OTH-00": 200,
+   "PRO-04": 9,
+   "PV-01": 181,
+   "QUA-02": 3,
+   "RAT-01": 1,
+   "RAT-02": 3,
+   "REL-01": 200,
+   "SEQ-01": 18,
+   "SEQ-02": 43,
+   "SIM-01": 4,
+   "UNT-01": 4,
+   "VIS-01": 21,
+   "WOP-01": 200,
+   "WOP-02": 147
+  },
+  "gold_root_code_per_copy": {
+   "ALG-01": 1,
+   "ALG-03": 2,
+   "ALG-04": 18,
+   "ALG-05": 7,
+   "ALG-06": 14,
+   "ANG-01": 22,
+   "ANS-01": 45,
+   "ANS-02": 17,
+   "CAL-01": 46,
+   "CHK-01": 2,
+   "COR-01": 2,
+   "Dec-01": 5,
+   "Dec-02": 12,
+   "EXP-01": 10,
+   "EXP-02": 11,
+   "EXP-03": 4,
+   "EXP-04": 37,
+   "EXP-05": 1,
+   "EXP-06": 6,
+   "EXP-07": 20,
+   "FRA-01": 6,
+   "FRA-02": 1,
+   "FRA-03": 2,
+   "FRA-04": 6,
+   "FRA-05": 7,
+   "FRA-06": 10,
+   "FRM-01": 46,
+   "FUN-01": 12,
+   "INT-02": 8,
+   "INT-03": 10,
+   "INT-04": 31,
+   "INV-01": 8,
+   "KPF-01": 20,
+   "KPF-02": 10,
+   "KPF-03": 5,
+   "KPF-04": 10,
+   "LIN-01": 1,
+   "LOG-02": 8,
+   "MEA-01": 2,
+   "MEA-02": 6,
+   "MEA-03": 3,
+   "MEA-04": 15,
+   "MEA-05": 2,
+   "NONE": 405,
+   "NOT-01": 1,
+   "OOO-01": 24,
+   "OOO-02": 4,
+   "OPS-01": 13,
+   "OPS-02": 10,
+   "OTH-00": 46,
+   "PRO-01": 1,
+   "PRO-02": 1,
+   "PRO-04": 17,
+   "PV-01": 8,
+   "QUA-02": 2,
+   "RAT-01": 1,
+   "RAT-02": 5,
+   "REL-01": 6,
+   "SEQ-01": 5,
+   "SEQ-02": 7,
+   "SET-01": 1,
+   "SIM-01": 1,
+   "STA-01": 11,
+   "STA-04": 5,
+   "STA-05": 7,
+   "UNT-01": 6,
+   "VIS-01": 33,
+   "WOP-01": 46,
+   "WOP-02": 22
+  },
+  "dev_truth": {
+   "ALG-02": 1,
+   "ALG-04": 5,
+   "ALG-05": 1,
+   "ALG-06": 4,
+   "ANG-01": 6,
+   "ANG-02": 1,
+   "ANS-01": 12,
+   "ANS-02": 4,
+   "CAL-01": 11,
+   "Dec-01": 1,
+   "Dec-02": 3,
+   "EXP-01": 3,
+   "EXP-02": 3,
+   "EXP-03": 1,
+   "EXP-04": 10,
+   "EXP-06": 2,
+   "EXP-07": 5,
+   "FRA-01": 1,
+   "FRA-03": 1,
+   "FRA-04": 1,
+   "FRA-05": 1,
+   "FRA-06": 3,
+   "FRM-01": 11,
+   "FUN-01": 3,
+   "GEO-01": 1,
+   "INT-01": 1,
+   "INT-02": 2,
+   "INT-03": 2,
+   "INT-04": 8,
+   "INV-01": 2,
+   "KPF-01": 5,
+   "KPF-02": 3,
+   "KPF-03": 1,
+   "KPF-04": 2,
+   "LOG-02": 2,
+   "MEA-02": 2,
+   "MEA-03": 1,
+   "MEA-04": 3,
+   "NONE": 101,
+   "OOO-01": 6,
+   "OOO-02": 1,
+   "OPS-01": 3,
+   "OPS-02": 2,
+   "OTH-00": 11,
+   "PRO-02": 1,
+   "PRO-04": 5,
+   "PV-01": 2,
+   "RAT-02": 1,
+   "REL-01": 2,
+   "SEQ-01": 2,
+   "SEQ-02": 2,
+   "SIM-01": 1,
+   "STA-01": 2,
+   "STA-03": 1,
+   "STA-04": 2,
+   "STA-05": 1,
+   "UNT-01": 1,
+   "VIS-01": 8,
+   "WOP-01": 11,
+   "WOP-02": 6
+  }
+ },
+ "dev_recall_at_k": 0.9501661129568106,
+ "k": 10,
+ "dev_recall_at_k_error_rows": 0.925,
+ "dev_top1_balanced": 0.6478405315614618,
+ "none_swapped_in": {
+  "dev": 46,
+  "test": 797,
+  "note": "rows where NONE was outside the stable top-k"
+ },
+ "shortcut_checks": {
+  "train_claude": {
+   "n": 4107,
+   "truth_has_example": 0.6236,
+   "distractor_has_example": 0.6241,
+   "truth_section_is_plurality": 0.4789,
+   "same_section_candidates": 2.44
+  },
+  "train_gold": {
+   "n": 1588,
+   "truth_has_example": 0.3665,
+   "distractor_has_example": 0.3553,
+   "truth_section_is_plurality": 0.5869,
+   "same_section_candidates": 2.43
+  },
+  "dev_error_rows": {
+   "n": 185,
+   "truth_has_example": 0.6595,
+   "distractor_has_example": 0.3209,
+   "truth_section_is_plurality": 0.4811,
+   "same_section_candidates": 2.14
+  },
+  "dev_unseen_pair_rows": {
+   "n": 91,
+   "truth_has_example": 0.3407,
+   "distractor_has_example": 0.2404,
+   "truth_section_is_plurality": 0.5934,
+   "same_section_candidates": 2.56
+  }
+ },
+ "example_balance": {
+  "claude": {
+   "before": {
+    "truth": 0.9172,
+    "distractor": 0.6241
+   },
+   "keep_truth_example": 0.6804,
+   "after": {
+    "truth": 0.6236,
+    "distractor": 0.6241
+   }
+  },
+  "gold": {
+   "before": {
+    "truth": 0.6285,
+    "distractor": 0.3553
+   },
+   "keep_truth_example": 0.5654,
+   "after": {
+    "truth": 0.3665,
+    "distractor": 0.3553
+   }
+  }
+ },
+ "claude_dropped_dev_test_duplicates": {
+  "n": 26,
+  "trace_ids": [
+   "78ea106d2cc3",
+   "94cef3661b0a",
+   "a49131ac98c3",
+   "68fcf4242844",
+   "6744ebb44014",
+   "e50aa3578f35",
+   "964a6c7740db",
+   "a4c66439798f",
+   "cb0ffd28c798",
+   "f6a44ed9ebe0",
+   "de7901e7c135",
+   "9dd9983dad43",
+   "caaeeecccf1b",
+   "ba069bbc3440",
+   "b46042b5a28a",
+   "156e6c92f542",
+   "ef9554c38c24",
+   "275f94c5279d",
+   "c43e1d616a21",
+   "3dfb027c4eb0",
+   "3bfa4c24fd4d",
+   "4c944daafee0",
+   "ddd432d3c7d4",
+   "a156a2916fc9",
+   "677157bdabe4",
+   "9cc581985995"
+  ]
+ },
+ "header_nan_fills": {
+  "topic_name": 192
+ },
+ "classes_never_a_train_answer": [
+  "ANG-02",
+  "PRO-03",
+  "STA-03"
+ ],
+ "train_truth_in_candidates": 1.0,
+ "train_rows_k_candidates_with_none": 1.0,
+ "example_share": {
+  "claude": {
+   "codes": 54963,
+   "with_example": 31917,
+   "share": 0.5807
+  },
+  "gold": {
+   "codes": 21582,
+   "with_example": 6983,
+   "share": 0.3236
+  },
+  "dev": {
+   "codes": 2709,
+   "with_example": 883,
+   "share": 0.326
+  },
+  "test": {
+   "codes": 31482,
+   "with_example": 11303,
+   "share": 0.359
+  }
+ },
+ "example_note": "share over non-NONE candidate entries; NONE has a fixed line and no example",
+ "tokens": {
+  "tokenizer": "tiny-Qwen2ForCausalLM-2.5 (Qwen2.5 vocab)",
+  "train_prompt_plus_target": {
+   "p50": 852,
+   "p90": 1002,
+   "p95": 1049,
+   "p99": 1135,
+   "p100": 1440
+  },
+  "train_target": {
+   "p50": 100,
+   "p90": 123,
+   "p95": 131,
+   "p99": 148,
+   "p100": 185
+  },
+  "train_over_2048": 0,
+  "dev_prompt": {
+   "p50": 725,
+   "p90": 882,
+   "p95": 914,
+   "p99": 1005,
+   "p100": 1122
+  },
+  "test_prompt": {
+   "p50": 726,
+   "p90": 908,
+   "p95": 951,
+   "p99": 1084,
+   "p100": 1405
+  },
+  "candidate_letters_single_token": true
+ },
+ "leakage": {
+  "dev_ids": 301,
+  "dev_ids_in_train_rows": 0,
+  "dev_ids_in_train_exemplar_sources": 0,
+  "dev_ids_in_dev_exemplar_sources": 0,
+  "train_exemplar_sources": 1867,
+  "train_exemplar_sources_gold": 589,
+  "dev_gold_transcripts_verbatim_in_train_prompts": 2,
+  "dev_question_ids_with_claude_rows_in_train": 138
+ },
+ "settings": {
+  "root": ".",
+  "claude": "runs/claude/unl_all_v4.jsonl",
+  "explain": "runs/claude/train_explain_opus.jsonl",
+  "out": "data/v5",
+  "report": "reports/cand_dataset.json",
+  "k": 10,
+  "per_code_cap": 200,
+  "none_cap": 2000,
+  "gold_repeats": 2,
+  "max_chars": 1500,
+  "lam": 0.5,
+  "seed": 2026,
+  "why_words": 60,
+  "min_span_chars": 6,
+  "max_siblings": 1,
+  "tokenizer": "/Users/gaddamshivateja/.cache/huggingface/hub/models--trl-internal-testing--tiny-Qwen2ForCausalLM-2.5/snapshots/*/tokenizer.json",
+  "tokenizer_python": "/usr/bin/python3",
+  "dev_blend": [
+   [
+    "runs/pod/text32/validation_tx_dev_epoch_1.npz",
+    0.35
+   ],
+   [
+    "runs/pod/tx/text_tx_dev_e3.npz",
+    0.3
+   ],
+   [
+    "runs/pod/dev-distill/validation_epoch_2.npz",
+    0.35
+   ]
+  ],
+  "test_blend": [
+   [
+    "runs/pod/text32-full/test.npz",
+    0.35
+   ],
+   [
+    "runs/pod/text-full/test.npz",
+    0.3
+   ],
+   [
+    "runs/pod/full-distill/test.npz",
+    0.35
+   ]
+  ],
+  "dev_sinkhorn_iters": 30,
+  "test_sinkhorn_iters": 50
+ }
+}

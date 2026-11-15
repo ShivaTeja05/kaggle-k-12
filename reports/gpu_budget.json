@@ -1,72 +1,105 @@
 {
-  "hard_cap_total_used_hours": 10.0,
-  "minimum_remaining_hours": 4.0,
-  "weekly_total_hours": 30.0,
+ "hard_cap_total_used_hours": 10.0,
+ "minimum_remaining_hours": 20.0,
+ "weekly_total_hours": 30.0,
+ "quota_refresh_at": "2026-11-21T00:00:00+00:00",
+ "quota_reset_renews_task_budget": false,
+ "safety_margin_hours": 0.25,
+ "per_session_overhead_hours": 0.1,
+ "quota_snapshot_used_hours": 11.22,
+ "quota_snapshot_remaining_hours": 18.78,
+ "policy": "Count all weekly GPU quota already consumed and reserve the remaining maximum of every active job before admitting a new job. CPU-only dependency jobs do not use GPU quota. Window of 14-21 Nov 2026: hard_cap_total_used_hours counts all GPU quota used in this window; it is 10.0 h for the Qwen3.5-9B fine-tune job approved on 15 Nov (was 1.0 h, then withdrawn); minimum_remaining_hours is 20.0 so that at least 20 of the 30 hours stay unused.",
+ "reservations": [
+  {
+   "kernel": "shivateja005/qcc-job-m6p-648fit",
+   "timeout_seconds": 0,
+   "progress_log": null,
+   "cpu_only": true,
+   "note": "another project's CPU-only session (enable_gpu false in its metadata, machine_shape None); zero GPU time; verified 2026-11-15T04:56:00+00:00"
+  },
+  {
+   "kernel": "shivateja005/k12-q35-9b-ft",
+   "timeout_seconds": 21600,
+   "progress_log": "runs/live/k12-q35-9b-ft.log"
+  }
+ ],
+ "gpu_launches_allowed": false,
+ "gpu_launch_policy_reason": "2026-11-15 11:05 UTC: the Qwen3.5-9B job approved on 15 Nov (\"okay start the free runs on mac and kaggle\", at most 10 GPU hours, at least 20 h unused) is finished and closed by the Kaggle worker. K-12 used about 5.88 h (smoke 0.17 h + main 5.71 h). The optional test-scoring job was NOT launched: dev result not promising (alone 0.562, fused -0.013), and the account quota now reads 11.22 h used / 18.78 h remaining because another project (gemma-4-* kernels on NvidiaL4, one still running at 11:04 UTC) used GPU on the same account while the K-12 job ran, so \"at least 20 h unused\" can no longer be met. No K-12 Kaggle GPU job may start without a new explicit yes from the owner.",
+ "account_concurrency_audit": "kaggle/budget-audit/budget_check.json",
+ "previous_window": {
   "quota_refresh_at": "2026-11-14T00:00:00",
-  "quota_reset_renews_task_budget": false,
-  "safety_margin_hours": 0.25,
-  "per_session_overhead_hours": 0.1,
   "quota_snapshot_used_hours": 21.12,
-  "quota_snapshot_remaining_hours": 8.88,
-  "policy": "Count all weekly GPU quota already consumed and reserve the remaining maximum of every active job before admitting a new job. CPU-only dependency jobs do not use GPU quota.",
+  "hard_cap_total_used_hours": 10.0,
   "reservations": [
-    {
-      "kernel": "shivateja005/k12-vision-development",
-      "timeout_seconds": 21600,
-      "progress_log": "runs/live/vision.log"
-    },
-    {
-      "kernel": "shivateja005/k12-taxonomy-development",
-      "timeout_seconds": 7200,
-      "progress_log": "runs/live/taxonomy.log"
-    },
-    {
-      "kernel": "shivateja005/k12-qwen35-pilot-vllm",
-      "timeout_seconds": 1800,
-      "progress_log": "runs/live/k12-qwen35-pilot-vllm.log"
-    },
-    {
-      "kernel": "shivateja005/k12-qwen35-development-vllm",
-      "timeout_seconds": 2700,
-      "progress_log": "runs/live/k12-qwen35-development-vllm.log"
-    },
-    {
-      "kernel": "shivateja005/k12-qwen35-27b-int4-development-vllm-gated",
-      "timeout_seconds": 10800,
-      "progress_log": "runs/live/k12-qwen35-27b-int4-development-vllm-gated.log"
-    },
-    {
-      "kernel": "shivateja005/k12-adaptive-features",
-      "timeout_seconds": 1080,
-      "progress_log": "runs/live/k12-adaptive-features.log"
-    },
-    {
-      "kernel": "shivateja005/k12-adaptive-features-fitting",
-      "timeout_seconds": 1500,
-      "progress_log": "runs/live/k12-adaptive-features-fitting.log"
-    },
-    {
-      "kernel": "shivateja005/k12-qwen35-27b-compact-grammar-gated",
-      "timeout_seconds": 8400,
-      "progress_log": "runs/live/k12-qwen35-27b-compact-grammar-gated.log"
-    },
-    {
-      "kernel": "shivateja005/k12-reading-supervision-smoke",
-      "timeout_seconds": 600,
-      "progress_log": "runs/live/k12-reading-supervision-smoke.log"
-    },
-    {
-      "kernel": "shivateja005/k12-reading-supervision-ddp-smoke",
-      "timeout_seconds": 600,
-      "progress_log": "runs/live/k12-reading-supervision-ddp-smoke.log"
-    },
-    {
-      "kernel": "shivateja005/k12-reading-supervision-ddp-development",
-      "timeout_seconds": 3900,
-      "progress_log": "runs/live/k12-reading-supervision-ddp-development.log"
-    }
+   {
+    "kernel": "shivateja005/k12-vision-development",
+    "timeout_seconds": 21600,
+    "progress_log": "runs/live/vision.log"
+   },
+   {
+    "kernel": "shivateja005/k12-taxonomy-development",
+    "timeout_seconds": 7200,
+    "progress_log": "runs/live/taxonomy.log"
+   },
+   {
+    "kernel": "shivateja005/k12-qwen35-pilot-vllm",
+    "timeout_seconds": 1800,
+    "progress_log": "runs/live/k12-qwen35-pilot-vllm.log"
+   },
+   {
+    "kernel": "shivateja005/k12-qwen35-development-vllm",
+    "timeout_seconds": 2700,
+    "progress_log": "runs/live/k12-qwen35-development-vllm.log"
+   },
+   {
+    "kernel": "shivateja005/k12-qwen35-27b-int4-development-vllm-gated",
+    "timeout_seconds": 10800,
+    "progress_log": "runs/live/k12-qwen35-27b-int4-development-vllm-gated.log"
+   },
+   {
+    "kernel": "shivateja005/k12-adaptive-features",
+    "timeout_seconds": 1080,
+    "progress_log": "runs/live/k12-adaptive-features.log"
+   },
+   {
+    "kernel": "shivateja005/k12-adaptive-features-fitting",
+    "timeout_seconds": 1500,
+    "progress_log": "runs/live/k12-adaptive-features-fitting.log"
+   },
+   {
+    "kernel": "shivateja005/k12-qwen35-27b-compact-grammar-gated",
+    "timeout_seconds": 8400,
+    "progress_log": "runs/live/k12-qwen35-27b-compact-grammar-gated.log"
+   },
+   {
+    "kernel": "shivateja005/k12-reading-supervision-smoke",
+    "timeout_seconds": 600,
+    "progress_log": "runs/live/k12-reading-supervision-smoke.log"
+   },
+   {
+    "kernel": "shivateja005/k12-reading-supervision-ddp-smoke",
+    "timeout_seconds": 600,
+    "progress_log": "runs/live/k12-reading-supervision-ddp-smoke.log"
+   },
+   {
+    "kernel": "shivateja005/k12-reading-supervision-ddp-development",
+    "timeout_seconds": 3900,
+    "progress_log": "runs/live/k12-reading-supervision-ddp-development.log"
+   }
   ],
-  "gpu_launches_allowed": false,
-  "gpu_launch_policy_reason": "2026-11-08 user chose: Keep Gemma running; continue K-12 on CPU",
-  "account_concurrency_audit": "kaggle/budget-audit/budget_check.json"
+  "gpu_launch_policy_reason": "2026-11-08 user chose: Keep Gemma running; continue K-12 on CPU"
+ },
+ "k12_usage_this_window": {
+  "recorded_at_utc": "2026-11-15T11:05:00+00:00",
+  "smoke_hours": 0.17,
+  "main_hours": 5.71,
+  "k12_total_hours": 5.88,
+  "account_used_hours_at_record": 11.22,
+  "other_projects_gpu_kernels_seen": [
+   "shivateja005/gemma-4-k3-t02-timing (CANCEL)",
+   "shivateja005/gemma-4-g4-e4b-adapter (COMPLETE)",
+   "shivateja005/gemma-4-g5-e4b-om2 (RUNNING at 11:04 UTC)"
+  ],
+  "note": "main_hours is the script run time (20,551 s) from status.json; Kaggle quota was 0.17 h before the main launch. The other kernels belong to another project and were only read (status, metadata), never changed."
+ }
 }

@@ -1,0 +1,1125 @@
+{
+ "script": "scripts/eval_router.py",
+ "data": "development fold only (301 training rows held out of every model); nothing submitted or staged",
+ "answers": "runs/deep/q38/pod_out/q38_dev_think.jsonl",
+ "threshold": 0.817,
+ "reference": "c product, cross-fitted (reference)",
+ "bootstrap": "paired over questions, 4000 resamples, seed 2026 (fuse_candidate.boot_ci): [difference, [2.5%, 97.5%]]",
+ "rows": {
+  "dev": 301,
+  "answered": 270,
+  "sent": 135,
+  "slices_all": {
+   "none": 101,
+   "seen_pair": 94,
+   "hard": 106,
+   "hard_new_code": 84,
+   "hard_unseen_question": 22
+  },
+  "slices_answered": {
+   "none": 101,
+   "seen_pair": 86,
+   "hard": 83,
+   "hard_new_code": 66,
+   "hard_unseen_question": 17
+  },
+  "slices_sent": {
+   "none": 17,
+   "seen_pair": 50,
+   "hard": 68,
+   "hard_new_code": 55,
+   "hard_unseen_question": 13
+  }
+ },
+ "reproduction": {
+  "expected": {
+   "crossfit": 0.8037037037037037,
+   "in_sample": 0.8141975308641974,
+   "choice": [
+    0.01,
+    1,
+    0.5
+   ]
+  },
+  "crossfit_on_answered": 0.8037037037037037,
+  "in_sample_chosen": 0.8141975308641974,
+  "chosen_eps_v_lam_all_dev": [
+   0.01,
+   1,
+   0.5
+  ],
+  "reproduces_q38_fuse": true,
+  "checked": true,
+  "soft_beta0_equals_product": true,
+  "max_abs_probability_gap": 1.3322676295501878e-15,
+  "row_scores_identical_on_every_grid_setting": true,
+  "design_301_row_line": {
+   "design": [
+    0.78,
+    0.924,
+    0.86,
+    0.571
+   ],
+   "settings_chosen_on_all_rows": {
+    "rows": 301,
+    "map3": 0.7796234772978958,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.8599290780141845,
+    "hard": 0.5707547169811321,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "settings_chosen_on_answered_rows_reference": {
+    "rows": 301,
+    "map3": 0.7812846068660022,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8546099290780143,
+    "hard": 0.5754716981132075,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "note": "the design table picked settings on all rows of the other folds; fuse_vlm.py and the reference here use the answered rows"
+  },
+  "q38_fuse_json": {
+   "crossfit": 0.8037037037037037,
+   "in_sample": 0.8141975308641974,
+   "choice": [
+    0.01,
+    1,
+    0.5
+   ],
+   "fold_choices_match": true
+  }
+ },
+ "systems": {
+  "a submitted, fixed setting": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7552602436323366,
+    "none": 0.9158415841584159,
+    "seen_pair": 0.8705673758865248,
+    "hard": 0.49999999999999994,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.7746913580246914,
+    "none": 0.9158415841584159,
+    "seen_pair": 0.872093023255814,
+    "hard": 0.5020080321285141,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.02602436323366556,
+     [
+      -0.04977758366198483,
+      -0.0023706385241542872
+     ]
+    ],
+    "answered_rows": [
+     -0.029012345679012348,
+     [
+      -0.05495634466601286,
+      -0.0024131444730596287
+     ]
+    ]
+   }
+  },
+  "b reasoner alone (unanswered: submitted)": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7408637873754153,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.7216312056737588,
+    "hard": 0.5833333333333334,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.758641975308642,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.7093023255813954,
+    "hard": 0.608433734939759,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.040420819490586936,
+     [
+      -0.07377167356817366,
+      -0.00694384371395617
+     ]
+    ],
+    "answered_rows": [
+     -0.04506172839506172,
+     [
+      -0.081712683433467,
+      -0.009152070790001805
+     ]
+    ]
+   },
+   "note": "the all-rows line gives the 31 unanswered rows to the submitted system"
+  },
+  "c product, cross-fitted (reference)": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7812846068660022,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8546099290780143,
+    "hard": 0.5754716981132075,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8037037037037037,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8527131782945736,
+    "hard": 0.6004016064257028,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     0.0,
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "answered_rows": [
+     0.0,
+     [
+      0.0,
+      0.0
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam": [
+    [
+     0.01,
+     1,
+     0.5
+    ],
+    [
+     0.01,
+     1,
+     0.5
+    ],
+    [
+     0.08,
+     1,
+     0.75
+    ],
+    [
+     0.01,
+     1,
+     0.5
+    ],
+    [
+     0.08,
+     1,
+     0.75
+    ]
+   ]
+  },
+  "c product, in-sample (0.01, 1, 0.5)": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7906976744186046,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8617021276595744,
+    "hard": 0.5959119496855345,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8141975308641974,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8604651162790696,
+    "hard": 0.6265060240963856,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     0.009413067552602437,
+     [
+      0.0011298480684073906,
+      0.01921129882578481
+     ]
+    ],
+    "answered_rows": [
+     0.010493827160493827,
+     [
+      0.0012436655014888389,
+      0.021385208564557907
+     ]
+    ]
+   },
+   "note": "in-sample: setting chosen on the rows it is scored on",
+   "chosen_eps_v_lam_all_dev": [
+    0.01,
+    1,
+    0.5
+   ]
+  },
+  "d hard, TRUE slice gate (not deployable)": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7868217054263565,
+    "none": 0.9158415841584159,
+    "seen_pair": 0.8705673758865248,
+    "hard": 0.589622641509434,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8098765432098765,
+    "none": 0.9158415841584159,
+    "seen_pair": 0.872093023255814,
+    "hard": 0.6164658634538153,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     0.005537098560354375,
+     [
+      -0.016774982567767802,
+      0.029508196721311476
+     ]
+    ],
+    "answered_rows": [
+     0.00617283950617284,
+     [
+      -0.019012751439301465,
+      0.03202677224736048
+     ]
+    ]
+   },
+   "gate": {
+    "sent_rows": 135,
+    "hard_sent_rows": 68,
+    "routed_rows": 68,
+    "routed_hard_rows": 68,
+    "precision_hard": 1.0,
+    "recall_hard": 1.0
+   }
+  },
+  "d same, ignoring the send flag": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7846068660022149,
+    "none": 0.9158415841584159,
+    "seen_pair": 0.8705673758865248,
+    "hard": 0.5833333333333334,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8074074074074075,
+    "none": 0.9158415841584159,
+    "seen_pair": 0.872093023255814,
+    "hard": 0.608433734939759,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     0.0033222591362126255,
+     [
+      -0.0224051597309794,
+      0.02984234234234234
+     ]
+    ],
+    "answered_rows": [
+     0.0037037037037037047,
+     [
+      -0.024810143418922043,
+      0.03260869565217391
+     ]
+    ]
+   },
+   "note": "every answered hard row goes to the reasoner, sent or not; this is the 0.807 of the design, section 4.2.3",
+   "routed_rows": 83
+  },
+  "e hard, learned cross-fitted gate": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7580287929125138,
+    "none": 0.9191419141914192,
+    "seen_pair": 0.7624113475177304,
+    "hard": 0.6006289308176102,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.7777777777777778,
+    "none": 0.9191419141914192,
+    "seen_pair": 0.753875968992248,
+    "hard": 0.6305220883534137,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.023255813953488372,
+     [
+      -0.047290062134910896,
+      0.0005674965021469618
+     ]
+    ],
+    "answered_rows": [
+     -0.025925925925925925,
+     [
+      -0.05152785779442124,
+      0.000610843588371679
+     ]
+    ]
+   },
+   "gate": {
+    "sent_rows": 135,
+    "hard_sent_rows": 68,
+    "routed_rows": 81,
+    "routed_hard_rows": 59,
+    "precision_hard": 0.7283950617283951,
+    "recall_hard": 0.8676470588235294
+   }
+  },
+  "f hard, confidence < 0.4": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.769656699889258,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8723404255319147,
+    "hard": 0.5267295597484276,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.7907407407407407,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8740310077519381,
+    "hard": 0.536144578313253,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.011627906976744186,
+     [
+      -0.0320738425280951,
+      0.009638010494300112
+     ]
+    ],
+    "answered_rows": [
+     -0.012962962962962963,
+     [
+      -0.03584246297423412,
+      0.01145731432011439
+     ]
+    ]
+   },
+   "gate": {
+    "sent_rows": 135,
+    "hard_sent_rows": 68,
+    "routed_rows": 30,
+    "routed_hard_rows": 18,
+    "precision_hard": 0.6,
+    "recall_hard": 0.2647058823529412
+   },
+   "note": "fixed hand threshold, not fitted here; confidence < 0.4 was the best of twelve gates in the earlier hybrid probe on these same rows"
+  },
+  "f hard, confidence < 0.6": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7668881506090808,
+    "none": 0.938943894389439,
+    "seen_pair": 0.7978723404255318,
+    "hard": 0.5754716981132075,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.7876543209876543,
+    "none": 0.938943894389439,
+    "seen_pair": 0.7926356589147285,
+    "hard": 0.5983935742971888,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.014396456256921372,
+     [
+      -0.03479236812570145,
+      0.007223434004474275
+     ]
+    ],
+    "answered_rows": [
+     -0.01604938271604938,
+     [
+      -0.038461538461538464,
+      0.007301973506353077
+     ]
+    ]
+   },
+   "gate": {
+    "sent_rows": 135,
+    "hard_sent_rows": 68,
+    "routed_rows": 70,
+    "routed_hard_rows": 44,
+    "precision_hard": 0.6285714285714286,
+    "recall_hard": 0.6470588235294118
+   },
+   "note": "fixed hand threshold, not fitted here; confidence < 0.4 was the best of twelve gates in the earlier hybrid probe on these same rows"
+  },
+  "f hard, reasoner new code & conf < 0.6": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7652270210409745,
+    "none": 0.9141914191419143,
+    "seen_pair": 0.801418439716312,
+    "hard": 0.591194968553459,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.7858024691358025,
+    "none": 0.9141914191419143,
+    "seen_pair": 0.7965116279069767,
+    "hard": 0.6184738955823293,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.01605758582502768,
+     [
+      -0.03649330736860954,
+      0.0050851781390522325
+     ]
+    ],
+    "answered_rows": [
+     -0.01790123456790124,
+     [
+      -0.042124712338466985,
+      0.006061159035611593
+     ]
+    ]
+   },
+   "gate": {
+    "sent_rows": 135,
+    "hard_sent_rows": 68,
+    "routed_rows": 51,
+    "routed_hard_rows": 39,
+    "precision_hard": 0.7647058823529411,
+    "recall_hard": 0.5735294117647058
+   },
+   "note": "fixed hand threshold, not fitted here; confidence < 0.4 was the best of twelve gates in the earlier hybrid probe on these same rows"
+  },
+  "g soft, beta=0, (eps,v,lam) cross-fit": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7812846068660022,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8546099290780143,
+    "hard": 0.5754716981132075,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8037037037037037,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8527131782945736,
+    "hard": 0.6004016064257028,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     0.0,
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "answered_rows": [
+     0.0,
+     [
+      0.0,
+      0.0
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam_beta": [
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.08,
+     1,
+     0.75,
+     0
+    ],
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.08,
+     1,
+     0.75,
+     0
+    ]
+   ],
+   "note": "settings are chosen on the other four folds, but those folds' gate scores come from models that saw the scored fold's gate labels; the strictly nested line is \"g soft, nested, gate re-fitted per fold\""
+  },
+  "g soft, beta=0.25, (eps,v,lam) cross-fit": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7807308970099668,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.847517730496454,
+    "hard": 0.5801886792452831,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8037037037037037,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8468992248062015,
+    "hard": 0.606425702811245,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.0005537098560354376,
+     [
+      -0.0074209575181991925,
+      0.006090808416389812
+     ]
+    ],
+    "answered_rows": [
+     0.0,
+     [
+      -0.0076045627376425855,
+      0.007275735720078788
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam_beta": [
+    [
+     0.01,
+     0.75,
+     0.5,
+     0.25
+    ],
+    [
+     0.03,
+     0.75,
+     0.5,
+     0.25
+    ],
+    [
+     0.03,
+     0.75,
+     0.5,
+     0.25
+    ],
+    [
+     0.01,
+     0.75,
+     0.5,
+     0.25
+    ],
+    [
+     0.03,
+     0.75,
+     0.5,
+     0.25
+    ]
+   ],
+   "note": "settings are chosen on the other four folds, but those folds' gate scores come from models that saw the scored fold's gate labels; the strictly nested line is \"g soft, nested, gate re-fitted per fold\""
+  },
+  "g soft, beta=0.5, (eps,v,lam) cross-fit": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7779623477297897,
+    "none": 0.9224422442244224,
+    "seen_pair": 0.8492907801418441,
+    "hard": 0.5770440251572326,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.7993827160493827,
+    "none": 0.9224422442244224,
+    "seen_pair": 0.8468992248062016,
+    "hard": 0.6004016064257028,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.003322259136212624,
+     [
+      -0.014612776928953398,
+      0.008104223588342448
+     ]
+    ],
+    "answered_rows": [
+     -0.004320987654320988,
+     [
+      -0.016476726695357873,
+      0.007353619492077276
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam_beta": [
+    [
+     0.03,
+     1,
+     0.75,
+     0.5
+    ],
+    [
+     0.01,
+     0.5,
+     0.75,
+     0.5
+    ],
+    [
+     0.03,
+     1,
+     0.75,
+     0.5
+    ],
+    [
+     0.01,
+     0.75,
+     0.75,
+     0.5
+    ],
+    [
+     0.01,
+     0.5,
+     0.75,
+     0.5
+    ]
+   ],
+   "note": "settings are chosen on the other four folds, but those folds' gate scores come from models that saw the scored fold's gate labels; the strictly nested line is \"g soft, nested, gate re-fitted per fold\""
+  },
+  "g soft, beta=0.75, (eps,v,lam) cross-fit": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7779623477297896,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.8351063829787233,
+    "hard": 0.5880503144654088,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.7987654320987654,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.8333333333333333,
+    "hard": 0.610441767068273,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.0033222591362126247,
+     [
+      -0.014348785871964682,
+      0.007651535645367819
+     ]
+    ],
+    "answered_rows": [
+     -0.0049382716049382715,
+     [
+      -0.0167910447761194,
+      0.0063625464865922935
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam_beta": [
+    [
+     0.08,
+     1,
+     0.75,
+     0.75
+    ],
+    [
+     0.08,
+     1,
+     0.75,
+     0.75
+    ],
+    [
+     0.08,
+     1,
+     0.75,
+     0.75
+    ],
+    [
+     0.01,
+     0.75,
+     0.75,
+     0.75
+    ],
+    [
+     0.03,
+     0.5,
+     0.75,
+     0.75
+    ]
+   ],
+   "note": "settings are chosen on the other four folds, but those folds' gate scores come from models that saw the scored fold's gate labels; the strictly nested line is \"g soft, nested, gate re-fitted per fold\""
+  },
+  "g soft, beta=1, (eps,v,lam) cross-fit": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7834994462901439,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.824468085106383,
+    "hard": 0.6132075471698113,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.80679012345679,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.8275193798449613,
+    "hard": 0.642570281124498,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     0.00221483942414175,
+     [
+      -0.01311583261432269,
+      0.017094748858447494
+     ]
+    ],
+    "answered_rows": [
+     0.0030864197530864204,
+     [
+      -0.013096804511278195,
+      0.0196078431372549
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam_beta": [
+    [
+     0.01,
+     0.5,
+     0.75,
+     1
+    ],
+    [
+     0.01,
+     0.5,
+     0.75,
+     1
+    ],
+    [
+     0.01,
+     0.5,
+     0.75,
+     1
+    ],
+    [
+     0.01,
+     0.5,
+     0.75,
+     1
+    ],
+    [
+     0.01,
+     0.5,
+     0.75,
+     1
+    ]
+   ],
+   "note": "settings are chosen on the other four folds, but those folds' gate scores come from models that saw the scored fold's gate labels; the strictly nested line is \"g soft, nested, gate re-fitted per fold\""
+  },
+  "g soft, (eps,v,lam,beta) nested": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.778516057585825,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.8492907801418441,
+    "hard": 0.5770440251572326,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8006172839506173,
+    "none": 0.9240924092409242,
+    "seen_pair": 0.8468992248062015,
+    "hard": 0.6024096385542169,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     -0.002768549280177187,
+     [
+      -0.009024528070251454,
+      0.0031849677458741185
+     ]
+    ],
+    "answered_rows": [
+     -0.0030864197530864196,
+     [
+      -0.010217113665389526,
+      0.0035460992907801418
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam_beta": [
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.08,
+     1,
+     0.75,
+     0.75
+    ],
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.08,
+     1,
+     0.75,
+     0
+    ]
+   ],
+   "note": "settings are chosen on the other four folds, but those folds' gate scores come from models that saw the scored fold's gate labels; the strictly nested line is \"g soft, nested, gate re-fitted per fold\"",
+   "in_sample_choice": [
+    0.01,
+    1,
+    0.5,
+    0
+   ],
+   "in_sample_on_answered": 0.8141975308641974
+  },
+  "g soft, nested, gate re-fitted per fold": {
+   "all_rows": {
+    "rows": 301,
+    "map3": 0.7818383167220376,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8546099290780143,
+    "hard": 0.5770440251572326,
+    "n_none": 101,
+    "n_seen_pair": 94,
+    "n_hard": 106
+   },
+   "answered_rows": {
+    "rows": 270,
+    "map3": 0.8043209876543209,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8527131782945736,
+    "hard": 0.6024096385542169,
+    "n_none": 101,
+    "n_seen_pair": 86,
+    "n_hard": 83
+   },
+   "minus_product_crossfit": {
+    "all_rows": [
+     0.0005537098560354376,
+     [
+      -0.005208333333333332,
+      0.006900212314225054
+     ]
+    ],
+    "answered_rows": [
+     0.0006172839506172843,
+     [
+      -0.006150061500615005,
+      0.007663344746066685
+     ]
+    ]
+   },
+   "fold_choices_eps_v_lam_beta": [
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.03,
+     1,
+     0.75,
+     0.25
+    ],
+    [
+     0.01,
+     1,
+     0.5,
+     0
+    ],
+    [
+     0.08,
+     1,
+     0.75,
+     0
+    ]
+   ],
+   "note": "strict nesting: gate and settings fitted without the scored fold"
+  }
+ },
+ "gate": {
+  "features": [
+   "confidence",
+   "memoriser_entropy",
+   "top_codes_agree",
+   "reasoner_top_new_error_code",
+   "question_seen",
+   "memoriser_top_none",
+   "line_flagged_unequal"
+  ],
+  "l2": 1.0,
+  "folds": "the fusion question folds (rng seed 7), restricted to sent rows",
+  "crossfit_auc_hard": 0.8158472344161545,
+  "threshold_0.5": {
+   "sent_rows": 135,
+   "hard_sent_rows": 68,
+   "routed_rows": 81,
+   "routed_hard_rows": 59,
+   "precision_hard": 0.7283950617283951,
+   "recall_hard": 0.8676470588235294
+  },
+  "hard_share_of_sent": 0.5037037037037037,
+  "mean_gate_on_hard": 0.6824833586720838,
+  "mean_gate_on_other": 0.31516961364277973,
+  "all_sent_rows_fit_standardised_coefficients": {
+   "intercept": -0.06370529351028757,
+   "confidence": -0.16039131815595994,
+   "memoriser_entropy": 0.2498983260561427,
+   "top_codes_agree": 0.0007412498726140353,
+   "reasoner_top_new_error_code": 1.2824995075912649,
+   "question_seen": -0.6378323629786873,
+   "memoriser_top_none": -0.4295881877101061,
+   "line_flagged_unequal": 0.0
+  },
+  "note": "coefficients are from one fit on all sent rows, for reading only; every score above uses cross-fitted gates"
+ },
+ "complementarity": {
+  "sent_rows": 135,
+  "top1_agreement_submitted_vs_reasoner": 0.3925925925925926,
+  "agree": {
+   "rows": 53,
+   "submitted": 0.8144654088050315,
+   "product_crossfit": 0.8176100628930818,
+   "product_in_sample": 0.8176100628930818,
+   "gain_crossfit": 0.0031446540880503146,
+   "gain_crossfit_share_of_total": 0.02127659574468085
+  },
+  "disagree": {
+   "rows": 82,
+   "submitted": 0.5203252032520325,
+   "product_crossfit": 0.6117886178861789,
+   "product_in_sample": 0.6463414634146342,
+   "gain_crossfit": 0.09146341463414633,
+   "gain_crossfit_share_of_total": 0.9574468085106381
+  },
+  "unsent_answered": {
+   "rows": 135,
+   "submitted": 0.9135802469135802,
+   "product_crossfit": 0.9148148148148147,
+   "product_in_sample": 0.9148148148148147,
+   "gain_crossfit": 0.001234567901234568,
+   "gain_crossfit_share_of_total": 0.02127659574468085
+  }
+ }
+}

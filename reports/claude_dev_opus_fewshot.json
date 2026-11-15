@@ -1,0 +1,26 @@
+{
+  "rows": 301,
+  "claude_missing_answers": 0,
+  "deltas_against": "runs/claude/dev_opus.jsonl",
+  "claude": {
+    "map3": 0.8106312292358804,
+    "top1_accuracy": 0.7541528239202658,
+    "recall_at_3": 0.8770764119601329,
+    "root_error_map3": 0.7433333333333333,
+    "none_map3": 0.943894389438944,
+    "root_error_rows_predicted_none_first": 7,
+    "delta_vs_image": -0.008305647840531559,
+    "rows_improved": 23,
+    "rows_regressed": 28,
+    "paired_question_bootstrap_delta_95": [
+      -0.034091221622162216,
+      0.017041122724611914
+    ]
+  },
+  "claude_failures": {
+    "false_alarm_on_none": 6,
+    "missed_error_said_none": 7,
+    "wrong_family": 52,
+    "right_family_wrong_code": 9
+  }
+}

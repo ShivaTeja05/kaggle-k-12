@@ -1,0 +1,68 @@
+{
+ "threshold": 0.817,
+ "dev_rows_answered": 301,
+ "dev_rows_sent": 158,
+ "dev_share_sent_of_answered": 0.5249169435215947,
+ "submitted_on_answered": {
+  "rows": 301,
+  "map3": 0.7552602436323366,
+  "none": 0.9158415841584159,
+  "seen_pair": 0.8705673758865248,
+  "hard": 0.49999999999999994
+ },
+ "fused_crossfit_on_answered": {
+  "rows": 301,
+  "map3": 0.7890365448504983,
+  "none": 0.9290429042904291,
+  "seen_pair": 0.8439716312056739,
+  "hard": 0.6069182389937107
+ },
+ "fused_minus_submitted": [
+  0.033776301218161685,
+  [
+   0.006368921241532705,
+   0.06193693693693694
+  ]
+ ],
+ "fold_choices_floor_v_lam": [
+  [
+   0.01,
+   1,
+   0.5
+  ],
+  [
+   0.01,
+   0.75,
+   0.5
+  ],
+  [
+   0.01,
+   0.75,
+   0.5
+  ],
+  [
+   0.01,
+   1,
+   0.5
+  ],
+  [
+   0.01,
+   0.75,
+   0.5
+  ]
+ ],
+ "chosen_floor_v_lam_all_dev": [
+  0.01,
+  0.75,
+  0.5
+ ],
+ "in_sample_chosen": 0.7962347729789591,
+ "on_sent_rows": {
+  "submitted": 0.6329113924050633,
+  "fused_crossfit": 0.6962025316455697
+ },
+ "on_unsent_answered_rows": {
+  "submitted": 0.8904428904428904,
+  "fused_crossfit": 0.8916083916083916
+ }
+}

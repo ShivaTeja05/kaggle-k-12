@@ -1,0 +1,33 @@
+{
+ "bundle": "runs/kaggle-q35-9b/main/dev_head.npz",
+ "rows_in_bundle": 301,
+ "dev_rows_scored": 301,
+ "dev_rows_total": 301,
+ "map3": 0.562,
+ "map3_ci95": [
+  0.5111,
+  0.6124
+ ],
+ "top1": 0.485,
+ "by_slice": {
+  "new_pair": {
+   "rows": 84,
+   "map3": 0.2599
+  },
+  "none": {
+   "rows": 101,
+   "map3": 0.8878
+  },
+  "seen_pair": {
+   "rows": 94,
+   "map3": 0.5709
+  },
+  "unseen_q": {
+   "rows": 22,
+   "map3": 0.1818
+  }
+ },
+ "final_ok_accuracy": 0.9136,
+ "final_ok_share_true_in_truth": 0.3289,
+ "mean_top_probability": 0.4694
+}

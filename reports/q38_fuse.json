@@ -1,0 +1,113 @@
+{
+ "threshold": 0.817,
+ "dev_rows_answered": 270,
+ "dev_rows_sent": 135,
+ "dev_share_sent_of_answered": 0.5,
+ "submitted_on_answered": {
+  "rows": 270,
+  "map3": 0.7746913580246914,
+  "none": 0.9158415841584159,
+  "seen_pair": 0.872093023255814,
+  "hard": 0.5020080321285141
+ },
+ "fused_crossfit_on_answered": {
+  "rows": 270,
+  "map3": 0.8037037037037037,
+  "none": 0.9290429042904291,
+  "seen_pair": 0.8527131782945736,
+  "hard": 0.6004016064257028
+ },
+ "fused_minus_submitted": [
+  0.029012345679012348,
+  [
+   0.0024131444730596378,
+   0.054956344666012874
+  ]
+ ],
+ "fold_choices_floor_v_lam": [
+  [
+   0.01,
+   1,
+   0.5
+  ],
+  [
+   0.01,
+   1,
+   0.5
+  ],
+  [
+   0.08,
+   1,
+   0.75
+  ],
+  [
+   0.01,
+   1,
+   0.5
+  ],
+  [
+   0.08,
+   1,
+   0.75
+  ]
+ ],
+ "chosen_floor_v_lam_all_dev": [
+  0.01,
+  1,
+  0.5
+ ],
+ "in_sample_chosen": 0.8141975308641974,
+ "on_sent_rows": {
+  "submitted": 0.6358024691358025,
+  "fused_crossfit": 0.6925925925925925
+ },
+ "on_unsent_answered_rows": {
+  "submitted": 0.9135802469135802,
+  "fused_crossfit": 0.9148148148148147
+ },
+ "staged": {
+  "rows": 3498,
+  "base": "the submitted system (artifacts/submission-3way-pw14): 3-way blend x ranker v1^0.5",
+  "rebuilt_base_matches_submitted_file": true,
+  "vlm": "Qwen/Qwen3.8-27B-FP8 zero-shot, thinking (effort medium), vLLM 0.33.0, offline on our own pods",
+  "vlm_rows_selected": 1593,
+  "vlm_rows_answered": 1593,
+  "vlm_rows_used": 1593,
+  "threshold": 0.817,
+  "floor": 0.01,
+  "v": 1,
+  "lambda": 0.5,
+  "post_processing": "Sinkhorn toward the 1,500-row train root_code marginals (+0.5), 50 iterations, label-free on test",
+  "development": {
+   "dev_rows_answered": 270,
+   "submitted_on_answered": {
+    "rows": 270,
+    "map3": 0.7746913580246914,
+    "none": 0.9158415841584159,
+    "seen_pair": 0.872093023255814,
+    "hard": 0.5020080321285141
+   },
+   "fused_crossfit_on_answered": {
+    "rows": 270,
+    "map3": 0.8037037037037037,
+    "none": 0.9290429042904291,
+    "seen_pair": 0.8527131782945736,
+    "hard": 0.6004016064257028
+   },
+   "fused_minus_submitted": [
+    0.029012345679012348,
+    [
+     0.0024131444730596378,
+     0.054956344666012874
+    ]
+   ]
+  },
+  "test_top1_changed_vs_submitted": 0.19125214408233276,
+  "test_top3_set_changed_vs_submitted": 0.42538593481989706,
+  "test_none_top1_share": 0.35591766723842194,
+  "submitted_none_top1_share": 0.34448256146369355,
+  "script": "scripts/fuse_vlm.py",
+  "submission_sha256": "86e9e42e2401be0208e7034a4b8d558e6e85f0de02d78986487df15f473950aa",
+  "submitted": false
+ }
+}

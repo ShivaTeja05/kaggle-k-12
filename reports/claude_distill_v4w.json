@@ -1,0 +1,185 @@
+{
+  "rows": 11426,
+  "skipped": {},
+  "none_first_share": 0.3332749868720462,
+  "distinct_first_codes": 64,
+  "most_common_first": [
+    [
+      "NONE",
+      3808
+    ],
+    [
+      "ANS-01",
+      1773
+    ],
+    [
+      "WOP-01",
+      767
+    ],
+    [
+      "CAL-01",
+      731
+    ],
+    [
+      "REL-01",
+      601
+    ],
+    [
+      "OTH-00",
+      329
+    ],
+    [
+      "INT-04",
+      327
+    ],
+    [
+      "KPF-04",
+      313
+    ]
+  ],
+  "error_rows_by_weight_kind": {
+    "base": 5361,
+    "long": 1992,
+    "rare": 153,
+    "rare_long": 112
+  },
+  "settings": {
+    "answers": "runs/claude/unl_all_v4.jsonl",
+    "output": "data/v3/claude_unl_v4w.jsonl",
+    "report": "reports/claude_distill_v4w.json",
+    "shares": [
+      0.7,
+      0.2,
+      0.1
+    ],
+    "weight": 0.8,
+    "none_share": 0.3333333333333333,
+    "long_tokens": 700,
+    "long_weight": 0.5,
+    "rare_count": 5,
+    "rare_weight": 1.0
+  },
+  "rare_codes": {
+    "ALG-01": {
+      "train": 1,
+      "claude_first": 2
+    },
+    "ALG-02": {
+      "train": 1,
+      "claude_first": 7
+    },
+    "ALG-03": {
+      "train": 2,
+      "claude_first": 5
+    },
+    "ANG-02": {
+      "train": 1,
+      "claude_first": 0
+    },
+    "CHK-01": {
+      "train": 2,
+      "claude_first": 0
+    },
+    "COR-01": {
+      "train": 2,
+      "claude_first": 3
+    },
+    "EXP-03": {
+      "train": 5,
+      "claude_first": 12
+    },
+    "EXP-05": {
+      "train": 1,
+      "claude_first": 16
+    },
+    "FRA-02": {
+      "train": 1,
+      "claude_first": 18
+    },
+    "FRA-03": {
+      "train": 3,
+      "claude_first": 25
+    },
+    "GEO-01": {
+      "train": 1,
+      "claude_first": 7
+    },
+    "INT-01": {
+      "train": 1,
+      "claude_first": 21
+    },
+    "LIN-01": {
+      "train": 1,
+      "claude_first": 0
+    },
+    "MEA-01": {
+      "train": 2,
+      "claude_first": 5
+    },
+    "MEA-03": {
+      "train": 4,
+      "claude_first": 3
+    },
+    "MEA-05": {
+      "train": 2,
+      "claude_first": 47
+    },
+    "NOT-01": {
+      "train": 1,
+      "claude_first": 22
+    },
+    "NOT-02": {
+      "train": 0,
+      "claude_first": 14
+    },
+    "OOO-02": {
+      "train": 5,
+      "claude_first": 50
+    },
+    "PRO-01": {
+      "train": 1,
+      "claude_first": 0
+    },
+    "PRO-02": {
+      "train": 2,
+      "claude_first": 0
+    },
+    "PRO-03": {
+      "train": 0,
+      "claude_first": 0
+    },
+    "QUA-02": {
+      "train": 2,
+      "claude_first": 3
+    },
+    "RAT-01": {
+      "train": 1,
+      "claude_first": 1
+    },
+    "SET-01": {
+      "train": 1,
+      "claude_first": 0
+    },
+    "SIM-01": {
+      "train": 2,
+      "claude_first": 4
+    },
+    "STA-03": {
+      "train": 1,
+      "claude_first": 0
+    }
+  },
+  "rare_codes_without_claude_rows": [
+    "ANG-02",
+    "CHK-01",
+    "LIN-01",
+    "PRO-01",
+    "PRO-02",
+    "PRO-03",
+    "SET-01",
+    "STA-03"
+  ],
+  "codes_without_any_rows": [
+    "PRO-03"
+  ]
+}

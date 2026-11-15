@@ -1,0 +1,133 @@
+{
+  "cap_usd": 18.0,
+  "approved": "2026-11-15 ~05:55 UTC \"Yes, go ahead\": HF Jobs for the Qwen3.8-27B fine-tune stage, at most $18, private storage only",
+  "account": "shivateja2005",
+  "rates_usd_per_hour": {
+    "cpu-basic": 0.01,
+    "a100-large": 2.5,
+    "rtx-pro-6000": 2.75,
+    "l40sx1": 1.8,
+    "h200x2": 10.0,
+    "h200": 5.0
+  },
+  "jobs": [
+    {
+      "name": "k12-hello",
+      "id": "6af9470429dd05ff0368422e",
+      "flavor": "cpu-basic",
+      "minutes": 0.3,
+      "usd": 0.01,
+      "result": "mounts work"
+    },
+    {
+      "name": "k12-smoke",
+      "id": "6af9472b23985fb9cd82f117",
+      "flavor": "a100-large",
+      "started_utc": "2026-11-15T05:46:27",
+      "ended_utc": "2026-11-15T05:57:45",
+      "minutes": 11.3,
+      "usd": 0.47,
+      "result": "train smoke passed (12 rows, 61.8 GB peak, about 3.5 s/row after warm-up); cancelled before head/features stages (their 6-minute limits were shorter than the 6-minute model load)"
+    },
+    {
+      "name": "k12-ft (cancelled after 35 s to add live progress lines)",
+      "id": "6af94bdc23985fb9cd82f5b4",
+      "flavor": "a100-large",
+      "minutes": 0.6,
+      "usd": 0.03
+    },
+    {
+      "name": "k12-ft",
+      "id": "6af94bf923985fb9cd82f5c7",
+      "flavor": "a100-large",
+      "started_utc": "2026-11-15T06:06:51",
+      "timeout_minutes": 270,
+      "max_usd": 11.25,
+      "usd": 6.99,
+      "plan": "train 2 epochs (TRAIN_MINUTES 160), head on dev, then untrained features for train+dev; outputs in hf://buckets/shivateja2005/k12-out/ft1",
+      "ended_utc": "2026-11-15T08:54:32",
+      "minutes": 167.7,
+      "result": "trained 2 epochs (2,612 rows, 0 skipped, 149 min), head on dev done; cancelled at the start of the optional features stage"
+    },
+    {
+      "name": "k12-written-dev",
+      "id": "6af973fa29dd05ff0368721f",
+      "flavor": "a100-large",
+      "started_utc": "2026-11-15T08:57:26",
+      "timeout_minutes": 90,
+      "max_usd": 3.75,
+      "usd": 0.7,
+      "plan": "written answers of the fine-tuned model on the 301 dev photos (generate, greedy, thinking off) -> hf://buckets/shivateja2005/k12-out/ft1/dev_written.jsonl",
+      "ended_utc": "2026-11-15T09:14:10",
+      "minutes": 16.7,
+      "result": "cancelled: transformers generate with the unmerged adapter writes 4.3 tokens/s (76.6 s per photo); 5 answers, all valid JSON"
+    },
+    {
+      "name": "k12-written-vllm",
+      "id": "6af977f529dd05ff03687627",
+      "flavor": "a100-large",
+      "started_utc": "2026-11-15T09:14:25",
+      "timeout_minutes": 50,
+      "max_usd": 2.08,
+      "usd": 0.92,
+      "plan": "merge adapter -> vLLM 0.33.0 -> written answers for the 301 dev photos, 3 samples each -> hf://buckets/shivateja2005/k12-out/ft1/written_ft_dev.jsonl",
+      "ended_utc": "2026-11-15T09:36:57",
+      "minutes": 22.0,
+      "result": "merge 7 min, vLLM ready at 12.3 min, 301 dev photos x 3 samples in 560 s (404 tok/s), 0 failed"
+    },
+    {
+      "name": "k12-ft-think",
+      "id": "6af97e6429dd05ff03687be7",
+      "flavor": "a100-large",
+      "started_utc": "2026-11-15T09:41:53",
+      "timeout_minutes": 55,
+      "max_usd": 2.29,
+      "usd": 0.73,
+      "plan": "merged fine-tuned model, thinking ON (medium), 301 dev photos, compact prompt -> k12-out/ft1/ftthink_ft_dev.jsonl",
+      "ended_utc": "2026-11-15T09:59:47",
+      "minutes": 17.6,
+      "result": "fine-tuned + thinking on: dev 0.599 on 301 rows (6 unanswered); thinking collapsed to a median of 537 characters"
+    },
+    {
+      "name": "k12-base-xhigh",
+      "id": "6af97e6723985fb9cd83245b",
+      "flavor": "a100-large",
+      "started_utc": "2026-11-15T09:41:56",
+      "timeout_minutes": 75,
+      "max_usd": 3.13,
+      "usd": 3.0,
+      "plan": "untrained Qwen3.8-27B bf16, thinking xhigh, 158 least-certain dev photos, zero-shot prompt -> k12-out/base/xhigh_q38_dev_sent158.jsonl",
+      "ended_utc": "2026-11-15T10:54:40",
+      "minutes": 72.0,
+      "result": "untrained xhigh: 142 of 158 sent dev rows answered before the deadline (21 hit the 14,000-token cap); about 327 output tok/s at 16 workers; median 7,900 tokens per photo"
+    },
+    {
+      "name": "k12-flash-preflight (cpu)",
+      "id": "6afa350f23985fb9cd83dd40",
+      "flavor": "cpu-upgrade",
+      "minutes": 2.5,
+      "usd": 0.01
+    },
+    {
+      "name": "k12-flash-dev attempt 1",
+      "id": "6afa361023985fb9cd83df42",
+      "flavor": "h200x2",
+      "started_utc": "2026-11-15T22:45:14",
+      "ended_utc": "2026-11-15T22:54:37",
+      "minutes": 9.4,
+      "usd": 1.57,
+      "result": "download 185.6 GB in 108 s; weights load in 25 s; server fails in flashinfer_all_reduce (needs nvcc, absent in the uv image); cancelled"
+    },
+    {
+      "name": "k12-flash-dev attempt 2",
+      "id": "6afa385e29dd05ff036953db",
+      "flavor": "h200x2",
+      "started_utc": "2026-11-15T22:55:21",
+      "ended_utc": "2026-11-15T23:02:50",
+      "minutes": 7.5,
+      "usd": 1.25,
+      "result": "all-reduce fusion and GDN prefill JIT switched off; server still fails: another flashinfer JIT build needs nvcc; cancelled"
+    }
+  ],
+  "spent_usd": 15.68
+}

@@ -1,8 +1,8 @@
 {
   "approved_at": "2026-11-10",
-  "approval": "User chose A100 80GB with a $40 cap, then asked to reduce the cap and accept similar or better GPUs: $20 total cap, Secure Cloud, rate at most $1.79/hr; 2026-11-11 user raised the total cap to $50 (\"i'll give you 50 dollars limit\")",
+  "approval": "User chose A100 80GB with a $40 cap, then asked to reduce the cap and accept similar or better GPUs: $20 total cap, Secure Cloud, rate at most $1.79/hr; 2026-11-11 user raised the total cap to $50 (\"i'll give you 50 dollars limit\") | 2026-11-11 user raised the GPU cap to $70 and asked to finish under it. | 2026-11-11 ~19:00 UTC user raised the GPU cap by $10 to $80 for overnight experiments (\"terminate and use them properly\"). | 2026-11-14 ~04:20 UTC user raised the cap to $88 for the Qwen3.8-27B test scoring (\"yes, run it\": about $7.80, working limit $9.50 on two RTX 6000 Ada pods). | 2026-11-14 ~08:35 UTC user raised the cap to $94 for the lean second-opinion plan (about $4.50 on one RTX 6000 Ada). | 2026-11-14 ~08:55 UTC user: the RunPod account holds $6.52 and everything must finish under it (about $6.01 left after the Stage 1 pod, by calculation). | 2026-11-15 ~01:15 UTC user: \"i have 5.97 credits in run pod ... check it progressive and tell me updates on it\" - read as a go-ahead for stage A of the 0.84 plan on one RTX 6000 Ada inside the account balance (spend at most $5.45; collector limit $5.20).",
   "max_cost_per_hr": 1.79,
-  "cap_usd": 50.0,
+  "cap_usd": 94.0,
   "watchdog_margin_usd": 1.0,
   "minimum_session_usd": 2.0,
   "gate": "Stage A: 8B LoRA trained on fold-fit rows only. Continue to full training only if best development fixed-calibration MAP@3 >= 0.68 on the 301 fold-0 rows.",
@@ -12,7 +12,7 @@
       "gpu": "RTX A6000",
       "cost_per_hr": 0.59,
       "created_at": "2026-11-10T22:20:04.413466+00:00",
-      "terminated_at": null
+      "terminated_at": "2026-11-11T10:43:14.336584+00:00"
     },
     {
       "id": "s1as780pwt7dxm",
@@ -26,14 +26,133 @@
       "gpu": "L40S",
       "cost_per_hr": 1.09,
       "created_at": "2026-11-11T02:27:52.429159+00:00",
-      "terminated_at": null
+      "terminated_at": "2026-11-11T11:54:36.777979+00:00"
     },
     {
       "id": "ocdo52ziviwftb",
       "gpu": "RTX A6000",
       "cost_per_hr": 0.59,
       "created_at": "2026-11-11T03:11:58.383673+00:00",
-      "terminated_at": null
+      "terminated_at": "2026-11-11T06:27:06.393757+00:00"
+    },
+    {
+      "id": "jrifk8tuk1u72n",
+      "gpu": "A100 SXM",
+      "cost_per_hr": 1.79,
+      "created_at": "2026-11-11T08:36:12.494876+00:00",
+      "terminated_at": "2026-11-11T14:32:01.919744+00:00"
+    },
+    {
+      "id": "09klqgmxtmpqhn",
+      "gpu": "H200 SXM",
+      "cost_per_hr": 5.29,
+      "created_at": "2026-11-11T14:20:08.793334+00:00",
+      "terminated_at": "2026-11-11T15:34:13.467438+00:00"
+    },
+    {
+      "id": "dukkyajjeo1k8f",
+      "gpu": "A100 SXM",
+      "cost_per_hr": 1.79,
+      "created_at": "2026-11-11T15:37:07.823680+00:00",
+      "terminated_at": "2026-11-11T15:55:58.687606+00:00"
+    },
+    {
+      "id": "rf3q4t6ph566ea",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 0.99,
+      "created_at": "2026-11-11T15:42:18.789363+00:00",
+      "terminated_at": "2026-11-11T20:52:18.117526+00:00"
+    },
+    {
+      "id": "a7cevylabnswz1",
+      "gpu": "A100 SXM",
+      "cost_per_hr": 1.79,
+      "created_at": "2026-11-11T20:53:30.557703+00:00",
+      "terminated_at": "2026-11-12T01:46:35.695089+00:00"
+    },
+    {
+      "id": "6c9dmwpwmjusor",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 0.99,
+      "created_at": "2026-11-12T01:03:47.733595+00:00",
+      "terminated_at": "2026-11-12T01:46:36.305603+00:00"
+    },
+    {
+      "id": "flm24as8yzphmb",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 0.99,
+      "created_at": "2026-11-12T18:06:01.131929+00:00",
+      "terminated_at": "2026-11-12T20:15:57.244246+00:00"
+    },
+    {
+      "id": "9fn8wkgrpay5yx",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-12T21:40:00.060172+00:00",
+      "terminated_at": "2026-11-13T00:14:32.033834+00:00"
+    },
+    {
+      "id": "592bq6m2h2n8ny",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-13T01:57:03.731307+00:00",
+      "terminated_at": "2026-11-13T06:46:00.724602+00:00"
+    },
+    {
+      "id": "303vccef0iaoz5",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-13T07:39:58.777703+00:00",
+      "terminated_at": "2026-11-13T08:10:50.069272+00:00"
+    },
+    {
+      "id": "mjkm0rj3wn5en8",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-13T08:11:54.192335+00:00",
+      "terminated_at": "2026-11-13T13:09:27.288623+00:00"
+    },
+    {
+      "id": "9wihb4qkifb0jp",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-13T23:24:19.043853+00:00",
+      "terminated_at": "2026-11-14T00:45:32.112318+00:00"
+    },
+    {
+      "id": "o2cnknpzd2vm11",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-14T02:42:07.303119+00:00",
+      "terminated_at": "2026-11-14T03:57:06.599863+00:00"
+    },
+    {
+      "id": "ripj2np3ueqbn1",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-14T04:24:26.843059+00:00",
+      "terminated_at": "2026-11-14T07:28:07.656863+00:00"
+    },
+    {
+      "id": "6htd6iidr0suqe",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-14T04:24:30.151184+00:00",
+      "terminated_at": "2026-11-14T07:50:41.338360+00:00"
+    },
+    {
+      "id": "zh38skorwdhips",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-14T08:37:44.121997+00:00",
+      "terminated_at": "2026-11-14T09:23:11.990749+00:00"
+    },
+    {
+      "id": "hv0glxvp4f0d8p",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-15T01:22:39.674654+00:00",
+      "terminated_at": "2026-11-15T05:05:15.497806+00:00"
     }
   ],
   "gpu_types": [
@@ -43,5 +162,10 @@
     "NVIDIA A100-SXM4-80GB",
     "NVIDIA A100 80GB PCIe"
   ],
-  "max_active_pods": 3
+  "max_active_pods": 3,
+  "scale_probe": {
+    "approved": "2026-11-11 user approved a 235B scale probe on a pod above $1.79/hr (2x A100 or H200), $15 probe budget inside the $70 cap | user approved \"4x A6000\" (Secure Cloud, up to $2.40/hr) when 2x A100 was out of stock | user approved both 2x A100 (<= $3.60/hr) and 4x A6000 (<= $2.40/hr) plus a 30-minute automatic retry creating at most one pod (\"Approve both\")",
+    "budget_usd": 15.0,
+    "max_rate": 3.6
+  }
 }

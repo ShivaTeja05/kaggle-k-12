@@ -1,0 +1,26 @@
+{
+  "rows": 301,
+  "claude_missing_answers": 0,
+  "deltas_against": "image model",
+  "claude": {
+    "map3": 0.8189368770764119,
+    "top1_accuracy": 0.7375415282392026,
+    "recall_at_3": 0.920265780730897,
+    "root_error_map3": 0.7608333333333333,
+    "none_map3": 0.9339933993399341,
+    "root_error_rows_predicted_none_first": 7,
+    "delta_vs_image": 0.2115171650055371,
+    "rows_improved": 116,
+    "rows_regressed": 29,
+    "paired_question_bootstrap_delta_95": [
+      0.16083603896103896,
+      0.2606599070328578
+    ]
+  },
+  "claude_failures": {
+    "false_alarm_on_none": 7,
+    "missed_error_said_none": 7,
+    "wrong_family": 51,
+    "right_family_wrong_code": 14
+  }
+}
