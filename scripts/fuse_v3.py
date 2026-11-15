@@ -28,7 +28,7 @@ RANKER_TEST = 'runs/deep/pointwise/pod_out/pw_full/predict_pw_test/predictions.n
 QWEN_DEV = 'runs/deep/q38/dev_answers_merged.jsonl'
 QWEN_TEST = 'runs/deep/q38/test_answers_merged.jsonl'
 CURRENT = (.01, 1., .5)  # floor, v, lambda of the staged Qwen3.8 file
-GRID = [(u, v, w, eps, lam) for u in (0., .5) for v in (0., .5, 1.) for w in (.25, .5, .75, 1., 1.5, 2.) for eps in (1e-4, .01, .03)
+GRID = [(u, v, w, eps, lam) for u in (0., .5) for v in (0., .5, 1.) for w in (0., .25, .5, .75, 1., 1.5, 2.) for eps in (1e-4, .01, .03)
         for lam in (.25, .5, .75)]
 
 

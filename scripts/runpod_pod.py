@@ -53,13 +53,15 @@ def create(args):
     if spent(budget) + budget['minimum_session_usd'] > budget['cap_usd']:
         raise SystemExit(f"Spend {spent(budget):.2f} leaves no room under the {budget['cap_usd']} cap")
     pod = None
+    gpu_types = args.gpu_types or budget['gpu_types']
+    max_rate = args.max_rate or budget['max_cost_per_hr']
     for attempt in range(args.attempts):
-        for gpu in budget['gpu_types']:
+        for gpu in gpu_types:
             try:
                 pod = gql('''mutation($input: PodFindAndDeployOnDemandInput) { podFindAndDeployOnDemand(input: $input) {
                                 id costPerHr machine { gpuDisplayName } } }''',
-                          {'input': {'cloudType': 'SECURE', 'gpuTypeId': gpu, 'gpuCount': 1,
-                                     'name': 'k12-train', 'imageName': args.image, 'containerDiskInGb': 120,
+                          {'input': {'cloudType': 'SECURE', 'gpuTypeId': gpu, 'gpuCount': args.gpu_count,
+                                     'name': 'k12-train', 'imageName': args.image, 'containerDiskInGb': args.disk,
                                      'volumeInGb': 0, 'ports': '22/tcp', 'startSsh': True,
                                      'env': [{'key': 'PUBLIC_KEY', 'value': PUBLIC_KEY.read_text().strip()}]}}
                           )['podFindAndDeployOnDemand']
@@ -73,7 +75,7 @@ def create(args):
         time.sleep(30)
     if not pod:
         raise SystemExit('No approved GPU available')
-    if pod['costPerHr'] > budget['max_cost_per_hr']:
+    if pod['costPerHr'] > max_rate:
         gql('mutation($input: PodTerminateInput!) { podTerminate(input: $input) }', {'input': {'podId': pod['id']}})
         raise SystemExit(f"Terminated: {pod['costPerHr']}/hr exceeds the approved rate")
     budget['pods'].append({'id': pod['id'], 'gpu': pod['machine']['gpuDisplayName'], 'cost_per_hr': pod['costPerHr'],
@@ -121,6 +123,10 @@ if __name__ == '__main__':
     make = commands.add_parser('create')
     make.add_argument('--image', default='runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04')
     make.add_argument('--attempts', type=int, default=10)
+    make.add_argument('--gpu-count', type=int, default=1)
+    make.add_argument('--gpu-types', nargs='+', help='override the approved list for this pod')
+    make.add_argument('--max-rate', type=float, help='per-pod $/hr limit; above the default needs user approval')
+    make.add_argument('--disk', type=int, default=120)
     commands.add_parser('status'); commands.add_parser('watchdog')
     commands.add_parser('terminate').add_argument('--pod', help='terminate only this pod (default: all active)')
     args = parser.parse_args()

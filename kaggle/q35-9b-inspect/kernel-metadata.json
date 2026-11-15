@@ -1,0 +1,20 @@
+{
+  "id": "shivateja005/k12-q35-9b-inspect",
+  "title": "K12 Q35 9B inspect",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [
+    "shivateja005/k12-q35-ft-inputs"
+  ],
+  "competition_sources": [
+    "misconception-detection-in-k-12-student-math-workings"
+  ],
+  "kernel_sources": [],
+  "model_sources": [
+    "shelterw/qwen3.5/transformers/qwen3.5-9b/1"
+  ]
+}

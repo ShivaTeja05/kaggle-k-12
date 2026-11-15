@@ -1,0 +1,19 @@
+{
+  "id": "shivateja005/k12-q38-27b-4bit-smoke",
+  "title": "K12 Q38 27B 4bit smoke",
+  "code_file": "smoke.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": false,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [
+    "misconception-detection-in-k-12-student-math-workings"
+  ],
+  "kernel_sources": [],
+  "model_sources": [
+    "cputer/qwen3-8-27b-base/transformers/default/1"
+  ]
+}
