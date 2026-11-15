@@ -1,0 +1,37 @@
+digraph teacher_request {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, label="Zoom: one Claude request (prompt layout) and its structured answer", labelloc=t];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_sys {
+    label="system (written to cache once; ~9,246 tokens read per photo at $0.20/M instead of $4/M)"; style=rounded; color="#4a6fa5";
+    s1 [label="Role: experienced maths teacher\ndiagnosing Indonesian K-12 handwritten working"];
+    s2 [label="Rules: ROOT = major error the rest follows from\n(not necessarily the first error)\nNONE if only minor slips (~1/3 of workings)\nrespect crossed-out work, do not invent steps"];
+    s3 [label="Procedure: 1 transcribe L1 | ...\n2 check each line vs question, key, previous line\n3 choose code, then 2nd and 3rd"];
+    s4 [label="Taxonomy table: id | name | description |\nnature | grade band | section  (75 rows)"];
+    s1 -> s2 -> s3 -> s4 [style=invis];
+  }
+  subgraph cluster_user {
+    label="user message content (per photo, median ~1,200 uncached input tokens)"; style=rounded; color="#4a6fa5";
+    u0 [label="[optional --fewshot] few-shot block\nup to k annotated fit examples", fillcolor="#f3f3f3"];
+    u1 [label="[optional] 'Question diagram:' + image"];
+    u2 [label="'Student's handwritten working:' + image\n(<=1024 px JPEG)"];
+    u3 [label="Grade / Topic / Question / Answer key\n[--explain: annotator transcription +\nverified root code, 'Treat it as correct']"];
+    u0 -> u1 -> u2 -> u3 [style=invis];
+  }
+  model [label="claude-opus-5-5\neffort=medium\nmax_tokens=16000", shape=cylinder, fillcolor="#fff4d6"];
+  s4 -> model; u3 -> model;
+  subgraph cluster_out {
+    label="output_config.format = json_schema (additionalProperties: false), fields in this order"; style=rounded; color="#2e7d32";
+    o1 [label="1 transcription: 'L1 | ... L2 | ...'"];
+    o2 [label="2 root_line: where the root error enters"];
+    o3 [label="3 reasoning: why this is the root"];
+    o4 [label="4 first_code / second_code / third_code\nenum of 76 classes (omitted in --explain)"];
+  }
+  model -> o1; model -> o2; model -> o3; model -> o4;
+  parse [label="parse(): json.loads(text) if stop_reason == end_turn\nelse {'stop_reason': ...}"];
+  o1 -> parse; o2 -> parse; o3 -> parse; o4 -> parse;
+  line [label="runs/claude/<name>.jsonl line\n{trace_id, mode, usd, usage, answer}", shape=note];
+  parse -> line;
+}

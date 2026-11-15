@@ -1,0 +1,82 @@
+digraph reasoner_pipeline {
+  rankdir=TB; fontname="Helvetica"; compound=true; newrank=true;
+  label="Stage 2a text reasoner: src/k12/text_diagnose.py run() (one training job)"; labelloc=t; fontsize=18;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_in {
+    label="Inputs on disk"; style="rounded,dashed"; color="#7a8aa6";
+    train [label="train.csv\n1,500 labelled rows\n(grade, topic, question_text,\ncorrect_answer, transcription_steps, root_code)"];
+    tax [label="taxonomy_v1.csv\n75 codes (+ NONE = 76 classes)"];
+    txjson [label="tx_dev.json / tx_test.json\n{trace_id: machine transcript}\n(from the Stage 1 VL transcriber)"];
+    v3 [label="--dataset train_v3.jsonl\n(or train_v3_claude.jsonl)\nteacher explanation targets\n'ROOT: X (name)\\nWHERE..\\nWHY..\\nREADING:..'"];
+    pseudo [label="--pseudo jsonl, e.g. claude_unl_v4.jsonl\n(11,426 Claude-labelled unlabelled photos)\n{trace_id, soft{code:share}, weight, target}"];
+    unl [label="unlabelled.csv\nmetadata for pseudo rows"];
+  }
+
+  subgraph cluster_prep {
+    label="Data preparation (CPU, lines 140-175)"; style="rounded"; color="#4a6fa5";
+    defs [label="definitions string  L146-147\n'Error codes:\\nID: name' x75\n(~921 tokens; ~3,002 with --descriptions)"];
+    folds [label="make_folds(seed 2026)  L148-150\nfit = folds != 0 (1,199 rows)\nvalidation = fold 0 (301 rows)\n--full-train: fit = all 1,500"];
+    fittext [label="fit_text  L153\ngold transcripts (default)\nor JSON via --fit-transcripts"];
+    bank [label="ExampleBank(fit, --examples K)  L154\nsame-question labelled workings\n(never the row itself)"];
+    soft [label="soft targets  L156-158\nteacher rows: {code: 1.0}, weight 1.0"];
+    expl [label="explanations  L160-163\n(only if --explain-weight > 0)\ntarget cut before '\\nREADING:'"];
+    addp [label="append pseudo rows  L164-173\nfit += unlabelled rows\nsoft += Claude {c1:.7,c2:.2,c3:.1}\nweight += 0.8 (v4)\ntext += Claude transcript (READING part)\nexplanations += Claude ROOT/WHERE/WHY"];
+    prior [label="HierarchicalPrior(teacher rows only)  L184\nquestion -> topic -> global code counts"];
+  }
+
+  subgraph cluster_model {
+    label="TextSystem (GPU, lines 32-57)"; style="rounded"; color="#4a6fa5";
+    tok [label="AutoTokenizer\npadding_side = truncation_side = 'left'\nmax_length 3072 (default)"];
+    base [label="Qwen3-8B (bf16)  or  Qwen3-32B (--load-4bit:\nNF4 + double quant, bf16 compute)\nFROZEN weights"];
+    lora [label="LoRA adapters r=32, alpha=64, dropout .05\non q,k,v,o,gate,up,down of every layer\nTRAINABLE (cast to fp32)"];
+    head [label="head = nn.Linear(hidden_size, 76)\n4096 -> 76 (8B), 5120 -> 76 (32B)\nTRAINABLE fp32"];
+  }
+
+  subgraph cluster_train {
+    label="Training loop (lines 185-213), per batch of 4"; style="rounded"; color="#4a6fa5";
+    shuffle [label="permute fit rows (seed + epoch)  L187"];
+    mkprompt [label="prompt(row, transcript, defs, examples)  L25-29\n-> string ending in 'ROOT:'"];
+    labels [label="label matrix [B, 76]\nfrom soft dicts  L191-194\nrow_weight [B]  L195"];
+    branch [label="--explain-weight > 0 ?", shape=diamond, fillcolor="#fff4d6"];
+    hid [label="hidden(texts)  L59-64\nleft-padded batch\nlast position state [B, H]"];
+    el [label="explain_loss(texts, explanations)  L66-97\nright-padded prompt+explanation\nprefix state [B, H] + LM loss (scalar)"];
+    ce [label="classify(states)  L197-199\nCE(head(states), soft labels,\nlabel_smoothing .03) * row_weight, mean"];
+    total [label="loss = classify + explain_weight * LM\n(0.3 in the 32B explain runs)", fillcolor="#fde2e2"];
+    opt [label="backward -> LR factor (5% warmup x cosine)  L206-208\nclip grad norm 1.0  L209\nAdamW (LoRA lr 1e-4, head lr 1e-3, wd .01)  L180-181"];
+  }
+
+  subgraph cluster_eval {
+    label="After each epoch / end of run (lines 214-231)"; style="rounded"; color="#4a6fa5";
+    score [label="score()  L128-136\nsoftmax(head(hidden(prompt))) per row\n-> P [rows, 76]"];
+    metric [label="map3 and fixed_calibration_map3\n(T=2, 25% prior)  L219-222"];
+    testscore [label="--test-transcripts: score test.csv\n(3,498 rows)  L225-230"];
+  }
+
+  subgraph cluster_out {
+    label="Files written to --output"; style="rounded,dashed"; color="#7a8aa6";
+    vb [label="validation_{gold|tx_dev}_epoch_N.npz\n{ids, classes, p float32, meta}", fillcolor="#e6f4ea"];
+    mj [label="metrics.json", fillcolor="#e6f4ea"];
+    tb [label="test.npz", fillcolor="#e6f4ea"];
+    nosave [label="NOT saved: LoRA weights, head\n(predictions must be made inside the run)", fillcolor="#fde2e2"];
+  }
+
+  tax -> defs; train -> folds; folds -> fittext; txjson -> fittext [style=dashed, label="optional"];
+  folds -> bank; folds -> soft; v3 -> expl; folds -> expl;
+  pseudo -> addp; unl -> addp; soft -> addp; fittext -> addp; expl -> addp;
+  folds -> prior;
+  addp -> shuffle; shuffle -> mkprompt; defs -> mkprompt; bank -> mkprompt;
+  shuffle -> labels;
+  mkprompt -> branch;
+  branch -> hid [label="no"]; branch -> el [label="yes"];
+  tok -> hid; tok -> el; base -> hid; lora -> hid; base -> el; lora -> el;
+  hid -> ce [label="[B,H]"]; el -> ce [label="prefix [B,H]"]; el -> total [label="LM loss"];
+  head -> ce; labels -> ce; ce -> total; total -> opt;
+  opt -> lora [label="update", style=dashed, color="#c0392b"]; opt -> head [label="update", style=dashed, color="#c0392b"];
+  opt -> score [label="end of epoch"];
+  txjson -> score [label="validation transcripts\n(gold and/or tx_dev)"];
+  score -> metric; prior -> metric; score -> vb; metric -> mj;
+  opt -> testscore [label="end of run"]; txjson -> testscore; testscore -> tb;
+  testscore -> nosave [style=invis];
+}

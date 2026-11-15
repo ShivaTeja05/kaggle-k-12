@@ -1,0 +1,15 @@
+digraph prompt_layout {
+  rankdir=TB; fontname="Helvetica";
+  label="prompt() layout (text_diagnose.py L25-29) and where the classifier reads"; labelloc=t; fontsize=16;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11, width=6];
+  edge [fontname="Helvetica", fontsize=9];
+  pad [label="[left padding in hidden(); none here in explain_loss, which pads on the right]", fillcolor="#f2f2f2"];
+  defs [label="Error codes:\n<ID>: <name>\n... 75 lines 'ID: name' (+ ' - description' with --descriptions)\n~921 tokens = ~79% of a ~1,160-token prompt\n(left truncation cuts HERE first if too long)", fillcolor="#fff4d6"];
+  ex [label="Other students on this question:   (only with --examples K)\nExample (teacher root: CODE):\n<first 350 chars of their transcript>  x K"];
+  meta [label="Grade: ..\nTopic: ..\nQuestion: ..\nAnswer key: .."];
+  work [label="Student working (line by line):\n<gold or machine transcript>"];
+  inst [label="Identify the root major error the rest of the working follows from,\nor NONE if there is no major error. ROOT:"];
+  last [label="LAST TOKEN of 'ROOT:'  -> hidden state h [H]  -> head -> 76 logits\n(no reasoning tokens generated before this point)", fillcolor="#fde2e2"];
+  expl [label="(training only, explain_loss) appended explanation:\n'ROOT: X (name)\\nWHERE: ..\\nWHY: ..<eos>'\nLM loss here; causal mask means the classifier position never sees it", fillcolor="#e6f4ea"];
+  pad -> defs -> ex -> meta -> work -> inst -> last -> expl;
+}

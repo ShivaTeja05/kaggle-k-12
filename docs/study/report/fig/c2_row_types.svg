@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" width="720" height="330">
+<rect width="720" height="330" fill="#ffffff"/>
+<text x="16.0" y="22.0" font-size="13" text-anchor="start" fill="#0b0b0b" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Dev MAP@3 by row type: our blend against Claude</text>
+<text x="16.0" y="322.0" font-size="9.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">The whole gap sits in the third group. About 0.63 there would give 0.80 overall.</text>
+<rect x="46" y="35" width="11" height="11" rx="2" fill="#2a78d6"/>
+<text x="62.0" y="44.0" font-size="10.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Our blend + balancing</text>
+<rect x="202.20000000000002" y="35" width="11" height="11" rx="2" fill="#eb6834"/>
+<text x="218.2" y="44.0" font-size="10.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Claude Opus with the photo</text>
+<line x1="46" y1="272.0" x2="706" y2="272.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="275.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.0</text>
+<line x1="46" y1="230.0" x2="706" y2="230.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="233.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.2</text>
+<line x1="46" y1="188.0" x2="706" y2="188.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="191.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.4</text>
+<line x1="46" y1="146.0" x2="706" y2="146.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="149.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.6</text>
+<line x1="46" y1="104.0" x2="706" y2="104.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="107.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.8</text>
+<line x1="46" y1="62.0" x2="706" y2="62.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="65.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1.0</text>
+<path d="M81.5,272.0 L81.5,80.5 Q81.5,77.5 84.5,77.5 L124.5,77.5 Q127.5,77.5 127.5,80.5 L127.5,272.0 Z" fill="#2a78d6"/>
+<text x="104.5" y="73.5" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.926</text>
+<path d="M129.5,272.0 L129.5,78.9 Q129.5,75.9 132.5,75.9 L172.5,75.9 Q175.5,75.9 175.5,78.9 L175.5,272.0 Z" fill="#eb6834"/>
+<text x="152.5" y="71.9" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.934</text>
+<text x="128.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">No error</text>
+<text x="128.5" y="299.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">(101 rows)</text>
+<path d="M246.5,272.0 L246.5,95.2 Q246.5,92.2 249.5,92.2 L289.5,92.2 Q292.5,92.2 292.5,95.2 L292.5,272.0 Z" fill="#2a78d6"/>
+<text x="269.5" y="88.2" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.856</text>
+<path d="M294.5,272.0 L294.5,104.5 Q294.5,101.5 297.5,101.5 L337.5,101.5 Q340.5,101.5 340.5,104.5 L340.5,272.0 Z" fill="#eb6834"/>
+<text x="317.5" y="97.5" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.812</text>
+<text x="293.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Error, code seen before</text>
+<text x="293.5" y="299.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">on this question (94)</text>
+<path d="M411.5,272.0 L411.5,180.3 Q411.5,177.3 414.5,177.3 L454.5,177.3 Q457.5,177.3 457.5,180.3 L457.5,272.0 Z" fill="#2a78d6"/>
+<text x="434.5" y="173.3" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.451</text>
+<path d="M459.5,272.0 L459.5,124.8 Q459.5,121.8 462.5,121.8 L502.5,121.8 Q505.5,121.8 505.5,124.8 L505.5,272.0 Z" fill="#eb6834"/>
+<text x="482.5" y="117.8" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.715</text>
+<text x="458.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Error, code new for the</text>
+<text x="458.5" y="299.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">question or new question (106)</text>
+<path d="M576.5,272.0 L576.5,120.2 Q576.5,117.2 579.5,117.2 L619.5,117.2 Q622.5,117.2 622.5,120.2 L622.5,272.0 Z" fill="#2a78d6"/>
+<text x="599.5" y="113.2" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.737</text>
+<path d="M624.5,272.0 L624.5,103.0 Q624.5,100.0 627.5,100.0 L667.5,100.0 Q670.5,100.0 670.5,103.0 L670.5,272.0 Z" fill="#eb6834"/>
+<text x="647.5" y="96.0" font-size="9.5" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.819</text>
+<text x="623.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">All rows</text>
+<text x="623.5" y="299.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">(301)</text>
+<line x1="46" y1="272" x2="706" y2="272" stroke="#52514e" stroke-width="1"/>
+</svg>

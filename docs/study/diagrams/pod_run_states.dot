@@ -1,0 +1,19 @@
+digraph pod_run_states {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  s0 [label="start\npod_run.sh <rate $/hr>"];
+  pip [label="fresh venv + pip\ntorch 2.11.0 (cu130), transformers 5.20.2,\npeft 0.21.2, accelerate 1.15.0, pandas 2.3.3\n(numpy, huggingface_hub unpinned)"];
+  model [label="snapshot_download\nQwen/Qwen3-8B -> /workspace/models/qwen3-8b"];
+  smoke [label="SMOKE_START\nsmoke800.jsonl = first 600 phase-a + 200 phase-b rows\ntimeout 45m, --no-save-adapter\nthen predict on dev20.jsonl (20 dev rows)"];
+  gate [label="GO / NO-GO (python heredoc)\nparse_rate >= 0.95  ('ANSWER:' found)\nAND epoch_usd = 8505 / rows_per_s / 3600 * rate < 4\n(rows_per_s = last log line with that key)", shape=diamond, fillcolor="#fff4d6"];
+  gatefile [label="/workspace/runs/cand_smoke_gate.json\n{parse_rate, rows_per_s, epoch_usd, go}\n(empty if the heredoc crashed)"];
+  full [label="FULL_START\ncand_train.jsonl (8,505 rows), timeout 6h\nsave every 500 steps\ninterim predict at 50% (first 100 dev rows)\nfinal predict on cand_dev.jsonl"];
+  done [label="'exit $?' -> cand.status\n(0 ok, 124 if timeout hit)", fillcolor="#e8f6ea"];
+  f1 [label="'exit setup-failed'", fillcolor="#fde2e2"];
+  f2 [label="'exit smoke-gate-failed'", fillcolor="#fde2e2"];
+  s0 -> pip; pip -> model [label="PIP_DONE"]; model -> smoke [label="MODEL_DONE"]; smoke -> gate;
+  gate -> gatefile [style=dotted, label="writes"];
+  gate -> full [label="'\"go\": true'"]; gate -> f2 [label="false or empty"]; full -> done;
+  pip -> f1 [label="any failure", style=dashed]; model -> f1 [style=dashed];
+}

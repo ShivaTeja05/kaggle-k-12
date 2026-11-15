@@ -1,0 +1,24 @@
+digraph train_row {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_in {
+    label="Available at test time (trace_id + core.INPUT_COLUMNS)"; style="rounded,dashed"; fontname="Helvetica";
+    ids [label="trace_id (row key)\nquestion_id (shared across rows)"];
+    meta [label="grade (4-12)\ntopic_name (Indonesian, 60 topics in train)"];
+    q [label="question_text (LaTeX-style maths)\ncorrect_answer (answer key)\nquestion_image_file (optional diagram)"];
+    photo [label="image_file\nphoto of handwritten working", fillcolor="#fff4e0"];
+  }
+  subgraph cluster_train {
+    label="Train only (core.TRAIN_ONLY) - never available for test"; style="rounded,dashed"; fontname="Helvetica";
+    tx [label="transcription_steps\n'L1 | ...\\nL2 | ...'\n(mean 6.5 lines, max 26)"];
+    fac [label="final_answer_correct (bool)\nclean (bool: no findings at all)"];
+    mis [label="misconceptions (JSON list)\n{step, span, category,\nseverity, root, text}\n0-5 findings per row"];
+    root [label="root_code\n= category of the finding with root=true\nor 'NONE' (no major root error)", fillcolor="#e6f4ea"];
+  }
+  mis -> root [label="exactly one root=true\nwhen not NONE (994 rows)"];
+  fac -> root [label="hint, not a rule:\n30 correct-answer rows have a root\n19 wrong-answer rows are NONE", style=dashed];
+  photo -> tx [label="human reading\n(we learn to imitate it)", style=dashed];
+  q -> root [style=invis];
+}

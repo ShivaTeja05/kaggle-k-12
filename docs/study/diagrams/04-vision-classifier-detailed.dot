@@ -1,0 +1,79 @@
+digraph vision_classifier {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, labelloc=t, label="Stage 2b: Qwen3-VL-8B image classifier (src/k12/pod_train.py + src/k12/vision.py)", nodesep=0.35, ranksep=0.45];
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_data {
+    label="1. Data in (run(), pod_train.py:141-167)"; style="rounded,dashed"; color="#7a8fb5"; fontname="Helvetica";
+    train [label="train.csv\n1,500 labelled rows\n(photo, question, answer key, root_code, misconceptions)"];
+    taxonomy [label="taxonomy_v1.csv\n-> label_space(): 75 codes + NONE = 76 classes"];
+    v3 [label="train_v3.jsonl (--dataset)\nper trace_id: evidence-first 'target' text\n+ row 'weight' (1.0 / 1.5 / 3.0)"];
+    claude [label="claude_unl.jsonl (--pseudo)\n3,427 Claude-labelled unlabelled photos\nsoft {c1:.7, c2:.2, c3:.1}, weight .8, target text"];
+    unl [label="unlabelled.csv + images/unlabelled/"];
+    folds [label="make_folds(seed 2026): 5 folds\nfold 0 = 301 dev rows\nfit = 1,199 rows (or all 1,500 with --full-train)"];
+    over [label="oversampled(fit, --rare-copies)\nrepeat rows of rare root codes\n(default 1 = off)"];
+    concat [label="pd.concat(fit, pseudo rows)\nfull-distill: 1,500 + 3,427 = 4,927 fit rows"];
+  }
+  train -> folds; folds -> over [label="fit rows"]; over -> concat;
+  taxonomy -> concat [style=dotted, label="class order ci"];
+  claude -> concat [label="soft, pseudo_weight, target"]; unl -> concat [label="photo metadata"];
+
+  subgraph cluster_encode {
+    label="2. Encode one row (CPU threads: prefetched(), 6 workers, 16 rows ahead)"; style="rounded,dashed"; color="#7a8fb5"; fontname="Helvetica";
+    img [label="image(): open photo, EXIF-rotate, RGB,\nthumbnail to maxside 1280"];
+    msg [label="messages(): [question diagram?] + student photo\n+ 'Grade / Topic / Question / Answer key / instruction ... ROOT:'"];
+    tmpl [label="processor.apply_chat_template(add_generation_prompt)\n-> input_ids [1, L], attention_mask, pixel_values, image_grid_thw\n(16px patches, 2x2 merge: <= 1,600 visual tokens per image)"];
+  }
+  concat -> img [label="row (real -> images/train,\npseudo -> images/unlabelled)"];
+  img -> msg -> tmpl;
+
+  teach [label="teacher text (training only)\nreal row: v3 target  |  Claude row: Claude target*\ntokenize, truncate to --teacher-tokens 384\n-> encoded [1, T]\n(* uncommitted working-tree code path)"];
+  v3 -> teach; claude -> teach [style=dashed];
+  append [label="append_teacher(prefix, encoded)\njoined input_ids [1, L+T]; remember length = L"];
+  tmpl -> append; teach -> append;
+
+  subgraph cluster_model {
+    label="3. VisionSystem (vision.py:79-164)"; style="rounded,dashed"; color="#7a8fb5"; fontname="Helvetica";
+    vit [label="Qwen3-VL vision tower + merger\n(frozen; LoRA only with --lora-vision)\npixels -> visual tokens", fillcolor="#e8e8e8"];
+    llm [label="Qwen3-VL-8B language model, 36 layers, hidden 4096\nfrozen bf16 weights + LoRA r=32, alpha=64, dropout .05\non q/k/v/o/gate/up/down (87.3M trainable params)"];
+    hid [label="system.hidden(): backbone only (no vocab logits)\nlast_hidden_state [1, L+T, 4096]"];
+  }
+  append -> vit [label="pixel_values"]; append -> llm [label="input_ids"]; vit -> llm [label="visual tokens\nreplace image pads"];
+  llm -> hid;
+
+  subgraph cluster_heads {
+    label="4. Heads and losses (loss_terms(), pod_train.py:75-113)"; style="rounded,dashed"; color="#7a8fb5"; fontname="Helvetica";
+    pos [label="classifier position = length-1\n(the newline after '<|im_start|>assistant')\nh [1, 4096] float32"];
+    resp [label="response positions length-1 ... length+T-2\n[1, T, 4096]"];
+    head [label="root head: nn.Linear(4096 -> 76), fp32\n(head_lr 5e-4)"];
+    tgt [label="label vector [1, 76]\nreal: target() one-hot (+ --secondary-weight share)\nClaude: soft shares .7 / .2 / .1"];
+    ce [label="CE(head(h), label)\nlabel_smoothing .03, except Claude rows\non the prompt-only path (no smoothing)", fillcolor="#fde9d9"];
+    lmh [label="frozen lm_head 4096 -> ~152k-token vocab\nin 64-token chunks"];
+    read [label="reading loss = summed token CE / T\n(teacher forcing on teacher text)", fillcolor="#fde9d9"];
+    fam [label="family head Linear(4096 -> 35 families)\n+ correct_head Linear(4096 -> 1) has-error\n(only if --aux-weight > 0, real rows)"];
+    aux [label="aux = CE(family) + BCE(has_error)", fillcolor="#fde9d9"];
+  }
+  hid -> pos; hid -> resp;
+  pos -> head -> ce; tgt -> ce;
+  resp -> lmh -> read; teach -> read [style=dotted, label="next-token targets"];
+  pos -> fam -> aux;
+
+  total [label="loss = (row_weight * CE + reading_weight * reading + aux_weight * aux) / window\nrow_weight: v3 weight (real) or pseudo_weight (Claude)\nfull-distill: reading_weight .15, aux_weight 0", fillcolor="#fff4cc"];
+  ce -> total; read -> total; aux -> total;
+  opt [label="backward, accumulate 8 rows\nAdamW (LoRA lr 5e-5, heads lr 5e-4, wd .01)\n5% warmup x cosine, grad clip 1.0\ngradient checkpointing"];
+  total -> opt;
+  opt -> llm [style=dashed, label="update LoRA"]; opt -> head [style=dashed, label="update head"];
+
+  subgraph cluster_out {
+    label="5. Outputs (per epoch and at the end)"; style="rounded,dashed"; color="#7a8fb5"; fontname="Helvetica";
+    save [label="epoch-N/: adapter/ (safetensors), processor/,\nheads.pt {root, correct}, metadata.json (args, classes, trained_ids)"];
+    pred [label="predict(): batched (left padding), autocast\nsoftmax(head(h[:, -1])) -> p [rows, 76]"];
+    valnpz [label="validation_epoch_N.npz (ids, classes, p)\n+ metrics.json: map3, fixed_calibration_map3"];
+    testnpz [label="--full-train --predict-test:\ntest.npz [3,498 x 76]\nsubmission_raw.csv, submission_calibrated.csv"];
+    blend [label="later, on CPU: geometric blend weight .35\nwith Qwen3-32B and Qwen3-8B text reasoners", fillcolor="#e3f2e1"];
+  }
+  opt -> save [label="end of epoch"];
+  save -> pred; pred -> valnpz [label="fold-0 dev rows\n(dev runs only)"]; pred -> testnpz [label="test rows"];
+  valnpz -> blend; testnpz -> blend;
+}

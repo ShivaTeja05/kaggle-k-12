@@ -1,0 +1,7 @@
+digraph txt { rankdir=LR; graph [fontname="Helvetica", fontsize=12, nodesep=0.28, ranksep=0.42, labelloc=t, label="Text model, simple view: read the prompt, decide at the last token"];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"]; edge [fontname="Helvetica", fontsize=9];
+  subgraph cluster_p { label="Prompt (plain text)"; style="rounded"; color="#888888";
+    p1 [label="1. List of 76 codes\nwith their names", fillcolor="#fff6d6"]; p2 [label="2. Grade, topic,\nquestion, answer key"]; p3 [label="3. Transcript\nof the working"]; p4 [label="4. The words\n'ROOT:'", fillcolor="#fde2e2"]; }
+  lm [label="Qwen3-8B or Qwen3-32B\n+ LoRA adapter (rank 32)"]; h [label="Internal vector at\nthe LAST prompt token", fillcolor="#fde2e2"]; head [label="One linear layer\n-> 76 scores -> softmax"]; out [shape=note, label="Probability for\neach of 76 labels"];
+  lab [label="Training label\nteacher code, or Claude's\n0.7 / 0.2 / 0.1 soft label", fillcolor="#fde2e2"];
+  p1 -> p2 -> p3 -> p4 [style=invis]; p4 -> lm [ltail=cluster_p]; lm -> h -> head -> out; lab -> head [style=dashed, label="cross-entropy loss"]; }

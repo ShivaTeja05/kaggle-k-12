@@ -1,0 +1,15 @@
+digraph catalogue {
+  rankdir=LR; graph [fontname="Helvetica", fontsize=12, nodesep=0.3, ranksep=0.5, labelloc=t,
+    label="Error catalogue: manufacture the question-and-error examples we lack (design tested 12-13 Nov)"];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+  subgraph cluster_in { label="Inputs per question (no student answers, no test photos)"; style="rounded"; color="#888888";
+    q [label="Question text\nanswer key, grade, topic"]; tax [label="Taxonomy\n75 codes with descriptions"]; ok [label="1-2 correct workings\nfrom fit rows or pool\n(style reference)", fillcolor="#fdf1dc"]; }
+  gen [label="Writer model (Claude)\nsolves the question, picks the\n10-12 most plausible error codes,\nwrites one student working per code\nwith the wrong numbers carried through", fillcolor="#fde2e2"];
+  cat [shape=note, label="Catalogue\n{question_id, code, working}\npilot: 1,503 workings\nfor 115 dev questions"];
+  subgraph cluster_use { label="Two ways to use it"; style="rounded"; color="#2a5d9f";
+    m [label="A. Text matcher (CPU)\ncompare the student's transcript\nwith catalogue workings\nresult: blend -0.015 (rejected)", fillcolor="#fde2e2"];
+    t [label="B. Train on it (GPU)\nadd rows to the fitting set\n(text_diagnose.py --synthetic)\ntarget rows +0.077, overall -0.018\n(pass mark not met)", fillcolor="#fff6d6"]; }
+  cov [shape=note, fillcolor="#e8f5e9", label="Coverage check\ntrue code is in the catalogue for\n71% of group B, 84% of group C"];
+  q -> gen; tax -> gen; ok -> gen [style=dashed]; gen -> cat; cat -> m; cat -> t; cat -> cov [style=dotted];
+}

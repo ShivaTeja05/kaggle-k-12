@@ -1,0 +1,31 @@
+digraph experiments {
+  rankdir=TB; graph [fontname="Helvetica", fontsize=12, nodesep=0.22, ranksep=0.42, labelloc=t,
+    label="Map of every line of work (green = kept, red = rejected, yellow = partial signal, blue = measurement)"];
+  node [fontname="Helvetica", fontsize=9.5, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=8.5];
+  subgraph cluster_p1 { label="Phase 1 (8-10 Nov): free Kaggle GPUs and CPU"; style="rounded"; color="#888888";
+    b0 [label="Question/topic prior\n0.485 (5-fold)", fillcolor="#e8f5e9"];
+    b1 [label="Qwen3-VL-4B image classifier\ndev 0.595, public 0.582", fillcolor="#e8f5e9"];
+    b2 [label="+ temperature and 25% prior\ndev 0.607, public 0.598", fillcolor="#e8f5e9"];
+    r1 [label="Taxonomy ranker 0.385\nQwen3.5-9B 0.455\nQwen3.5-27B untrained 0.590", fillcolor="#fde2e2"];
+    r2 [label="Output adapters, feature memory,\nprior correction, text prior,\nTesseract and formula OCR", fillcolor="#fde2e2"]; }
+  subgraph cluster_p2 { label="Phase 2 (10-12 Nov): rented GPUs and Claude labels"; style="rounded"; color="#888888";
+    c1 [label="8B image classifier + reading loss\ndev 0.632; blend public 0.624", fillcolor="#e8f5e9"];
+    c2 [label="Read, then diagnose\ntranscriber + 8B text model\nblend dev 0.684, public 0.662", fillcolor="#e8f5e9"];
+    c3 [label="Claude Opus as teacher\ndev 0.819; 26,202 pool photos labelled", fillcolor="#eef3fb"];
+    c4 [label="Image model distilled from Claude\nblend dev 0.693, public 0.683", fillcolor="#e8f5e9"];
+    c5 [label="+ 32B text model: 3-way blend\ndev 0.718, public 0.7085", fillcolor="#e8f5e9"];
+    c6 [label="+ label balancing (Sinkhorn)\ndev 0.737, public 0.71716 (BEST)", fillcolor="#c8e6c9"];
+    r3 [label="Aux heads, soft secondary labels,\n32B image classifier, more Claude data\nin the same recipe, 235B as 4th member", fillcolor="#fde2e2"]; }
+  subgraph cluster_p3 { label="Phase 3 (12-13 Nov): diagnosis and new designs"; style="rounded"; color="#888888";
+    d1 [label="Deep research: 6 weaknesses ranked;\nstackers, routers, symbolic checks,\nretrieval, debiasing all rejected", fillcolor="#eef3fb"];
+    d2 [label="Reason-first candidate student\ndev 0.625, failed 4 gates ($2.14)", fillcolor="#fde2e2"];
+    d3 [label="Claude without the photo\n0.771: text-only ceiling ($1.79)", fillcolor="#eef3fb"];
+    d4 [label="Hard rows split into A / B / C\nexamples of the exact pair are the key", fillcolor="#eef3fb"];
+    d5 [label="Error catalogue, text matcher\nblend -0.015", fillcolor="#fde2e2"];
+    d6 [label="Coverage-aware blend\n-0.005 cross-fitted", fillcolor="#fde2e2"];
+    d7 [label="Error catalogue, trained\ntarget rows +0.077, overall -0.018 ($2.81)", fillcolor="#fff6d6"]; }
+  b0 -> b1 -> b2; b1 -> r1 [style=dashed]; b2 -> r2 [style=dashed];
+  b2 -> c1 -> c2 -> c4 -> c5 -> c6; c3 -> c4 [style=dashed, label="labels"]; c5 -> r3 [style=dashed];
+  c6 -> d1 -> d2; d1 -> d3; d3 -> d4 -> d5; d4 -> d6; d5 -> d7;
+}

@@ -1,0 +1,19 @@
+digraph row_groups {
+  rankdir=TB; graph [fontname="Helvetica", fontsize=12, nodesep=0.3, ranksep=0.45, labelloc=t,
+    label="How the 301 dev rows split, and what each group scores (dev MAP@3)"];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+  all [label="301 dev rows\nblend + balancing 0.737 | Claude photo 0.819"];
+  q1 [shape=diamond, style="filled", fillcolor="#fff6d6", label="Does the working have\na major error?"];
+  none [fillcolor="#e8f5e9", label="NO ERROR (101 rows, 34%)\nours 0.926 | Claude 0.934\nfine"];
+  q2 [shape=diamond, style="filled", fillcolor="#fff6d6", label="Was this exact code seen on this\nquestion in the teacher labels?"];
+  seen [fillcolor="#e8f5e9", label="SEEN PAIR (94 rows, 31%)\nours 0.856 | Claude 0.812\nwe beat Claude"];
+  hard [fillcolor="#fde2e2", label="HARD ROWS (106 rows, 35%)\nours 0.451 | Claude 0.715\nthe whole gap"];
+  q3 [shape=diamond, style="filled", fillcolor="#fff6d6", label="Did Claude label this exact pair\non another photo of the question?"];
+  A [fillcolor="#e8f5e9", label="GROUP A (32 rows)\nold student 0.677 | blend 0.573\nClaude on our transcript 0.688\nan example exists: we match Claude-on-text"];
+  q4 [shape=diamond, style="filled", fillcolor="#fff6d6", label="Does the question have any\nphotos in the unlabelled pool?"];
+  B [fillcolor="#fde2e2", label="GROUP B (31 rows)\nold student 0.204 | blend 0.290\nClaude on our transcript 0.505\nabout 81 labelled photos, none with this error"];
+  C [fillcolor="#fde2e2", label="GROUP C (43 rows)\nold student 0.434 | blend 0.477\nClaude on our transcript 0.694\nno pool photos for the question at all"];
+  all -> q1; q1 -> none [label="no"]; q1 -> q2 [label="yes"]; q2 -> seen [label="yes"]; q2 -> hard [label="no"];
+  hard -> q3; q3 -> A [label="yes"]; q3 -> q4 [label="no"]; q4 -> B [label="yes"]; q4 -> C [label="no"];
+}

@@ -1,0 +1,86 @@
+digraph teacher_pipeline {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, nodesep=0.35, ranksep=0.45, label="05 - Teacher: Claude Opus labels and distillation data", labelloc=t];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_in {
+    label="Inputs (private, local Mac)"; style="rounded,dashed"; color="#8899aa";
+    train [label="data/raw/train.csv\n1,500 labelled photos\n(root_code, transcription_steps,\nmisconceptions JSON)"];
+    unl [label="unlabelled.csv\n50,000 photos, no labels\n(26,202 sent to Claude)"];
+    test [label="test.csv\n3,498 photos", fillcolor="#f8d7d7"];
+    tax [label="taxonomy_v1.csv\n75 codes + NONE = 76 classes"];
+    folds [label="make_folds(train)\nfold 0 = 301 dev rows\nfolds 1-4 = 1,199 fit rows"];
+  }
+
+  refuse [label="frame(): split == 'test'\n-> SystemExit\n'Test photos are never sent to the API'", shape=octagon, fillcolor="#f8d7d7"];
+  test -> refuse [color="#c0392b"];
+
+  sel [label="scripts/select_unlabelled.py\nerror-rich, code-diverse picks\n<= 150 per question\n-> data/pseudo/subset3_ids.json (9,000)"];
+  unl -> sel;
+
+  subgraph cluster_req {
+    label="scripts/claude_label.py : build one request per photo"; style=rounded; color="#4a6fa5";
+    sys [label="system_prompt(taxonomy)\nteacher instructions + 75-row code table\n~9,246 tokens, cache_control=ephemeral"];
+    shots [label="few_shot(row, pool, names, k)\n(optional --fewshot)\nfit-fold examples only:\nsame question, then same topic"];
+    img [label="encoded(path)\nEXIF rotate -> RGB -> thumbnail <=1024px\n-> JPEG q90 -> base64"];
+    meta [label="text block: Grade, Topic,\nQuestion, Answer key\n(+ explanation_request if --explain)"];
+    schema [label="schema(classes)\nJSON schema: transcription, root_line,\nreasoning, first/second/third_code\n(codes = enum of 76 classes)"];
+    params [label="params(): MessageCreateParams\nmodel=claude-opus-5-5, max_tokens=16000\noutput_config: effort=medium, format=schema"];
+    sys -> params; shots -> params; img -> params; meta -> params; schema -> params;
+  }
+  tax -> sys; tax -> schema;
+  train -> shots [label="fit rows only"];
+  folds -> shots;
+
+  subgraph cluster_modes {
+    label="Three commands"; style=rounded; color="#4a6fa5";
+    pilot [label="pilot\n5 photos, synchronous,\nstandard price -> per-photo cost"];
+    submit [label="submit\nskip done + pending ids\nprojection = per_photo x 1.3 x rows\nrefuse if spent+open+projection > limit\nchunks of 700 -> Message Batches API"];
+    collect [label="collect\nretrieve ended batches\ncost(usage, batch=True) = 50% price\nparse JSON answer"];
+  }
+  api [label="Anthropic API\n(Opus 5.5; Fable 5.2 tested once)", shape=cylinder, fillcolor="#fff4d6"];
+  params -> pilot; params -> submit;
+  submit -> api; api -> collect;
+  pilot -> api [style=dashed];
+
+  budget [label="reports/claude_budget.json\nlimit $200, spent $186.61\n(+ claude_budget_key2.json $25.33)", shape=note, fillcolor="#fff4d6"];
+  pilot -> budget [label="record()"]; submit -> budget [label="batch entries"]; collect -> budget [label="record()"];
+
+  train -> folds;
+  train -> params [label="--split train\n(dev ids or fit ids)"];
+  unl -> params [label="--split unlabelled\n(unl_opus, unl2_opus)"];
+  sel -> params [label="--ids (unl3_opus,\nunl3b_opus)"];
+
+  subgraph cluster_out {
+    label="runs/claude/*.jsonl  (one JSON line per photo: trace_id, mode, usd, usage, answer)"; style=rounded; color="#2e7d32";
+    dev [label="dev_opus / dev_fable52 /\ndev_opus_fewshot\n301 rows each"];
+    unlall [label="unl_opus 9,602 + unl2 7,600\n+ unl3 6,000 + unl3b 3,000\n= unl_all_v4.jsonl 26,202"];
+    expl [label="train_explain_opus\n1,199 fit rows\n(transcription, root_line, reasoning)"];
+  }
+  collect -> dev; collect -> unlall; collect -> expl;
+
+  evalc [label="scripts/evaluate_claude.py\nclaude_scores(): rank shares .6/.25/.15\nsummarize(): MAP@3, top-1, bootstrap CI"];
+  dev -> evalc;
+  devrep [label="reports/claude_dev_*.json\nOpus 0.819 | few-shot 0.811 | Fable 0.788", shape=note];
+  evalc -> devrep;
+
+  distill [label="scripts/build_claude_distill.py\nsoft = .7/.2/.1 over 3 codes\nweight .8 (v4w: long .5, rare 1.0)\nNONE-first capped at 1/3\ntarget = ROOT/WHERE/WHY/READING"];
+  unlall -> distill;
+  dv4 [label="data/v3/claude_unl_v4.jsonl\ndata/v3/claude_unl_v4w.jsonl\n11,426 rows each\n{trace_id, weight, soft, target}", fillcolor="#e3f2e1"];
+  distill -> dv4;
+  distrep [label="reports/claude_distill_v4*.json", shape=note];
+  distill -> distrep;
+
+  v3 [label="scripts/build_dataset_v3.py\ngold rows: evidence-first target\nweight = max(1, 3/count)"];
+  train -> v3;
+  tv3 [label="data/v3/train_v3.jsonl\n1,500 rows", fillcolor="#e3f2e1"];
+  v3 -> tv3;
+  why [label="scripts/build_claude_train_why.py\nreplace WHY on fit error rows\n(dev ids excluded)"];
+  tv3 -> why; expl -> why;
+  tv3c [label="data/v3/train_v3_claude.jsonl\n1,500 rows", fillcolor="#e3f2e1"];
+  why -> tv3c;
+
+  students [label="Students (offline at inference)\nsrc/k12/pod_train.py --pseudo (+ --dataset)\nsrc/k12/text_diagnose.py --pseudo (+ --dataset)\nloss = weight x soft-label cross-entropy\n(+ reading / explanation LM loss)", fillcolor="#e8e0f5"];
+  dv4 -> students [label="--pseudo"]; tv3 -> students [label="--dataset"]; tv3c -> students [label="--dataset"];
+}

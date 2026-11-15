@@ -1,0 +1,74 @@
+digraph tx_overview {
+  rankdir=TB; fontname="Helvetica"; compound=true; newrank=true;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_data {
+    label="Inputs (data/raw, private)"; style="rounded,dashed"; color="#7a8ca8"; fontname="Helvetica";
+    traincsv [label="train.csv (1,500 rows)\ntrace_id, question_id, question_text, grade, topic_name,\ncorrect_answer, image_file, question_image_file,\ntranscription_steps (gold 'L1 | ...' lines), root_code"];
+    testcsv  [label="test.csv (3,498 rows)\nsame input columns, NO transcription_steps"];
+    imgs     [label="images/{train,test,questions}/*\nstudent photo + optional question diagram"];
+    tax      [label="taxonomy_v1.csv\n(only builds the 76-class list;\nunused by the transcriber's loss)"];
+  }
+
+  subgraph cluster_split {
+    label="Split (core.make_folds, seed 2026)"; style="rounded"; color="#7a8ca8"; fontname="Helvetica";
+    folds [label="make_folds(): 5 folds, greedy balance of root_code counts\nrows with same question_id + normalised transcript\nkept together"];
+    fit   [label="fit rows = folds != 0\n1,199 rows (train on these)"];
+    dev   [label="dev rows = fold 0\n301 rows (never trained on)"];
+  }
+
+  subgraph cluster_pre {
+    label="Preprocessing (vision.image + vision.messages)"; style="rounded"; color="#7a8ca8"; fontname="Helvetica";
+    load  [label="PIL open -> exif_transpose -> RGB\n(fix phone rotation)"];
+    thumb [label="thumbnail(maxside x maxside)\nlongest side <= 1280 px (transcriber default)\naspect ratio kept, never upscaled"];
+    msg   [label="chat message (one 'user' turn):\n[Question diagram: <img>]?\nStudent's handwritten working: <img>\nGrade / Topic / Question / Answer key\n+ 'Transcribe ... L1 | ... format. Preserve errors'"];
+    proc  [label="AutoProcessor.apply_chat_template\nmin_pixels 128^2, max_pixels 1280^2\nadd_generation_prompt=True\n-> input_ids, attention_mask,\npixel_values, image_grid_thw"];
+  }
+
+  subgraph cluster_model {
+    label="VisionSystem (vision.py:79-164)"; style="rounded"; color="#3d5a80"; fontname="Helvetica";
+    base [label="Qwen3-VL-8B base, bf16, frozen\nvision tower (ViT) -> merger -> LLM decoder\nsdpa attention, 1 GPU"];
+    lora [label="LoRA adapters (trainable, kept in fp32)\nr=32, alpha=64, dropout 0.05\non LLM q,k,v,o,gate,up,down proj\n(vision tower NOT adapted: no --lora-vision)"];
+    heads [label="root head (76) + correct head (1)\ncreated but UNUSED for transcription;\nsaved to heads.pt anyway", fillcolor="#f4f4f4"];
+  }
+
+  subgraph cluster_train {
+    label="train() - transcriber.py:22-77"; style="rounded"; color="#3d5a80"; fontname="Helvetica";
+    tgt   [label="target ids = tokenizer(gold transcription_steps + EOS)\ntruncate to 512 tokens"];
+    join  [label="append_teacher(prefix, target)\ninput = [prompt tokens | target tokens]\n(prefetched: 6 CPU threads, 16 rows ahead)"];
+    fwd   [label="system.hidden(): backbone forward\n-> last_hidden_state [1, P+T, H]\n(no full-vocab logits)"];
+    loss  [label="slice positions P-1 .. P+T-2\nlm_head in 64-token chunks\ncross-entropy summed / T\n(loss on transcript tokens only)"];
+    opt   [label="AdamW lr 1e-4, wd 0.01\ngrad accumulation 8 rows\nwarm-up 5% then cosine, clip 1.0\n2 epochs (defaults)"];
+    ckpt  [label="checkpoint/\nadapter/ (LoRA safetensors)\nprocessor/  heads.pt\nmetadata.json (args, classes, trained_ids, task)", shape=note, fillcolor="#fff6dc"];
+  }
+
+  subgraph cluster_inf {
+    label="transcribe() - transcriber.py:80-116"; style="rounded"; color="#3d5a80"; fontname="Helvetica";
+    reload [label="read metadata.json -> same args\n(same maxside / max_pixels / dtype as training)\nPeftModel.from_pretrained(adapter)"];
+    resume [label="load existing output JSON (if any)\nskip trace_ids already done"];
+    batchn [label="batches of 8, left padding\nprefetched(): 6 CPU threads build\nbatches 3 ahead"];
+    gen    [label="model.generate()\ngreedy (do_sample=False)\nrepetition_penalty 1.05\nmax_new_tokens 512"];
+    dec    [label="decode only NEW tokens\nstrip(), map trace_id -> text"];
+    write  [label="rewrite whole JSON after every batch\n(resumable if pod dies)"];
+  }
+
+  txdev  [label="runs/pod/tx/tx_dev.json\n301 dev transcripts\nmedian 5 lines, 137 chars", shape=note, fillcolor="#fff6dc"];
+  txtest [label="runs/pod/tx/tx_test.json\n3,498 test transcripts\nmedian 6 lines, 151 chars", shape=note, fillcolor="#fff6dc"];
+  down   [label="Stage 2 text reasoners (text_diagnose.py)\n--validation-transcripts / --test-transcripts\nQwen3-8B and Qwen3-32B read these instead of photos\n(fitted on gold text: --fit-transcripts gold)"];
+
+  traincsv -> folds; folds -> fit; folds -> dev;
+  imgs -> load -> thumb -> msg; fit -> msg [label="row context"];
+  msg -> proc -> join;
+  fit -> tgt [label="gold text"]; tgt -> join;
+  join -> fwd; base -> fwd; lora -> fwd;
+  fwd -> loss -> opt; opt -> lora [label="update LoRA only", style=dashed];
+  opt -> ckpt [label="after last epoch"];
+  heads -> ckpt [style=dotted];
+  tax -> heads [style=dotted, label="75 codes + NONE"];
+
+  ckpt -> reload; dev -> resume [label="dev rows\n(--csv train.csv --ids ...)"]; testcsv -> resume [label="--csv test.csv"];
+  reload -> gen; resume -> batchn -> gen -> dec -> write;
+  write -> txdev; write -> txtest;
+  txdev -> down; txtest -> down;
+}

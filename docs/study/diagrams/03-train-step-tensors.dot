@@ -1,0 +1,32 @@
+digraph train_step_tensors {
+  rankdir=TB; fontname="Helvetica";
+  label="One training step with --explain-weight > 0 (explain_loss, text_diagnose.py L66-97 and L191-210); B = 4"; labelloc=t; fontsize=16;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  texts [label="4 prompt strings\n(each ends 'ROOT:')"];
+  exps [label="4 explanation strings\n'ROOT: X (name)\\nWHERE..\\nWHY..' + eos"];
+  tp [label="tokenize prompts\nlist of int lists a_i\n(len <= 3072, left-truncated)"];
+  te [label="tokenize explanations\nlist of int lists b_i\n(len <= 256, also LEFT-truncated:\nan over-long one loses its start, keeps eos)"];
+  pack [label="pack RIGHT-padded\nids [4, W]  W = max(len a_i + len b_i)\nmask [4, W]  (1 on real tokens)\ntargets [4, W] = -100 except\npositions len(a_i)-1 .. len(a_i)+len(b_i)-2 = b_i\nends_i = len(a_i) - 1"];
+  fwd [label="base.model(ids, mask)\nQwen3 decoder (frozen + LoRA)\nbf16 autocast\nlast_hidden_state [4, W, H]"];
+  prefix [label="gather hidden[i, ends_i]\nprefix [4, H] (fp32)\n= state at the last token of 'ROOT:'"];
+  sel [label="positions where targets != -100\n(sum of len(b_i) positions)"];
+  lmh [label="lm_head on chunks of 512 positions\nlogits [<=512, vocab]"];
+  lmce [label="cross_entropy(sum) / #positions\n= explanation LM loss (scalar)"];
+  headn [label="head: Linear(H, 76)\nlogits [4, 76]"];
+  lab [label="soft labels [4, 76]\n(one-hot or Claude 0.7/0.2/0.1)"];
+  ce [label="cross_entropy(logits, labels,\nlabel_smoothing .03, reduction none)\n-> per_row [4]"];
+  w [label="row_weight [4]\n(1.0 teacher, 0.8 Claude v4)"];
+  cls [label="(per_row * row_weight).mean()"];
+  tot [label="loss = cls + 0.3 * LM", fillcolor="#fde2e2"];
+  back [label="loss.backward()\ngrads flow to LoRA A/B matrices\n(all layers) and to head"];
+  step [label="lr = base_lr * warmup * cosine\nclip_grad_norm(1.0)\nAdamW step, zero_grad"];
+
+  texts -> tp; exps -> te; tp -> pack; te -> pack;
+  pack -> fwd [label="ids, mask"];
+  fwd -> prefix [label="[4,W,H]"]; pack -> prefix [label="ends"];
+  fwd -> sel; pack -> sel [label="targets"]; sel -> lmh [label="hidden[r,c]"]; lmh -> lmce; pack -> lmce [label="targets[r,c]"];
+  prefix -> headn; headn -> ce; lab -> ce; ce -> cls; w -> cls;
+  cls -> tot; lmce -> tot; tot -> back -> step;
+}

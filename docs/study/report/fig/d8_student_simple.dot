@@ -1,0 +1,6 @@
+digraph stu { rankdir=LR; graph [fontname="Helvetica", fontsize=12, nodesep=0.28, ranksep=0.4, labelloc=t, label="Reason-first candidate student, simple view: write the diagnosis, then choose a letter"];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"]; edge [fontname="Helvetica", fontsize=9];
+  in1 [label="Question fields\n+ transcript", fillcolor="#fdf1dc"]; in2 [label="10 lettered candidates (blend's top 10)\neach: code, name, description,\nexample from this question if any", fillcolor="#fff6d6"];
+  lm [label="Qwen3-8B\n+ LoRA adapter"]; w [label="Model WRITES:\nROOT_LINE: L3\nWHY: short explanation\nANSWER:"]; r [label="Read the probabilities\nof letters A..J here", fillcolor="#fde2e2"];
+  avg [label="Map letters to codes;\naverage over 2 orderings\nof the candidates"]; fuse [label="Fuse with the blend\n(cross-fitted weight),\nthen balance", fillcolor="#e8f5e9"]; out [shape=note, label="Top 3 codes"];
+  in1 -> lm; in2 -> lm; lm -> w -> r -> avg -> fuse -> out; }

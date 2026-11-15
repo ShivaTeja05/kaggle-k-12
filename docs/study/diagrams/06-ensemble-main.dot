@@ -1,0 +1,56 @@
+digraph stage3_ensemble {
+  rankdir=TB; fontname="Helvetica"; compound=true; newrank=true;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_in {
+    label="Inputs: probability bundles from Stages 1-2 (.npz: ids, classes, p, meta)"; style="rounded"; color="#8899bb";
+    t32 [label="Qwen3-32B text reasoner\n(machine transcripts)\ntest: runs/pod/text32-full/test.npz\ndev: runs/pod/text32/validation_tx_dev_epoch_1.npz\np: N x 76"];
+    t8  [label="Qwen3-8B text reasoner\n(machine transcripts)\ntest: runs/pod/text-full/test.npz\ndev: runs/pod/tx/text_tx_dev_e3.npz\np: N x 76"];
+    vl  [label="Qwen3-VL-8B image classifier\n(distilled from Claude labels)\ntest: runs/pod/full-distill/test.npz\ndev: runs/pod/dev-distill/validation_epoch_2.npz\np: N x 76"];
+  }
+  meta [label="data/raw/test.csv (3,498 trace_ids)\ndata/raw/taxonomy_v1.csv -> label_space()\n= 75 codes + NONE = 76 classes (sorted)", fillcolor="#f4f4f4"];
+
+  subgraph cluster_blend {
+    label="scripts/blend_geometric.py  (weighted geometric mean = log-linear pooling)"; style="rounded"; color="#8899bb";
+    align [label="aligned_bundle(path, ids, classes)\nreorder rows to test.csv order,\ncolumns to label_space order;\ncheck id/class sets match\n-> N x 76, rows sum to 1"];
+    logw  [label="log p_m  x  weight w_m\n.35 (32B) / .30 (8B) / .35 (VL)\nsum over models -> log_p (N x 76)"];
+    stab  [label="exp(log_p - rowmax)\nnormalize() rows -> P (N x 76)"];
+    prior [label="optional: calibrated(P, HierarchicalPrior, w, T=1)\n(1-w)*P + w*prior\n--prior-weight 0 in the 3-way blend", fillcolor="#f4f4f4", style="rounded,filled,dashed"];
+  }
+
+  subgraph cluster_sink {
+    label="Sinkhorn label balancing (s7_sinkhorn.py dev / s11_none_falarm_and_test.py test)"; style="rounded"; color="#8899bb";
+    target [label="target marginal pi (76,)\n= train root_code counts + 0.5, normalised\n(dev: 1,199 fit rows; test: all 1,500 train rows)"];
+    loop   [label="iterate 30 (dev) / 50 (test) times:\nQ = normalize(P * exp(b))\nb += log(pi / mean_rows(Q))\n-> bias vector b (76,)"];
+    temper [label="Q_final = normalize(P * exp(lambda * b))\nlambda = 0.5 (half-strength correction)\nlabel-free: uses no test labels"];
+  }
+
+  topk [label="topk(Q, classes, k=3)\nstable argsort, 3 codes per row"];
+  sub  [label="write_submission()\nsubmission.csv: trace_id, root_code=\"c1 c2 c3\"\n3,498 rows"];
+  files [label="artifacts/submission-3way-blend/\n  test.npz, submission.csv, metrics.json\n  (public 0.7085, dev 0.7182)\nruns/arch/label-structure/staged_submission_balanced_l0.5.csv\n  copied to artifacts/submission-3way-sinkhorn/\n  (dev 0.7370 fixed lambda; NOT submitted)", fillcolor="#e8f5e9"];
+  ask  [label="STOP: ask user before any Kaggle submission", fillcolor="#fdecea"];
+
+  subgraph cluster_eval {
+    label="Evaluation on the dev fold (fold 0 of make_folds: 301 rows, 218 questions)"; style="rounded"; color="#bb9988";
+    devy [label="dev labels y (root_code)\nused ONLY for scoring / choosing lambda", fillcolor="#fff6e5"];
+    map3 [label="row_scores(): 1, 1/2, 1/3 or 0 per row\nMAP@3 = mean", fillcolor="#fff6e5"];
+    xfit [label="cross-fitting: 5 question folds\npick lambda on 4/5, apply to held-out 1/5", fillcolor="#fff6e5"];
+    boot [label="boot_ci(): resample questions (4,000x)\n95% CI of delta vs blend", fillcolor="#fff6e5"];
+    js   [label="runs/arch/label-structure/\nsinkhorn_balance.json, none_falarm_and_test.json", fillcolor="#e8f5e9"];
+  }
+
+  judge [label="scripts/stack_models.py (judge / stacker)\ncandidates = union of top-6 per model\nfeatures: log p, 1/rank, top1 flag, max p,\nfamily x log p, agreement counts (41 total)\nLogisticRegression(C=0.1), GroupKFold by question\n-> not shipped; own score not saved.\nSimilar s3_stacker.py: -0.006 to -0.031", fillcolor="#f4f4f4", style="rounded,filled,dashed"];
+
+  t32 -> align; t8 -> align; vl -> align; meta -> align;
+  align -> logw -> stab;
+  stab -> loop [label="P"];
+  stab -> prior [style=dashed, label="optional"];
+  target -> loop -> temper;
+  stab -> topk [label="3-way blend path", style=dashed];
+  temper -> topk [label="Sinkhorn path"];
+  topk -> sub -> files -> ask;
+  temper -> map3 [label="dev bundles", color="#bb9988"];
+  devy -> map3 -> xfit -> boot -> js;
+  stab -> judge [style=dashed, color="#888888"];
+}

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 384" width="720" height="384">
+<rect width="720" height="384" fill="#ffffff"/>
+<text x="16.0" y="22.0" font-size="13" text-anchor="start" fill="#0b0b0b" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Dev MAP@3 on the 106 hard rows, every model we have run</text>
+<text x="16.0" y="376.0" font-size="9.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Orange = Claude. No open model, trained or not, gets past about 0.45.</text>
+<line x1="300.0" y1="54" x2="300.0" y2="346" stroke="#e3e2dc" stroke-width="1"/>
+<text x="300.0" y="50.0" font-size="9.5" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.0</text>
+<line x1="372.0" y1="54" x2="372.0" y2="346" stroke="#e3e2dc" stroke-width="1"/>
+<text x="372.0" y="50.0" font-size="9.5" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.2</text>
+<line x1="444.0" y1="54" x2="444.0" y2="346" stroke="#e3e2dc" stroke-width="1"/>
+<text x="444.0" y="50.0" font-size="9.5" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.4</text>
+<line x1="516.0" y1="54" x2="516.0" y2="346" stroke="#e3e2dc" stroke-width="1"/>
+<text x="516.0" y="50.0" font-size="9.5" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.6</text>
+<line x1="588.0" y1="54" x2="588.0" y2="346" stroke="#e3e2dc" stroke-width="1"/>
+<text x="588.0" y="50.0" font-size="9.5" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.8</text>
+<line x1="660.0" y1="54" x2="660.0" y2="346" stroke="#e3e2dc" stroke-width="1"/>
+<text x="660.0" y="50.0" font-size="9.5" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1.0</text>
+<line x1="526.8" y1="54" x2="526.8" y2="346" stroke="#52514e" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="529.8" y="358.0" font-size="9.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">needed for 0.80 overall</text>
+<text x="292.0" y="73.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Claude Opus, photo</text>
+<path d="M300.0,63.0 L554.4,63.0 Q557.4,63.0 557.4,66.0 L557.4,74.0 Q557.4,77.0 554.4,77.0 L300.0,77.0 Z" fill="#eb6834"/>
+<text x="562.4" y="73.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.715</text>
+<text x="292.0" y="97.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Claude Opus, our transcript only</text>
+<path d="M300.0,87.0 L526.3,87.0 Q529.3,87.0 529.3,90.0 L529.3,98.0 Q529.3,101.0 526.3,101.0 L300.0,101.0 Z" fill="#eb6834"/>
+<text x="534.3" y="97.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.637</text>
+<text x="292.0" y="121.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Our blend + balancing</text>
+<path d="M300.0,111.0 L459.4,111.0 Q462.4,111.0 462.4,114.0 L462.4,122.0 Q462.4,125.0 459.4,125.0 L300.0,125.0 Z" fill="#2a78d6"/>
+<text x="467.4" y="121.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.451</text>
+<text x="292.0" y="145.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Qwen3-235B, untrained, transcript</text>
+<path d="M300.0,135.0 L458.3,135.0 Q461.3,135.0 461.3,138.0 L461.3,146.0 Q461.3,149.0 458.3,149.0 L300.0,149.0 Z" fill="#2a78d6"/>
+<text x="466.3" y="145.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.448</text>
+<text x="292.0" y="169.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Old 8B text student (11.4k Claude rows)</text>
+<path d="M300.0,159.0 L455.4,159.0 Q458.4,159.0 458.4,162.0 L458.4,170.0 Q458.4,173.0 455.4,173.0 L300.0,173.0 Z" fill="#2a78d6"/>
+<text x="463.4" y="169.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.440</text>
+<text x="292.0" y="193.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">New reason-first 8B student</text>
+<path d="M300.0,183.0 L447.1,183.0 Q450.1,183.0 450.1,186.0 L450.1,194.0 Q450.1,197.0 447.1,197.0 L300.0,197.0 Z" fill="#2a78d6"/>
+<text x="455.1" y="193.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.417</text>
+<text x="292.0" y="217.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Qwen3-32B, untrained, transcript</text>
+<path d="M300.0,207.0 L438.1,207.0 Q441.1,207.0 441.1,210.0 L441.1,218.0 Q441.1,221.0 438.1,221.0 L300.0,221.0 Z" fill="#2a78d6"/>
+<text x="446.1" y="217.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.392</text>
+<text x="292.0" y="241.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Text 8B, teacher labels only, 3 epochs</text>
+<path d="M300.0,231.0 L427.7,231.0 Q430.7,231.0 430.7,234.0 L430.7,242.0 Q430.7,245.0 427.7,245.0 L300.0,245.0 Z" fill="#2a78d6"/>
+<text x="435.7" y="241.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.363</text>
+<text x="292.0" y="265.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Image 8B (deployed member)</text>
+<path d="M300.0,255.0 L427.3,255.0 Q430.3,255.0 430.3,258.0 L430.3,266.0 Q430.3,269.0 427.3,269.0 L300.0,269.0 Z" fill="#2a78d6"/>
+<text x="435.3" y="265.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.362</text>
+<text x="292.0" y="289.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Text 32B (deployed member)</text>
+<path d="M300.0,279.0 L425.5,279.0 Q428.5,279.0 428.5,282.0 L428.5,290.0 Q428.5,293.0 425.5,293.0 L300.0,293.0 Z" fill="#2a78d6"/>
+<text x="433.5" y="289.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.357</text>
+<text x="292.0" y="313.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Qwen3.5-27B, untrained, photo</text>
+<path d="M300.0,303.0 L410.0,303.0 Q413.0,303.0 413.0,306.0 L413.0,314.0 Q413.0,317.0 410.0,317.0 L300.0,317.0 Z" fill="#2a78d6"/>
+<text x="418.0" y="313.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.314</text>
+<text x="292.0" y="337.0" font-size="10.5" text-anchor="end" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Qwen3.5-9B, untrained, photo</text>
+<path d="M300.0,327.0 L356.4,327.0 Q359.4,327.0 359.4,330.0 L359.4,338.0 Q359.4,341.0 356.4,341.0 L300.0,341.0 Z" fill="#2a78d6"/>
+<text x="364.4" y="337.5" font-size="10" text-anchor="start" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.165</text>
+</svg>

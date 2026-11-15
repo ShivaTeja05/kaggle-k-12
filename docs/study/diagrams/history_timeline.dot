@@ -1,0 +1,50 @@
+digraph history_timeline {
+  rankdir=TB; fontname="Helvetica"; labelloc=t; label="K-12 experiment history: public MAP@3 timeline (green), pending steps (yellow) and rejected branches (red)";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  base [label="CPU baseline (first step)\nHierarchicalPrior: question -> topic -> global code counts\nno image signal\n5-fold OOF MAP@3 0.4853"];
+
+  s1 [fillcolor="#dff3e3", label="Submission 58126216  (8 Nov 11:43)\nQwen3-VL-4B LoRA classifier, epoch 3\nKaggle free T4 GPUs\nphoto -> 76-way probabilities\ndev 0.5952  |  PUBLIC 0.58216"];
+  s2 [fillcolor="#dff3e3", label="Submission 58133839  (8 Nov 16:08)\nsame 4B probabilities, temperature 2\n+ 25% hierarchical prior (linear mix)\ndev 0.6074 in-sample / 0.5980 cross-fit\nPUBLIC 0.59800"];
+  gap [shape=note, fillcolor="#fff6d6", label="8-10 Nov: Kaggle GPU quota shared with an unrelated Gemma job\nuser: 'Keep Gemma running; continue K-12 on CPU'\nonly CPU experiments possible\n10 Nov: paid RunPod GPUs approved"];
+  s3 [fillcolor="#dff3e3", label="Submission 58221584  (11 Nov 02:07)\nQwen3-VL-8B LoRA + teacher-transcription LM loss (w 0.15)\ngeometric blend 0.7 x 8B, 0.3 x 4B, then 10% prior\ndev 0.6467  |  PUBLIC 0.62383"];
+  s4 [fillcolor="#dff3e3", label="Submission 58228022  (11 Nov 06:27)\nREAD-THEN-DIAGNOSE\nQwen3-VL-8B transcriber: photo -> text lines\nQwen3-8B LoRA reasoner: question + transcript -> 76 probs\ngeometric 0.6 reasoner x 0.4 8B image model\ndev 0.6838  |  PUBLIC 0.66183"];
+  s5 [fillcolor="#dff3e3", label="Submission 58234705  (11 Nov 10:43)\nDISTILLATION from Claude Opus 5.5\nQwen3-VL-8B trained on 1,500 gold + 3,427 Claude-labelled\nunlabelled photos; 50/50 geometric with 8B reasoner\ndev 0.6932  |  PUBLIC 0.68283"];
+  s6 [fillcolor="#c9ecd2", label="Submission 58240192  (11 Nov 14:03)  BEST SO FAR\n3-way geometric blend .35 / .30 / .35\nQwen3-32B QLoRA reasoner + Qwen3-8B reasoner + VL-8B distilled\ndev 0.7182 in-sample / 0.706 cross-fit\nPUBLIC 0.70850\n(58240232 = accidental duplicate, same file)"];
+  s7 [fillcolor="#fff6d6", label="12 Nov: Sinkhorn label balancing (lambda 0.5)\ndev 0.7370, +0.019 CI [+0.006, +0.033]\nCSV staged, NOT submitted (needs user OK)\nexpected about +0.01 public (estimate)"];
+  s8 [fillcolor="#fff6d6", label="12 Nov: Stage B reason-then-choose 8B student\nsmoke-tested on CPU, gated GPU run planned\nresult: not measured in these reports"];
+
+  base -> s1 [label="+ fine-tuned vision model"];
+  s1 -> s2 [label="+0.016 calibration + prior"];
+  s2 -> gap;
+  gap -> s3 [label="+0.026 bigger VL + reading loss"];
+  s3 -> s4 [label="+0.038 split reading from reasoning"];
+  s4 -> s5 [label="+0.021 teacher labels on unlabelled photos"];
+  s5 -> s6 [label="+0.026 32B reasoner, 3-way blend"];
+  s6 -> s7 [label="CPU post-processing"];
+  s7 -> s8 [label="only GPU bet left"];
+
+  node [fillcolor="#fbe3e3"];
+  f1 [label="Offline all-taxonomy image ranker\ndev 0.3848, NONE false alarm 0.85\nREJECTED"];
+  f2 [label="Qwen3.5-9B constrained output\ndev 0.4551 (< prior 0.4972)\nREJECTED"];
+  f3 [label="Qwen3.5-27B int4 compact-grammar ranker\ndev 0.5897 < gate 0.65\nREJECTED, no test run"];
+  f4 [label="CPU on frozen 4B features:\nlinear head 0.5903, rank-32 adapter 0.5703 (overfit),\nkNN memory 0.5991, text prior 0.5842\nall REJECTED (< +0.01 or CI spans 0)"];
+  f5 [label="8B VL variants\nD soft secondary + rare oversample 0.618\nE family / has-error aux heads 0.613\n32B QLoRA image classifier 0.403 (stopped)\nno gain"];
+  f6 [label="Old OCR / PP-FormulaNet reader\nnumber recall 0.12-0.22 vs 0.88 for our transcriber\nformula pilot 0.656 vs 0.664: no gain"];
+  f7 [label="Qwen3-235B-A22B probe (H200, ~$6.50)\nzero-shot 0.584, few-shot 0.650\nas 4th member: +0.016 cross-fit, CI crosses 0;\n-0.017 vs blend + Sinkhorn\nNOT ADOPTED"];
+  f8 [label="Combiners: question priors, LR / GBM stackers,\nNONE gates, family bias, kNN, HiE family factorisation\nall cross-fitted -0.031 .. +0.006\nREJECTED"];
+  f9 [label="More Claude labels for volume\n8B: 0% -> 25% +0.113, 25% -> 100% +0.026 (CI crosses 0)\nensemble 0.715 vs 0.718\nSATURATED"];
+  f10 [label="Research dead ends (assessed, not run): Guo 2025 GNN reader,\nMask & Match (withdrawn), Ultramarine 1 Flash,\nKimi-K3 C engine, Rust/C++ rewrite (<1% wall-clock),\nexternal datasets (wrong label space / licence)"];
+
+  base -> f1 [style=dashed, color="#b04040"];
+  base -> f2 [style=dashed, color="#b04040"];
+  s2 -> f3 [style=dashed, color="#b04040"];
+  s2 -> f4 [style=dashed, color="#b04040"];
+  s3 -> f5 [style=dashed, color="#b04040"];
+  s4 -> f6 [style=dashed, color="#b04040"];
+  s6 -> f7 [style=dashed, color="#b04040"];
+  s6 -> f8 [style=dashed, color="#b04040"];
+  s6 -> f9 [style=dashed, color="#b04040"];
+  s6 -> f10 [style=dashed, color="#b04040"];
+}

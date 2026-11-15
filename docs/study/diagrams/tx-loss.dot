@@ -1,0 +1,18 @@
+digraph tx_loss {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+  label="Loss computation for one row (transcriber.py:53-70)"; labelloc=t;
+
+  joined [label="joined inputs: input_ids [1, P+T] + pixel_values, image_grid_thw\nP = prompt length ('length'), T = target length"];
+  hid    [label="backbone(...).last_hidden_state  (under bf16 autocast)\n[1, P+T, H]  (H = text hidden size)"];
+  sl     [label="response = hidden[:, P-1 : P+T-1]\n[1, T, H]\n(position i predicts token i+1)"];
+  chunk  [label="for offset in 0, 64, 128, ...:\nlogits = lm_head(response chunk).float()\n[1, <=64, vocab]"];
+  ce     [label="F.cross_entropy(logits, target chunk,\nreduction='sum')\nadd to running loss"];
+  mean   [label="loss = total / T\n(mean per-token negative log-likelihood)"];
+  acc    [label="(loss / window).backward()\nwindow = 8 (or smaller last window)"];
+  step   [label="every 8 rows (300 updates with defaults):\nlr = 1e-4 * warmup * cosine\nclip_grad_norm 1.0\nAdamW step on LoRA params"];
+
+  joined -> hid -> sl -> chunk -> ce -> mean -> acc -> step;
+  ce -> chunk [label="next chunk", style=dashed];
+}

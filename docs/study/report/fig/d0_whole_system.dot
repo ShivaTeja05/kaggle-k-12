@@ -1,0 +1,90 @@
+digraph whole_system {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, compound=true, newrank=true, nodesep=0.35, ranksep=0.6,
+         label="K-12 misconception pipeline: every stage, with files (dashed = training-time only, never at test)", labelloc=t];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_in {
+    label="0. Inputs (data/raw/, data/bundle/)"; style="rounded"; color="#888888";
+    photo [label="Student photo\nimage_file\n(k12_images.tar)"];
+    qfields [label="Question fields\nquestion_text, correct_answer,\ngrade, topic_name, diagram"];
+    gold [label="Train-only annotations\ntranscription_steps, misconceptions,\nroot_code (1,500 rows)", fillcolor="#fdf1dc"];
+    unl [label="Unlabelled photos\nunlabelled.csv (50,000)\nk12_unlabelled.tar", fillcolor="#fdf1dc"];
+    folds [label="core.make_folds(seed 2026)\nfold 0 = dev (301)\nfolds 1-4 = fit (1,199)", fillcolor="#e8f5e9"];
+  }
+
+  subgraph cluster_teacher {
+    label="Teacher data (training-time only; API never sees test)"; style="rounded,dashed"; color="#c0392b";
+    claude [label="scripts/claude_label.py\nClaude Opus: transcription, root_line,\nreasoning, 3 ranked codes\n-> runs/claude/*.jsonl (26,202 unl)", fillcolor="#fde2e2"];
+    distill [label="scripts/build_claude_distill.py\nsoft .7/.2/.1, weight .8, NONE cap 1/3\n-> data/v3/claude_unl*.jsonl (3,427 .. 11,426)", fillcolor="#fde2e2"];
+    v3 [label="scripts/build_dataset_v3.py\nevidence-first targets, rare weights\n-> data/v3/train_v3.jsonl", fillcolor="#fde2e2"];
+  }
+
+  subgraph cluster_s1 {
+    label="Stage 1: transcriber (src/k12/transcriber.py, vision.py)"; style="rounded"; color="#2e6da4";
+    tx [label="Qwen3-VL-8B + LoRA r32 (bf16)\nphoto + question -> 'L1 | ...' text lines\ntrained on 1,199 fit gold transcripts"];
+    txout [label="runs/pod/tx/tx_dev.json (301)\nruns/pod/tx/tx_test.json (3,498)", shape=note];
+  }
+
+  subgraph cluster_s2a {
+    label="Stage 2a: text reasoners (src/k12/text_diagnose.py)"; style="rounded"; color="#2e6da4";
+    r32 [label="Qwen3-32B QLoRA (NF4)\ncode list + question + transcript -> 'ROOT:'\nhidden[-1] -> Linear -> P[76]\nrows: train + Claude pseudo"];
+    r8 [label="Qwen3-8B LoRA\nsame prompt and head\n-> P[76]"];
+    b32 [label="text32/validation_tx_dev_epoch_1.npz\ntext32-full/test.npz", shape=note];
+    b8 [label="tx/text_tx_dev_e3.npz\ntext-full/test.npz", shape=note];
+  }
+
+  subgraph cluster_s2b {
+    label="Stage 2b: image classifier (src/k12/pod_train.py, vision.py)"; style="rounded"; color="#2e6da4";
+    vl [label="Qwen3-VL-8B + LoRA r32\nphoto + diagram + question -> last token\n-> Linear(4096->76) -> P[76]\nloss: CE + 0.15 reading LM loss"];
+    bvl [label="dev-distill/validation_epoch_2.npz\nfull-distill/test.npz", shape=note];
+  }
+
+  subgraph cluster_s3 {
+    label="Stage 3: combine (scripts/blend_geometric.py, runs/arch/label-structure/)"; style="rounded"; color="#2e6da4";
+    blend [label="Geometric blend\nexp(.35 log P32 + .30 log P8 + .35 log PVL)\ndev 0.7182, public 0.7085"];
+    sink [label="Sinkhorn balancing, lambda 0.5\nmatch train label mix\ndev 0.7370, public 0.71716 (best)"];
+  }
+
+  subgraph cluster_s4 {
+    label="Stage 4: candidate student (tested 12 Nov, rejected) (src/k12/candidate_student.py)"; style="rounded"; color="#2e6da4";
+    cand [label="scripts/build_candidate_dataset.py\ntop-10 candidates + descriptions + examples\n-> data/v5/cand_{train,dev,test}.jsonl"];
+    stud [label="Qwen3-8B LoRA\nwrites ROOT_LINE / WHY, then ANSWER: letter\nletter logits A..J, 2 orders -> P_B[76]\ndev 0.625: failed all 4 gates (12 Nov)"];
+  }
+
+  subgraph cluster_s5 {
+    label="Stage 5: fusion, gates, submission"; style="rounded"; color="#2e6da4";
+    fuse [label="scripts/fuse_candidate.py\nP0 * P_B^w, then Sinkhorn(lambda)\ncross-fitted w, lambda"];
+    gates [label="4 predeclared gates (a)-(d)\nfail -> ship blend + Sinkhorn", shape=diamond, fillcolor="#fff7d6"];
+    csv [label="core.write_submission -> submission.csv\nscripts/validate_submission.py\nartifacts/submission-*/"];
+    ask [label="User's explicit OK per file\n-> Kaggle; log in reports/status.json", fillcolor="#fff7d6"];
+  }
+
+  photo -> tx; qfields -> tx; gold -> tx [label="target text", style=dashed];
+  tx -> txout [label="greedy decode"];
+  txout -> r32 [label="machine text"]; txout -> r8;
+  qfields -> r32; qfields -> r8;
+  gold -> r32 [label="fit on gold text", style=dashed];
+  photo -> vl; qfields -> vl;
+  v3 -> vl [style=dashed, label="targets, weights"];
+  unl -> claude [style=dashed];
+  gold -> v3 [style=dashed];
+  claude -> distill [style=dashed];
+  distill -> vl [style=dashed, label="soft rows"];
+  distill -> r32 [style=dashed]; distill -> r8 [style=dashed];
+  claude -> cand [style=dashed, label="phase a rows"];
+  folds -> tx [style=dotted]; folds -> blend [style=dotted, label="dev scoring"];
+  r32 -> b32; r8 -> b8; vl -> bvl;
+  b32 -> blend; b8 -> blend; bvl -> blend;
+  blend -> sink;
+  sink -> cand [label="balanced top-10"];
+  txout -> cand [label="dev/test text"];
+  cand -> stud;
+  blend -> fuse [label="raw P0"];
+  stud -> fuse [label="P_B"];
+  fuse -> gates;
+  gates -> csv [label="pass"];
+  sink -> csv [label="fallback if gates fail", color="#888888"];
+  csv -> ask;
+}

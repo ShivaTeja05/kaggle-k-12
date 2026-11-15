@@ -1,0 +1,20 @@
+digraph teacher_softlabel {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, label="Zoom: build_claude_distill.py turns one Claude answer into one training row", labelloc=t];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+  a [label="answer: first=A, second=B, third=C\nusage.output_tokens = T"];
+  v [label="valid? A present and\n{A,B,C} subset of 76 classes", shape=diamond];
+  skip [label="skipped[stop_reason or 'invalid_codes']\n(0 rows in every report)", fillcolor="#f8d7d7"];
+  soft [label="soft = {A: .7, B: .2, C: .1}\n(a duplicated code would add up;\nnone occur)"];
+  w [label="weight = 0.8 (base)"];
+  long [label="v4w only, --long-tokens 700:\nA != NONE and T > 700 -> 0.5\n(dev: long 47% vs short 75% top-1)"];
+  rare [label="v4w only, --rare-weight 1.0:\nA has <= 5 train rows -> 1.0\n(overrides the long rule)"];
+  tgt [label="target text\nROOT: A (name)\nWHERE: root_line\nWHY: reasoning\nREADING:\ntranscription\n(NONE rows: ROOT + READING only)"];
+  split [label="26,202 answers ->\nerror rows (A != NONE): keep all 7,618\nNONE rows: 18,584"];
+  cap [label="NONE cap: keep int((1/3)/(2/3) x 7,618) = 3,808\n(float ratio 0.4999..., so not 3,809)\nsorted by soft NONE; all .7, so file order"];
+  out [label="data/v3/claude_unl_v4.jsonl / _v4w.jsonl\n11,426 rows: {trace_id, weight, soft, target}", fillcolor="#e3f2e1"];
+  loss [label="trainer: label vector[76] from soft\nloss_row = weight x CE(head(h), soft)", fillcolor="#e8e0f5"];
+  a -> v; v -> skip [label="no"]; v -> soft [label="yes"];
+  soft -> w -> long -> rare -> tgt -> split -> cap -> out -> loss;
+}

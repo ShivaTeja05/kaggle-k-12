@@ -1,0 +1,35 @@
+digraph loss_computation {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, labelloc=t, label="Zoom-in: loss for one row (loss_terms + training loop, pod_train.py:46-113, 196-213; working-tree version)"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  row [label="row from fit table"];
+  isp [label="row.soft is a dict?", shape=diamond, style="filled", fillcolor="#ffffff"];
+  row -> isp;
+
+  real_lbl [label="target(row, ci, secondary_weight)\none-hot on root_code (1.0)\nif secondary_weight s > 0 and other major codes exist:\nroot 1-s, the others share s"];
+  real_txt [label="teacher text = train_v3 target\n(or teacher_response() alternating\nREADING / CAUSE if no --dataset)"];
+  real_w [label="row weight = v3 weight\n(max(1, 3/count): 1.0, 1.5 or 3.0;\n1.0 without --dataset)"];
+  pse_lbl [label="soft label from Claude:\n{first: .7, second: .2, third: .1}"];
+  pse_txt [label="teacher text = Claude target\n(ROOT / WHERE / WHY / READING)\nuncommitted code path"];
+  pse_w [label="row weight = pseudo_weight (.8)\naux heads switched off"];
+  isp -> real_lbl [label="no (real)"]; isp -> real_txt [label="no"]; isp -> real_w [label="no"];
+  isp -> pse_lbl [label="yes (Claude)"]; isp -> pse_txt [label="yes"]; isp -> pse_w [label="yes"];
+
+  rw [label="reading_weight > 0?\n(Claude rows: and a target text exists)", shape=diamond, style="filled", fillcolor="#ffffff"];
+  real_lbl -> rw; pse_lbl -> rw;
+  short [label="forward prompt only\nh = hidden[:, -1]\nreading = 0\nCE smoothing .03 real rows, none for Claude rows"];
+  long [label="forward prompt + teacher text\nh = hidden[:, L-1]\nreading = mean token CE over T\nCE smoothing .03 for every row"];
+  rw -> short [label="no"]; rw -> long [label="yes"];
+  real_txt -> long [style=dashed]; pse_txt -> long [style=dashed];
+
+  ce [label="CE = cross_entropy(head(h), label, smoothing as above)", fillcolor="#fde9d9"];
+  aux [label="aux = CE(family_head(h)) + BCE(correct_head(h), has_error)\nreal rows, only if --aux-weight > 0", fillcolor="#fde9d9"];
+  short -> ce; long -> ce; short -> aux; long -> aux;
+  sum [label="loss = (w * CE + reading_weight * reading + aux_weight * aux) / window\nwindow = 8 (smaller for the final partial group)", fillcolor="#fff4cc"];
+  ce -> sum; aux -> sum; long -> sum [label="reading"];
+  real_w -> sum [style=dotted]; pse_w -> sum [style=dotted];
+  step [label="backward(); every 8 rows:\nset lr = base * warmup * cosine, clip grad norm 1.0,\nAdamW step, zero grads"];
+  sum -> step;
+}

@@ -1,0 +1,15 @@
+digraph deployed {
+  rankdir=LR; graph [fontname="Helvetica", fontsize=12, nodesep=0.28, ranksep=0.5, labelloc=t,
+    label="The deployed system in one line (public 0.71716): what runs on a test photo"];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+  photo [label="Student photo\n+ question, answer key,\ngrade, topic", fillcolor="#fdf1dc"];
+  tx [label="1. Transcriber\nQwen3-VL-8B + LoRA\nphoto -> 'L1 | ...' lines"];
+  t32 [label="2a. Text model, Qwen3-32B\nquestion + transcript\n-> 76 probabilities"];
+  t8 [label="2a. Text model, Qwen3-8B\nsame input\n-> 76 probabilities"];
+  vl [label="2b. Image model, Qwen3-VL-8B\nphoto + question\n-> 76 probabilities"];
+  blend [label="3. Geometric blend\nP32^.35 x P8^.30 x PVL^.35", fillcolor="#e8f5e9"];
+  sk [label="4. Label balancing\n(Sinkhorn, lambda 0.5)", fillcolor="#e8f5e9"];
+  out [shape=note, label="Top 3 codes\nfor the row"];
+  photo -> tx; tx -> t32 [label="transcript"]; tx -> t8; photo -> vl; t32 -> blend; t8 -> blend; vl -> blend; blend -> sk -> out;
+}

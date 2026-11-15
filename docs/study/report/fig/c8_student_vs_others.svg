@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" width="720" height="330">
+<rect width="720" height="330" fill="#ffffff"/>
+<text x="16.0" y="22.0" font-size="13" text-anchor="start" fill="#0b0b0b" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Reason-first student (Stage B) against earlier models, dev MAP@3</text>
+<text x="16.0" y="322.0" font-size="9.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">The student wrote well-formed diagnoses (99.7% parsed) but did not diagnose better than the classifier student.</text>
+<rect x="46" y="35" width="11" height="11" rx="2" fill="#2a78d6"/>
+<text x="62.0" y="44.0" font-size="10.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">New reason-first student</text>
+<rect x="220.8" y="35" width="11" height="11" rx="2" fill="#eb6834"/>
+<text x="236.8" y="44.0" font-size="10.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Old 8B student</text>
+<rect x="333.6" y="35" width="11" height="11" rx="2" fill="#1baf7a"/>
+<text x="349.6" y="44.0" font-size="10.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Blend + balancing</text>
+<rect x="465.0" y="35" width="11" height="11" rx="2" fill="#eda100"/>
+<text x="481.0" y="44.0" font-size="10.5" text-anchor="start" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Claude, photo</text>
+<line x1="46" y1="272.0" x2="706" y2="272.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="275.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.0</text>
+<line x1="46" y1="230.0" x2="706" y2="230.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="233.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.2</text>
+<line x1="46" y1="188.0" x2="706" y2="188.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="191.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.4</text>
+<line x1="46" y1="146.0" x2="706" y2="146.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="149.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.6</text>
+<line x1="46" y1="104.0" x2="706" y2="104.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="107.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.8</text>
+<line x1="46" y1="62.0" x2="706" y2="62.0" stroke="#e3e2dc" stroke-width="1"/>
+<text x="40.0" y="65.5" font-size="9.5" text-anchor="end" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1.0</text>
+<path d="M58.0,272.0 L58.0,143.8 Q58.0,140.8 61.0,140.8 L88.8,140.8 Q91.8,140.8 91.8,143.8 L91.8,272.0 Z" fill="#2a78d6"/>
+<text x="74.9" y="136.8" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.625</text>
+<path d="M93.8,272.0 L93.8,129.7 Q93.8,126.7 96.8,126.7 L124.5,126.7 Q127.5,126.7 127.5,129.7 L127.5,272.0 Z" fill="#eb6834"/>
+<text x="110.6" y="122.7" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.692</text>
+<path d="M129.5,272.0 L129.5,120.2 Q129.5,117.2 132.5,117.2 L160.2,117.2 Q163.2,117.2 163.2,120.2 L163.2,272.0 Z" fill="#1baf7a"/>
+<text x="146.4" y="113.2" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.737</text>
+<path d="M165.2,272.0 L165.2,103.0 Q165.2,100.0 168.2,100.0 L196.0,100.0 Q199.0,100.0 199.0,103.0 L199.0,272.0 Z" fill="#eda100"/>
+<text x="182.1" y="96.0" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.819</text>
+<text x="128.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">All rows</text>
+<path d="M223.0,272.0 L223.0,102.4 Q223.0,99.4 226.0,99.4 L253.8,99.4 Q256.8,99.4 256.8,102.4 L256.8,272.0 Z" fill="#2a78d6"/>
+<text x="239.9" y="95.4" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.822</text>
+<path d="M258.8,272.0 L258.8,84.7 Q258.8,81.7 261.8,81.7 L289.5,81.7 Q292.5,81.7 292.5,84.7 L292.5,272.0 Z" fill="#eb6834"/>
+<text x="275.6" y="77.7" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.906</text>
+<path d="M294.5,272.0 L294.5,80.5 Q294.5,77.5 297.5,77.5 L325.2,77.5 Q328.2,77.5 328.2,80.5 L328.2,272.0 Z" fill="#1baf7a"/>
+<text x="311.4" y="73.5" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.926</text>
+<path d="M330.2,272.0 L330.2,78.9 Q330.2,75.9 333.2,75.9 L361.0,75.9 Q364.0,75.9 364.0,78.9 L364.0,272.0 Z" fill="#eda100"/>
+<text x="347.1" y="71.9" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.934</text>
+<text x="293.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">No error</text>
+<path d="M388.0,272.0 L388.0,139.1 Q388.0,136.1 391.0,136.1 L418.8,136.1 Q421.8,136.1 421.8,139.1 L421.8,272.0 Z" fill="#2a78d6"/>
+<text x="404.9" y="132.1" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.647</text>
+<path d="M423.8,272.0 L423.8,118.3 Q423.8,115.3 426.8,115.3 L454.5,115.3 Q457.5,115.3 457.5,118.3 L457.5,272.0 Z" fill="#eb6834"/>
+<text x="440.6" y="111.3" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.746</text>
+<path d="M459.5,272.0 L459.5,95.2 Q459.5,92.2 462.5,92.2 L490.2,92.2 Q493.2,92.2 493.2,95.2 L493.2,272.0 Z" fill="#1baf7a"/>
+<text x="476.4" y="88.2" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.856</text>
+<path d="M495.2,272.0 L495.2,104.5 Q495.2,101.5 498.2,101.5 L526.0,101.5 Q529.0,101.5 529.0,104.5 L529.0,272.0 Z" fill="#eda100"/>
+<text x="512.1" y="97.5" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.812</text>
+<text x="458.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Seen pair</text>
+<path d="M553.0,272.0 L553.0,187.4 Q553.0,184.4 556.0,184.4 L583.8,184.4 Q586.8,184.4 586.8,187.4 L586.8,272.0 Z" fill="#2a78d6"/>
+<text x="569.9" y="180.4" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.417</text>
+<path d="M588.8,272.0 L588.8,182.6 Q588.8,179.6 591.8,179.6 L619.5,179.6 Q622.5,179.6 622.5,182.6 L622.5,272.0 Z" fill="#eb6834"/>
+<text x="605.6" y="175.6" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.440</text>
+<path d="M624.5,272.0 L624.5,180.3 Q624.5,177.3 627.5,177.3 L655.2,177.3 Q658.2,177.3 658.2,180.3 L658.2,272.0 Z" fill="#1baf7a"/>
+<text x="641.4" y="173.3" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.451</text>
+<path d="M660.2,272.0 L660.2,124.8 Q660.2,121.8 663.2,121.8 L691.0,121.8 Q694.0,121.8 694.0,124.8 L694.0,272.0 Z" fill="#eda100"/>
+<text x="677.1" y="117.8" font-size="9" text-anchor="middle" fill="#0b0b0b" font-weight="normal" font-family="Helvetica, Arial, sans-serif">0.715</text>
+<text x="623.5" y="287.0" font-size="10" text-anchor="middle" fill="#52514e" font-weight="normal" font-family="Helvetica, Arial, sans-serif">Hard rows</text>
+<line x1="46" y1="272" x2="706" y2="272" stroke="#52514e" stroke-width="1"/>
+</svg>

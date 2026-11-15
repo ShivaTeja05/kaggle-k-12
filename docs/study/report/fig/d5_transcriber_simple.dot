@@ -1,0 +1,7 @@
+digraph tx { rankdir=LR; graph [fontname="Helvetica", fontsize=12, nodesep=0.3, ranksep=0.45, labelloc=t, label="Transcriber, simple view: a vision-language model fine-tuned to copy the working as text"];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"]; edge [fontname="Helvetica", fontsize=9];
+  photo [label="Student photo\n(up to 1280 px)", fillcolor="#fdf1dc"]; q [label="Question, answer key,\ngrade, topic", fillcolor="#fdf1dc"];
+  vis [label="Vision tower\n(frozen)\nphoto -> image tokens"]; lm [label="Language model\n+ LoRA adapter (rank 32)\n(the only trained part)"];
+  out [shape=note, label="Machine transcript\nL1 | ...\nL2 | ...\n(one line per written line)"];
+  gold [label="Teacher transcript\n(1,199 fit rows)", fillcolor="#fde2e2"];
+  photo -> vis -> lm; q -> lm; lm -> out [label="writes token by token\n(greedy)"]; gold -> lm [style=dashed, label="training target:\nlearn to write this"]; }

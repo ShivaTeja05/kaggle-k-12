@@ -1,0 +1,6 @@
+digraph img { rankdir=LR; graph [fontname="Helvetica", fontsize=12, nodesep=0.3, ranksep=0.42, labelloc=t, label="Image model, simple view: the same last-token decision, but the model sees the photo"];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"]; edge [fontname="Helvetica", fontsize=9];
+  photo [label="Student photo\n(+ question diagram)", fillcolor="#fdf1dc"]; q [label="Grade, topic, question,\nanswer key, 'ROOT:'", fillcolor="#fdf1dc"];
+  vis [label="Vision tower\n(frozen)"]; lm [label="Language model\n+ LoRA adapter (rank 32)"]; h [label="Vector at the\nlast token", fillcolor="#fde2e2"]; head [label="Linear layer\n-> 76 scores"]; out [shape=note, label="Probability for\neach of 76 labels"];
+  l1 [label="Loss 1: cross-entropy\non the root code", fillcolor="#fde2e2"]; l2 [label="Loss 2 (x 0.15): also write the\nteacher's reading of the working", fillcolor="#fde2e2"];
+  photo -> vis -> lm; q -> lm; lm -> h -> head -> out; l1 -> head [style=dashed]; l2 -> lm [style=dashed]; }

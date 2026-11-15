@@ -1,0 +1,32 @@
+digraph prompt_layout {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, labelloc=t, label="Zoom-in: one training sequence (prompt + teacher text) and which positions feed which loss", nodesep=0.3];
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_prompt {
+    label="PROMPT = the only input at inference (length L tokens)"; style="rounded"; color="#4a6fa5"; fontname="Helvetica";
+    t0 [label="<|im_start|>user"];
+    t1 [label="'Question diagram:'\n+ <|vision_start|> image pads <|vision_end|>\n(only if question_image_file;\n18% of train rows)"];
+    t2 [label="'Student's handwritten working:'\n+ <|vision_start|> image pads <|vision_end|>\n(photo <= 1280 px side,\n<= 1,600 visual tokens)"];
+    t3 [label="'Grade: ..  Topic: ..\nQuestion: ..  Answer key: ..'\n+ instruction ending 'ROOT:'"];
+    t4 [label="<|im_end|>\n<|im_start|>assistant + newline\n(last token = position L-1)"];
+    t0 -> t1 -> t2 -> t3 -> t4;
+  }
+  subgraph cluster_teacher {
+    label="TEACHER TEXT = training target only (T <= 384 tokens)"; style="rounded"; color="#b5651d"; fontname="Helvetica";
+    r0 [label="'ROOT: EXP-01 (name)'", fillcolor="#fdf0e6"];
+    r1 [label="'WHERE: L3 | ...'\n'WHY: ...'\n(NONE rows: FINAL ANSWER line\nfor v3, nothing for Claude)", fillcolor="#fdf0e6"];
+    r2 [label="'READING:'\nL1 | ...\nL2 | ...\n(cut first if too long)", fillcolor="#fdf0e6"];
+    r0 -> r1 -> r2;
+  }
+  t4 -> r0 [label="append_teacher()"];
+
+  cls [label="hidden state at position L-1\n(last prompt token)\n-> root head -> 76 scores", fillcolor="#fff4cc"];
+  lm [label="hidden states at L-1 .. L+T-2\n-> frozen lm_head\n-> predict teacher tokens L .. L+T-1", fillcolor="#fff4cc"];
+  t4 -> cls [style=bold, color="#4a6fa5"];
+  t4 -> lm [style=dashed];
+  r0 -> lm [style=dashed]; r1 -> lm [style=dashed]; r2 -> lm [style=dashed];
+  note [label="Causal attention: position L-1 cannot see any teacher token,\nso the classifier feature is identical at train and test time.\nThe teacher text shapes the shared LoRA weights only.", shape=note, fillcolor="#ffffff"];
+  cls -> note [style=dotted, arrowhead=none];
+}

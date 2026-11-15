@@ -1,0 +1,15 @@
+digraph gap_anatomy {
+  rankdir=TB; fontname="Helvetica"; labelloc=t; label="Where the 0.10 dev gap between our blend (0.718) and Claude Opus (0.819) lives";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  dev [label="301 dev rows (fold 0)\nblend 0.718 | Claude 0.819\ngap 0.1008 CI [0.063, 0.138]"];
+  none [label="NONE rows: 101\nblend 0.916 | Claude 0.934\n~6% of gap"];
+  err [label="error rows: 200"];
+  seen [fillcolor="#dff3e3", label="code already seen for this question: 94\nblend 0.830 | Claude 0.812\n-5.5% of gap (we WIN)"];
+  newpair [fillcolor="#fbe3e3", label="seen question, NEW code: 84\nblend 0.431 | Claude 0.712\n~78% of gap"];
+  unseen [fillcolor="#fbe3e3", label="unseen question: 22\nblend 0.432 | Claude 0.727\n~21% of gap"];
+  cause [shape=note, fillcolor="#fff6d6", label="Cause: models memorise question -> usual codes\nblend top-1 is one of the question's training codes\n36% of the time on new-code rows (Claude 11%)\ncode picked from LAST PROMPT TOKEN, before any reasoning"];
+  notit [shape=note, fillcolor="#f2f2f2", label="NOT the lever (measured):\nreading <= +0.0155 | NONE oracle +0.041\nbigger model: 235B few-shot 0.650\ncombiners -0.031..+0.006"];
+  dev -> none; dev -> err; err -> seen; err -> newpair; err -> unseen;
+  newpair -> cause; unseen -> cause; dev -> notit [style=dashed];
+}

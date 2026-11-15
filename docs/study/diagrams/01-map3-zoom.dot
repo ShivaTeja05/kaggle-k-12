@@ -1,0 +1,15 @@
+digraph map3 {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+  P [label="P row (76 probs)\nNONE .60  CAL-01 .20\nANS-01 .10  WOP-01 .10\nall others 0"];
+  norm [label="normalize()\nfinite, >= 0, rows sum to 1"];
+  sort [label="argsort(-P, kind='stable')\nties keep column order\n(alphabetical class ids:\nANS-01 beats WOP-01 at .10)"];
+  top [label="top-3 = [NONE, CAL-01, ANS-01]"];
+  y [label="gold y = 'CAL-01'", fillcolor="#fff4e0"];
+  hit [label="first position i (0-based) where code == y\nscore = 1/(i+1)\n-> i=1 -> 0.5"];
+  miss [label="if y not in top-3 -> 0"];
+  mean [label="map3 = mean over rows", fillcolor="#e6f4ea"];
+  P -> norm -> sort -> top -> hit; y -> hit; hit -> mean;
+  top -> miss [style=dashed, label="otherwise"]; miss -> mean;
+}

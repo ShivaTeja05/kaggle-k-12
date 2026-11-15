@@ -1,0 +1,19 @@
+digraph crossfit_bootstrap {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+  dev   [label="dev fold: 301 rows, 218 question_ids\n(fit fold: 1,199 rows trains the members)"];
+  cache [label="precompute the balanced scores for every setting\nlambda grid {0, .1, .25, .5, .75, 1}\n-> 6 score matrices (301 x 76)"];
+  split [label="shuffle questions (seed 7), assign q -> i mod 5\nmf = question fold per row"];
+  subgraph cluster_cf { label="for f in 0..4  (cross-fitting)"; style="rounded"; color="#8899bb";
+    choose [label="on rows with mf != f (about 4/5):\nMAP@3 per lambda -> pick best"];
+    apply  [label="on rows with mf == f (held-out 1/5):\ncopy that lambda's scores into R"];
+  }
+  pts  [label="pts = row_scores(y, topk(R))\nhonest per-row points (301,)\ncross-fit MAP@3 = 0.7337\n(folds chose 0.5, 0.75, 0.5, 0.5, 0.5)"];
+  ref  [label="ref = row_scores of plain blend\n(MAP@3 0.7182)"];
+  d    [label="d = pts - ref  per row"];
+  grp  [label="group by question_id:\nsum(d), size  -> 218 groups"];
+  bs   [label="4,000 times: draw 218 questions\nwith replacement; delta* = sum d / sum size"];
+  ci   [label="mean delta +0.0155\n95% CI = 2.5% / 97.5% quantiles\n[+0.001, +0.031]"];
+  dev -> cache; dev -> split; cache -> choose; split -> choose -> apply -> pts; pts -> d; ref -> d; d -> grp -> bs -> ci;
+}

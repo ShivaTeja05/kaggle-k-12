@@ -1,0 +1,67 @@
+digraph infra_overview {
+  rankdir=TB; fontname="Helvetica"; compound=true; newrank=true;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_kaggle_in {
+    label="Kaggle (CPU only, private, internet off)"; style="rounded,dashed"; fontname="Helvetica";
+    compdata [label="competition input under /kaggle/input\ntrain.csv test.csv taxonomy_v1.csv unlabelled.csv\nimages/{train,test,questions,unlabelled}"];
+    nb_img [label="kaggle/image-bundle/bundle.py\nCPU notebook\n-> k12_images.tar (477,399,040 bytes)\n1,500 train + 3,498 test + 119 question photos + 3 CSVs"];
+    nb_unl [label="kaggle/unlabelled-bundle/bundle.py\nCPU notebook\n-> k12_unlabelled.tar (4,770,805,760 bytes)\n50,000 unlabelled photos + unlabelled.csv"];
+    compdata -> nb_img; compdata -> nb_unl;
+  }
+
+  subgraph cluster_mac {
+    label="This Mac (control plane; holds all secrets)"; style="rounded"; fontname="Helvetica";
+    rawdata [label="data/raw/*.csv + data/bundle/*.tar\n(gitignored, private)"];
+    agents [label="AGENTS.md\nuser rules: caps, no test photos to Claude,\noffline inference, ask before submit", fillcolor="#fff4d6"];
+    rp_budget [label="reports/runpod_budget.json\ncap_usd 80, max_cost_per_hr 1.79,\nmax_active_pods 3, pods[] with timestamps", fillcolor="#fff4d6"];
+    runpod_py [label="scripts/runpod_pod.py\ncreate | status | terminate | watchdog\n(GraphQL, key read from ~/.runpod/config.toml)"];
+    launch_sh [label="Mac-side launcher\n(runs/pod/text32-explain/pod-setup/v4/launch.sh,\nscripts/run_test235.sh, scripts/run_probe_h200.sh)\nstage -> create -> wait for SSH -> upload -> start"];
+    watchdog [label="watchdog loop (every 60 s)\nspent() >= cap - 1 USD -> terminate all", fillcolor="#fde2e2"];
+    deadman [label="dead-man shell loop (every 300 s)\nruns/heartbeat older than 10,800 s\n-> terminate all", fillcolor="#fde2e2"];
+    captimer [label="per-pod cap timer (H200 scripts)\nsleep int(CAP/RATE*3600) - 300 s\n-> terminate --pod ID", fillcolor="#fde2e2"];
+    heartbeat [label="runs/heartbeat\n(empty file; mtime = 'I am alive')"];
+    pollers [label="poll loops (watch.sh, launcher loops):\ntouch heartbeat, ssh 'test -f *.status'\nor 'cat *.status', scp results"];
+    pulled [label="runs/pod/<run>/*.npz\nbundle: ids (N,), classes (76,),\np (N,76) float32, meta (JSON string)"];
+    blend [label="CPU: blend / calibrate\n(e.g. scripts/blend_geometric.py)\n-> staged submission.csv"];
+    validate [label="scripts/validate_submission.py\nheader, exactly the 3,498 test IDs,\n1-3 distinct codes from 76 labels"];
+    ask [label="ASK THE USER\n(explicit OK for this file)", shape=octagon, fillcolor="#ffd6d6"];
+    status [label="reports/status.json\nsubmissions[]: ref, time, model,\npublic_map3, source, sha256", fillcolor="#fff4d6"];
+    gpu_budget [label="reports/gpu_budget.json\ngpu_launches_allowed: false\n-> scripts/launch_kaggle.py refuses", fillcolor="#eeeeee"];
+  }
+
+  api [label="RunPod GraphQL API\napi.runpod.io/graphql\npodFindAndDeployOnDemand, pod, podTerminate", fillcolor="#e8f6ea"];
+
+  subgraph cluster_pod {
+    label="RunPod Secure Cloud pod (no Kaggle / Claude / RunPod keys)"; style="rounded"; fontname="Helvetica";
+    podfs [label="/workspace\nk12/src, data/, models/, venv/"];
+    runsh [label="run.sh / pod_run.sh / setup.sh\n(setsid nohup, detached)\ne.g. pinned pip -> HF model -> smoke -> gate -> full"];
+    statusf [label="/workspace/runs/*.status\ne.g. PIP_DONE, MODEL_DONE, SMOKE_START,\nFULL_START, 'exit N'"];
+    outputs [label="/workspace/runs/<run>/\nvalidation*.npz / test.npz,\nmetrics json, logs"];
+    podfs -> runsh -> statusf; runsh -> outputs;
+  }
+
+  kaggle_lb [label="Kaggle competition\nsubmission.csv (trace_id,root_code)", fillcolor="#e8f6ea"];
+
+  nb_img -> rawdata [label="notebook output\ndownloaded once"];
+  nb_unl -> rawdata;
+  agents -> rp_budget [style=dotted, label="limits copied in"];
+  agents -> gpu_budget [style=dotted];
+  launch_sh -> runpod_py [label="create --gpu-types ..."];
+  runpod_py -> api [label="deploy / status / terminate"];
+  runpod_py -> rp_budget [label="append pod,\nset terminated_at"];
+  api -> podfs [label="pod boots,\nSSH on public port"];
+  rawdata -> launch_sh;
+  launch_sh -> podfs [label="tar czf - | ssh 'tar xzf -', scp\n(code + data, never credentials)"];
+  watchdog -> rp_budget [label="reads"]; watchdog -> runpod_py [label="terminate"];
+  deadman -> heartbeat [label="checks mtime"]; deadman -> runpod_py [label="terminate"];
+  captimer -> runpod_py [label="terminate --pod"];
+  pollers -> heartbeat [label="touch"];
+  launch_sh -> heartbeat [label="touch"];
+  pollers -> statusf [label="ssh"];
+  outputs -> pulled [label="scp"];
+  pulled -> blend -> validate -> ask;
+  ask -> kaggle_lb [label="only after 'yes'\n(manual)"];
+  kaggle_lb -> status [label="record score\n+ sha256"];
+}

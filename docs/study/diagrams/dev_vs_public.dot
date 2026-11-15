@@ -1,0 +1,14 @@
+digraph dev_vs_public {
+  rankdir=TB; fontname="Helvetica"; labelloc=t; label="Dev score vs public score per submission (in-sample dev was always optimistic)";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  a [label="4B LoRA\ndev 0.5952\npublic 0.58216\ndiff -0.013"];
+  b [label="4B + prior\ndev 0.6074 (cross-fit 0.5980)\npublic 0.59800\ndiff -0.009 (cross-fit: 0.000)"];
+  c [label="8B read + 4B\ndev 0.6467\npublic 0.62383\ndiff -0.023"];
+  d [label="reasoner + 8B\ndev 0.6838\npublic 0.66183\ndiff -0.022"];
+  e [label="reasoner x distill\ndev 0.6932\npublic 0.68283\ndiff -0.010"];
+  f [label="3-way\ndev 0.7182 (cross-fit 0.706)\npublic 0.70850\ndiff -0.010 (cross-fit: +0.0025)"];
+  a -> b -> c -> d -> e -> f;
+  lesson [shape=note, fillcolor="#fff6d6", label="Lesson: choosing weights on the same 301 rows\nyou report on adds ~0.01 of optimism.\nThe two cross-fitted numbers matched public\nwithin 0.003."];
+  f -> lesson [style=dashed];
+}

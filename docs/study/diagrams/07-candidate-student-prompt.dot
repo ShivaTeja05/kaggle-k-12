@@ -1,0 +1,16 @@
+digraph prompt_layout {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  head [label="HEADER (never truncated)\nGrade: ... / Topic: ... / Question: ... / Answer key: ...\n'Student working (line by line):'"];
+  work [fillcolor="#fff6e0", label="WORKING (only part that may be cut, from the left)\nL1 | ...\nL2 | ...\n(tail 1,500 chars at build time; tail of token budget at train/predict time)"];
+  cands [label="CANDIDATE BLOCK (never truncated)\nA. CODE: name - description (<=140 chars) On this question, e.g. \"span (<=60)\"\nB. NONE: No major error - the working is correct or has only minor slips.\n... 10 lines, A..J"];
+  instr [label="Instruction (never truncated)\n'Find the root major error ... choose the matching candidate.'"];
+  tgt [fillcolor="#e8f6ea", label="TARGET (train) / GENERATED after seed '\\nROOT_LINE:' (predict)\nROOT_LINE: L3\nWHY: <= 60 words\nANSWER:"];
+  letter [shape=ellipse, fillcolor="#fde8e8", label="next token = ' A' .. ' J'\n(one token each; read from the logits\nat the last token of 'ANSWER:')"];
+  eos [shape=ellipse, label="eos (train only)"];
+  lm [label="LM loss on target tokens + eos\n(train only; letter excluded)"];
+  sl [label="soft letter CE (train)\nletter softmax -> P_B (predict)"];
+  head -> work -> cands -> instr -> tgt -> letter -> eos;
+  tgt -> lm [style=dashed]; eos -> lm [style=dashed]; letter -> sl [style=dashed];
+}

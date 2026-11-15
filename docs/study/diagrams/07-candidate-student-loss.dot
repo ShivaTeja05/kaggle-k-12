@@ -1,0 +1,17 @@
+digraph letter_loss {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  ids [label="ids (B x T)\nright-padded, mask (B x T)"];
+  dec [label="decoder (Qwen3-8B + LoRA)\nautocast bf16"];
+  h [label="hidden (B x T x d)"];
+  sel1 [label="pick (row, col) pairs\ncol in [start-1, len_row-2], col != answer"];
+  head1 [label="lm_head on picked\nhidden (N x d) -> (N x V)\nin chunks of 1,024 pairs"];
+  ce [label="CE vs ids[col+1]\nindex_add per row / count\n-> lm (B)"];
+  sel2 [label="hidden[row, answer_pos]\n(B x d)"];
+  head2 [label="lm_head -> (B x V)"];
+  g [label="gather 10 letter ids\n(B x 10) -> log_softmax"];
+  dot [label="letter = -sum(soft * logp)\n(B)"];
+  tot [label="mean( weight x (lm_w x lm + let_w x letter) )"];
+  ids -> dec -> h; h -> sel1 -> head1 -> ce -> tot; h -> sel2 -> head2 -> g -> dot -> tot;
+}

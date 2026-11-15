@@ -1,0 +1,26 @@
+digraph pod_create_flow {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  start [label="python -I scripts/runpod_pod.py create\n[--gpu-types ...] [--max-rate R] [--gpu-count N]\n[--disk GB (default 120)] [--attempts K (default 10)]"];
+  load [label="load reports/runpod_budget.json"];
+  c1 [label="active pods >= max_active_pods (3)?", shape=diamond, fillcolor="#fff4d6"];
+  c2 [label="spent() + minimum_session_usd (2)\n> cap_usd (80)?", shape=diamond, fillcolor="#fff4d6"];
+  stop1 [label="SystemExit: terminate one first", fillcolor="#fde2e2"];
+  stop2 [label="SystemExit: no room under cap", fillcolor="#fde2e2"];
+  loop [label="for attempt in 1..K:\n  for gpu in gpu_types (in order):\n    podFindAndDeployOnDemand(cloudType SECURE, gpu,\n    volumeInGb 0, ports 22/tcp, env PUBLIC_KEY)"];
+  sc [label="error contains\nSUPPLY_CONSTRAINT?", shape=diamond, fillcolor="#fff4d6"];
+  raise [label="re-raise (real error)", fillcolor="#fde2e2"];
+  nextgpu [label="print 'attempt N: gpu unavailable'\ntry next GPU type;\nafter a full pass with no pod: sleep 30 s"];
+  none [label="SystemExit: No approved GPU available", fillcolor="#fde2e2"];
+  got [label="pod = {id, costPerHr, machine.gpuDisplayName}"];
+  c3 [label="costPerHr > max_rate?\n(--max-rate, else budget 1.79)", shape=diamond, fillcolor="#fff4d6"];
+  kill [label="podTerminate immediately\nSystemExit (pod NOT in ledger)", fillcolor="#fde2e2"];
+  rec [label="append {id, gpu, cost_per_hr,\ncreated_at, terminated_at: null}\nsave budget; print pod JSON (last line)", fillcolor="#e8f6ea"];
+  start -> load -> c1;
+  c1 -> stop1 [label="yes"]; c1 -> c2 [label="no"];
+  c2 -> stop2 [label="yes"]; c2 -> loop [label="no"];
+  loop -> sc [label="API error"]; sc -> raise [label="no"]; sc -> nextgpu [label="yes"]; nextgpu -> loop;
+  loop -> got [label="success"]; loop -> none [label="K passes exhausted"];
+  got -> c3; c3 -> kill [label="yes"]; c3 -> rec [label="no"];
+}

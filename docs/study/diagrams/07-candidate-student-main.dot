@@ -1,0 +1,88 @@
+digraph cand_student {
+  rankdir=TB; fontname="Helvetica"; compound=true; newrank=true;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_in {
+    label="Inputs (already on disk)"; style="rounded,dashed"; fontname="Helvetica";
+    claude [label="runs/claude/unl_all_v4.jsonl\nClaude Opus labels on unlabelled photos\n26,202 rows: transcription, root_line,\nreasoning, first/second/third_code"];
+    unl [label="unlabelled.csv\nquestion_id, grade, topic,\nquestion_text, correct_answer"];
+    gold [label="data/raw/train.csv (1,500 gold rows)\nmake_folds -> fold 0 = dev (301)\nfolds 1-4 = fit (1,199)"];
+    explain [label="train_explain_opus.jsonl\nreasoning for gold rows (WHY)"];
+    tax [label="taxonomy_v1.csv\n75 codes + NONE = 76 classes\nname, description, section"];
+    tx [label="runs/pod/tx/tx_dev.json, tx_test.json\nmachine transcripts (photo -> text lines)"];
+    bdev [label="3 dev bundles (301 x 76)\n32B tx .35 / 8B tx e3 .30 / VL-8B distill .35"];
+    btest [label="3 full-train test bundles (3,498 x 76)"];
+    copus [label="runs/claude/dev_opus.jsonl\nClaude zero-shot on dev (gates c, d only)"];
+  }
+
+  subgraph cluster_build {
+    label="scripts/build_candidate_dataset.py (CPU)"; style="rounded"; fontname="Helvetica";
+    filt [label="Filter Claude rows\nfirst_code in label space, non-empty transcript,\ndrop 26 copies of dev/test transcripts\n-> 26,176 valid"];
+    cap [label="Cap per first_code\n200 per code, 2,000 NONE (seeded)\n-> 6,107 rows, phase a, weight 0.8\n(OTH-00: 0.8 x 0.3 = 0.24)"];
+    goldrows [label="Gold fit rows x 2 repeats\n(new candidate shuffle each copy;\ngold transcription_steps as transcript)\n-> 2,398 rows, phase b, weight 1.0"];
+    blendT [label="Test blend: geometric .35/.30/.35\n-> Sinkhorn lam=.5 toward 1,500-row marginals (50 it.)\n-> top-10 (+NONE swap on 797 rows)"];
+    cooc [label="Co-occurrence table\ncodes listed together in test top-10s\n(label-free distractor source)"];
+    tcand [label="train_candidates(): k=10\ntruth, NONE, Claude 2nd/3rd,\n<=4 same-question codes, <=1 section sibling,\nco-occurring codes, random fill\n-> shuffle, letters A-J"];
+    ex [label="Exemplars: same-question example span per code\ngold root span first, else Claude root line;\nnever the row itself; spans >= 6 chars"];
+    bal [label="Example-presence balancing (train only)\ndrop truth's example with prob 1 - keep\nkeep = .680 (claude) / .565 (gold)"];
+    tgt [label="Target text\nROOT_LINE: Ln or -\nWHY: <= 60 words\nANSWER: <letter>"];
+    soft [label="soft label over letters\nClaude: .7/.2/.1 on 1st/2nd/3rd\nGold: {letter: 1.0}"];
+    render [label="render(): Grade / Topic / Question / Answer key /\nStudent working (tail 1,500 chars) /\nCandidate error codes A..J / instruction"];
+    blendD [label="Dev blend -> Sinkhorn lam=.5 toward fit marginals (30 it.)\n-> top-10 (+NONE swap on 46 rows)\nrecall@10 = 0.950"];
+    orders [label="Two orders per dev/test row\norder 1 = by balanced blend score,\norder 2 = reversed (letters reassigned A..J)"];
+  }
+
+  files [shape=folder, fillcolor="#fff6e0", label="data/v5/cand_train.jsonl (8,505)\ndata/v5/cand_dev.jsonl (301)\ndata/v5/cand_test.jsonl (3,498)\nreports/cand_dataset.json"];
+
+  subgraph cluster_train {
+    label="src/k12/candidate_student.py train (GPU pod, runs/arch/student/pod_run.sh)"; style="rounded"; fontname="Helvetica";
+    smoke [label="pod_run.sh smoke: 800 rows = 200 steps,\npredict 20 dev rows\ngo only if parse_rate >= .95 and epoch cost < $4"];
+    model [label="Qwen3-8B (bf16, frozen)\n+ LoRA r=32, alpha=64, dropout .05\non q,k,v,o,gate,up,down"];
+    item [label="train_item(): ids = prompt + '\\n' + target up to 'ANSWER:' + ' X' + eos\nleft-truncate only the working if > 2048 tokens"];
+    fwd [label="decoder -> hidden states (B x T x 4096)\nlm_head only on target positions"];
+    lml [label="LM loss: token CE on target tokens\n(excluding the letter token)"];
+    letl [label="Letter loss: logits at last token of 'ANSWER:',\ngather 10 letter-token ids, log_softmax,\n-sum(soft * logp)"];
+    tot [label="loss = mean_rows weight x (1.0 x LM + 1.0 x letter)"];
+    sched [label="Schedule (1 epoch, batch 4)\nphase a (Claude, ~1,527 updates): 5% warmup + cosine, peak 1e-4\nthen phase b (gold, ~600 updates): own warmup + cosine, peak 3e-5\nAdamW wd .01, grad clip 1.0"];
+    interimp [label="interim predict at step ~1,063 (50%)\n100 dev rows -> fuse_candidate.py --subset\n(still inside phase a)"];
+    adapter [shape=folder, fillcolor="#fff6e0", label="cand_full/adapter (LoRA weights)\ntrain_metrics.json, checkpoint/ (every 500 steps)"];
+  }
+
+  subgraph cluster_pred {
+    label="predict_rows() (GPU)"; style="rounded"; fontname="Helvetica";
+    gen [label="For each order: prompt ids + '\\nROOT_LINE:'\ngreedy generate <= 224 new tokens,\nstop at 'ANSWER:' (or EOS)"];
+    read [label="Forward on prompt + text up to 'ANSWER:'\n(append '\\nANSWER:' if missing -> parsed=false)\nsoftmax over 10 letter logits"];
+    avg [label="Map letters -> codes, average 2 orders\nnon-candidates = 1e-4, renormalise\n-> P_B (rows x 76)"];
+    pout [shape=folder, fillcolor="#fff6e0", label="predictions.npz (ids, classes, p)\ngenerations.jsonl, predict_metrics.json"];
+  }
+
+  subgraph cluster_fuse {
+    label="scripts/fuse_candidate.py (CPU)"; style="rounded"; fontname="Helvetica";
+    fuse [label="Fused = normalize(P0 * P_B^w)\nthen Sinkhorn(lam) toward fit marginals (30 it.)\nw in {0,.25,.5,.75,1,1.5}, lam in {0,.25,.5,.75}"];
+    cf [label="5-fold question-grouped cross-fitting\npick (w, lam) on 4 folds, score 5th"];
+    ci [label="Paired question-grouped bootstrap (B=4000)\ndelta vs blend+Sinkhorn 0.737, 95% CI"];
+    gates [shape=diamond, fillcolor="#fde8e8", label="4 gates\n(a) delta>=.015, CI lo>0\n(b) unseen-pair MAP@3>=.50\n(c) Claude agree>=.65\n(d) agree on disagree rows>=.45"];
+    stage [shape=folder, fillcolor="#fff6e0", label="--stage-test (full-dev best w, lam;\nSinkhorn to 1,500-row marginals, 50 it.):\nartifacts/submission-3way-student/\nsubmission.csv, test.npz, metrics.json\n\"submitted\": false -> ask user"];
+    fallback [label="Any gate fails:\nship blend + Sinkhorn (Stage A)"];
+  }
+
+  claude -> filt; unl -> filt; tx -> filt [label="dup check"]; gold -> filt [label="dup check"];
+  filt -> cap -> tcand; gold -> goldrows -> tcand;
+  btest -> blendT -> cooc -> tcand;
+  tax -> tcand [label="sections"]; tax -> render [label="name + description"];
+  filt -> ex [label="Claude root lines"]; gold -> ex [label="gold spans: fit (train/dev),\nall 1,500 (test)"];
+  tcand -> ex; ex -> bal [label="train"]; bal -> render;
+  ex -> render [label="dev/test\n(no balancing)"];
+  cap -> tgt; goldrows -> tgt; explain -> tgt; cap -> soft; goldrows -> soft;
+  bdev -> blendD -> orders; blendT -> orders; tx -> orders [label="transcripts"];
+  orders -> ex;
+  render -> files; tgt -> files; soft -> files;
+  files -> smoke -> item; files -> item; model -> fwd; item -> fwd -> lml -> tot; fwd -> letl -> tot; tot -> sched -> adapter;
+  sched -> interimp [style=dashed];
+  adapter -> gen; files -> gen [label="cand_dev / cand_test"]; gen -> read -> avg -> pout;
+  pout -> fuse [label="P_B"]; bdev -> fuse [label="P0 (raw blend)"];
+  fuse -> cf -> ci -> gates; copus -> gates [label="Claude top-1"];
+  gates -> stage [label="all pass"]; gates -> fallback [label="any fails"];
+  btest -> stage [style=dashed, label="test P0"];
+}

@@ -1,0 +1,44 @@
+digraph train_vs_test {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=12, newrank=true, nodesep=0.4, ranksep=0.5,
+         label="Training time (may use the Claude API on train/unlabelled photos) vs test time (fully offline)", labelloc=t];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef3fb"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_train {
+    label="TRAINING TIME (Mac + RunPod pods)"; style="rounded"; color="#c0392b";
+    tr_photos [label="Train photos (1,500)\n+ unlabelled photos (50,000)"];
+    tr_gold [label="Human annotations\ntranscription_steps, root_code, misconceptions"];
+    api [label="Claude Opus API (paid, $200 cap)\nscripts/claude_label.py\nframe() refuses split=test", fillcolor="#fde2e2", style="rounded,filled,dashed"];
+    tr_data [label="Training files\ndata/v3/train_v3.jsonl, claude_unl_v4*.jsonl\ndata/v5/cand_train.jsonl"];
+    pods [label="RunPod GPU pods (no credentials on pod)\nLoRA / QLoRA fine-tuning\ntranscriber, text reasoners, VL classifier, student"];
+    weights [label="Trained models (kept local)\nLoRA adapters + heads; dev + test .npz bundles\n(text reasoners score test inside the training run)", shape=folder];
+    tr_photos -> api [style=dashed, label="train/unl only"];
+    api -> tr_data [style=dashed, label="soft labels, explanations"];
+    tr_gold -> tr_data;
+    tr_photos -> pods [label="via SSH from Mac"];
+    tr_data -> pods;
+    pods -> weights;
+  }
+
+  subgraph cluster_test {
+    label="TEST TIME (offline: no API, no internet, no hand-labelling)"; style="rounded"; color="#2e7d32";
+    te_in [label="Test row (3,498)\nphoto + question fields only\n(no transcription, no labels)"];
+    te_tx [label="Transcriber -> tx_test.json"];
+    te_models [label="Text reasoners (32B, 8B) + VL classifier\n-> test.npz bundles (3,498 x 76)"];
+    te_comb [label="Geometric blend -> Sinkhorn\n(-> candidate student -> fusion, if gates pass)"];
+    te_csv [label="submission.csv (top-3 codes)\nvalidate_submission.py"];
+    te_in -> te_tx -> te_models;
+    te_in -> te_models [label="photo + question"];
+    te_models -> te_comb -> te_csv;
+  }
+
+  forbidden [label="FORBIDDEN\nsending test photos to any API\nhand-labelling test rows\nsubmitting without the user's OK", shape=octagon, fillcolor="#ffd6d6"];
+  user [label="User approves each CSV\nbefore a Kaggle submission", fillcolor="#fff7d6"];
+
+  weights -> te_tx [label="same weights, loaded offline"];
+  weights -> te_models;
+  te_csv -> user;
+  te_in -> forbidden [style=dotted, color="#c0392b", arrowhead=tee, label="never"];
+  {rank=same; api; forbidden;}
+}

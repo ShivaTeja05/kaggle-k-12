@@ -1,0 +1,48 @@
+digraph data_pipeline {
+  rankdir=TB; fontname="Helvetica"; compound=true; newrank=true;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_raw {
+    label="Raw competition files (data/raw, data/semisupervised, data/bundle)"; style="rounded,dashed"; fontname="Helvetica";
+    train [label="train.csv\n1,500 rows x 13 cols\ninputs + transcription_steps,\nfinal_answer_correct, clean,\nroot_code, misconceptions (JSON)"];
+    test  [label="test.csv\n3,498 rows x 8 cols\ninputs only\n(public 1,000 / private 2,498\nper official data page)"];
+    unl   [label="unlabelled.csv\n50,000 rows x 8 cols\ninputs only, 284 questions"];
+    tax   [label="taxonomy_v1.csv\n75 codes x 8 cols\nid, name, description, nature,\ndefault_severity, severity_note,\ngrade_band, section"];
+    imgs  [label="Photos (data/bundle/k12_images.tar,\ndata/bundle/unl/k12_unlabelled.tar)\nimage_file = student working\nquestion_image_file = diagram\n(17.3% of test rows)", fillcolor="#fff4e0"];
+  }
+
+  readcsv [label="core.read_csv()\nkeep_default_na=False\n(literal 'NONE' stays a string;\ntrace_id/question_id as str)"];
+  labels  [label="core.label_space(tax)\nsorted(75 ids + 'NONE')\n-> 76 classes (fixed column order)"];
+  folds   [label="core.make_folds(train, 5, seed=2026)\ngroup = question_id | normalised transcript\ngreedy label-balanced assignment\n-> fold id per row\n(sizes 301/300/299/300/300 for folds 0-4)"];
+  fit     [label="Fit set: folds 1-4\n1,199 rows", fillcolor="#e6f4ea"];
+  dev     [label="Dev set: fold 0\n301 rows (101 NONE)\ndata/v3/dev_ids.json", fillcolor="#fde8e8"];
+
+  models  [label="Any model (prior, VLM classifier,\ntext reasoner, blend ...)\ninputs: photo + question fields\noutput: probability matrix P\nshape (N rows x 76 classes)", fillcolor="#f3e8fd"];
+
+  savebundle [label="core.save_bundle(path, ids, classes, P)\n.npz: ids, classes, p(float32), meta(JSON)\nrows normalised to sum 1"];
+  aligned [label="core.aligned_bundle(path, ids, classes)\nreorders rows/columns to a\ncommon id + class order;\nrefuses mismatched sets"];
+  topk    [label="core.topk(P, classes, k=3)\nstable argsort of -P\n-> 3 codes per row"];
+  rows    [label="core.row_scores(y, top3)\n1 / 1/2 / 1/3 / 0 per row"];
+  map3    [label="core.map3 = mean(row_scores)\ne.g. dev blend 0.7182", fillcolor="#e6f4ea"];
+  boot    [label="analyze.py / evaluate_holdout.py\nquestion-grouped bootstrap\n2,000 resamples -> 95% CI"];
+
+  writesub [label="core.write_submission(test, P, classes, path)\n'trace_id,root_code'\nroot_code = 'C1 C2 C3'"];
+  validate [label="scripts/validate_submission.py\nheader, exact ID set,\n1-3 distinct valid codes"];
+  csv      [label="submission.csv (3,498 rows)\nstaged; uploaded ONLY with\nthe user's explicit OK", fillcolor="#fff4e0"];
+
+  train -> readcsv; test -> readcsv; unl -> readcsv; tax -> readcsv;
+  readcsv -> labels [label="taxonomy"];
+  readcsv -> folds [label="train"];
+  folds -> fit; folds -> dev;
+  labels -> models [label="76 class ids"];
+  fit -> models [label="training rows\n(+ labels)"];
+  imgs -> models [label="pixels"];
+  dev -> models [label="score dev rows"];
+  readcsv -> models [label="test / unlabelled rows"];
+  models -> savebundle -> aligned -> topk -> rows -> map3;
+  dev -> rows [label="gold root_code y", style=dashed];
+  rows -> boot [label="per-row scores\n+ question_id"];
+  aligned -> writesub [label="test P"];
+  writesub -> validate -> csv;
+}

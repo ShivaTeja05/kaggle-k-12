@@ -1,0 +1,1509 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>K-12 Misconception Detection: research report</title><style>
+@page { size: A4; margin: 17mm 16mm 18mm 16mm; @bottom-center { content: counter(page); font: 9pt Helvetica, Arial, sans-serif; color: #52514e; } }
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 10.2pt; line-height: 1.5; color: #14171f; margin: 0; }
+h1, h2, h3 { color: #12305f; break-after: avoid; }
+h2 { font-size: 15pt; border-bottom: 1.5px solid #2a78d6; padding-bottom: 3px; margin-top: 26px; break-before: page; }
+h2:first-of-type { break-before: avoid; }
+h2[id^="appendix-b"], h2[id^="appendix-d"] { break-before: auto; }
+h3 { font-size: 11.8pt; margin-top: 18px; }
+p, li { orphans: 3; widows: 3; }
+.titlepage { text-align: center; padding-top: 70mm; break-after: page; }
+.titlepage .title { font-size: 25pt; border: 0; margin: 0 0 8px 0; color: #12305f; }
+.titlepage .subtitle { font-size: 14pt; color: #33415c; margin: 0 0 26px 0; }
+.titlepage .meta { font-size: 10pt; color: #52514e; }
+.abstract { border-left: 3px solid #2a78d6; background: #f4f7fc; padding: 8px 14px; margin: 0 0 8px 0; font-size: 10pt; }
+table { border-collapse: collapse; margin: 10px 0 14px 0; font-size: 8.9pt; width: 100%; }
+th, td { border: 1px solid #cdd5e0; padding: 4px 6px; vertical-align: top; text-align: left; }
+th { background: #eaf1fb; }
+tr { break-inside: avoid; }
+code { background: #f1f3f7; padding: 0 3px; border-radius: 3px; font-size: 8.8pt; }
+figure { margin: 12px 0 16px 0; text-align: center; break-inside: avoid; }
+figure img { max-width: 100%; max-height: 150mm; }
+figure img.small { max-width: 62%; max-height: 95mm; }
+figure img.tall { max-height: 228mm; }
+figcaption { font-size: 8.8pt; color: #52514e; margin-top: 5px; text-align: left; }
+.eq { text-align: center; font-size: 11pt; margin: 10px 0; }
+.toc ul { list-style: none; padding-left: 14px; margin: 2px 0; } .toc > ul { padding-left: 0; } .toc a { color: #12305f; text-decoration: none; }
+</style></head><body><div class="titlepage">
+<h1 class="title">Misconception Detection in K-12 Student Math Workings</h1>
+<p class="subtitle">System architecture, complete experiment record, and diagnosis</p>
+<p class="meta">Project record for 8 – 13 November 2026 · written 13 November 2026 · internal study document</p>
+</div>
+
+<div class="abstract">
+<p><strong>Abstract.</strong> The task is to look at a photo of a student's handwritten maths working and name the
+root misconception behind it, as up to three ranked codes out of 75 error codes plus NONE. The metric is MAP@3.
+Our best public score is <strong>0.71716</strong>. It comes from an offline pipeline of open models: a transcriber
+turns the photo into text, two text models and one image model each give a probability for all 76 labels, and the
+three are blended and balanced. Claude Opus, used only as a teacher on training and unlabelled photos, scores 0.819
+on our 301-row development set. The top of the public leaderboard was 0.8465 when last read.</p>
+<p>This report records every experiment, with its score and verdict, and explains the architecture from the smallest
+part to the whole system. The main finding is that all of our gap to Claude sits on one kind of row: an error whose
+code the model has never seen on that question. There we score 0.45 and Claude scores 0.715. Our models are nearly
+perfect once they have seen an example of the exact question-and-error pair, and close to guessing when they have not.
+Every attempt to fix this with more teacher data, larger models, a reason-first student, retrieval, or manufactured
+examples has failed its pre-set test, although the last one moved the target rows for the first time (+0.077).</p>
+</div>
+
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#1-how-to-read-this-report">1. How to read this report</a></li>
+<li><a href="#2-the-task-the-data-and-the-metric">2. The task, the data and the metric</a><ul>
+<li><a href="#21-the-task">2.1 The task</a></li>
+<li><a href="#22-the-data">2.2 The data</a></li>
+<li><a href="#23-the-metric-map3">2.3 The metric: MAP@3</a></li>
+</ul>
+</li>
+<li><a href="#3-the-system-from-the-smallest-part-to-the-whole">3. The system, from the smallest part to the whole</a><ul>
+<li><a href="#31-step-1-the-transcriber-photo-text">3.1 Step 1: the transcriber (photo → text)</a></li>
+<li><a href="#32-step-2a-the-text-models-question-transcript-76-probabilities">3.2 Step 2a: the text models (question + transcript → 76 probabilities)</a></li>
+<li><a href="#33-step-2b-the-image-model-photo-question-76-probabilities">3.3 Step 2b: the image model (photo + question → 76 probabilities)</a></li>
+<li><a href="#34-the-teacher-claude-labels-training-time-only">3.4 The teacher: Claude labels (training time only)</a></li>
+<li><a href="#35-step-3-the-blend">3.5 Step 3: the blend</a></li>
+<li><a href="#36-step-4-label-balancing-sinkhorn">3.6 Step 4: label balancing (Sinkhorn)</a></li>
+<li><a href="#37-the-whole-system">3.7 The whole system</a></li>
+</ul>
+</li>
+<li><a href="#4-how-we-measure">4. How we measure</a></li>
+<li><a href="#5-the-complete-experiment-record">5. The complete experiment record</a><ul>
+<li><a href="#51-submissions">5.1 Submissions</a></li>
+<li><a href="#52-phase-1-810-nov-free-kaggle-gpus-and-cpu">5.2 Phase 1 (8–10 Nov): free Kaggle GPUs and CPU</a></li>
+<li><a href="#53-phase-2-1012-nov-rented-gpus-and-claude-labels">5.3 Phase 2 (10–12 Nov): rented GPUs and Claude labels</a></li>
+<li><a href="#54-phase-3a-12-nov-diagnosis-on-cpu">5.4 Phase 3a (12 Nov): diagnosis on CPU</a></li>
+<li><a href="#55-phase-3b-1213-nov-paid-tests-of-new-designs">5.5 Phase 3b (12–13 Nov): paid tests of new designs</a></li>
+</ul>
+</li>
+<li><a href="#6-where-the-points-are-lost">6. Where the points are lost</a><ul>
+<li><a href="#61-the-gap-is-in-one-row-type">6.1 The gap is in one row type</a></li>
+<li><a href="#62-no-open-model-does-well-on-hard-rows">6.2 No open model does well on hard rows</a></li>
+<li><a href="#63-our-models-learn-pairs-not-codes">6.3 Our models learn pairs, not codes</a></li>
+<li><a href="#64-more-teacher-data-does-not-fix-it">6.4 More teacher data does not fix it</a></li>
+<li><a href="#65-reader-and-reasoner-separated">6.5 Reader and reasoner, separated</a></li>
+<li><a href="#66-the-hard-rows-split-by-example-coverage">6.6 The hard rows split by example coverage</a></li>
+</ul>
+</li>
+<li><a href="#7-new-designs-tested-on-1213-november">7. New designs tested on 12–13 November</a><ul>
+<li><a href="#71-the-reason-first-candidate-student-stage-b">7.1 The reason-first candidate student (Stage B)</a></li>
+<li><a href="#72-claude-without-the-photo">7.2 Claude without the photo</a></li>
+<li><a href="#73-the-error-catalogue">7.3 The error catalogue</a></li>
+<li><a href="#74-the-coverage-aware-blend">7.4 The coverage-aware blend</a></li>
+</ul>
+</li>
+<li><a href="#8-diagnosis-what-the-problem-is">8. Diagnosis: what the problem is</a></li>
+<li><a href="#9-open-questions-and-untested-ideas">9. Open questions and untested ideas</a></li>
+<li><a href="#10-cost-ledger">10. Cost ledger</a></li>
+<li><a href="#appendix-a-glossary">Appendix A. Glossary</a></li>
+<li><a href="#appendix-b-file-map">Appendix B. File map</a></li>
+<li><a href="#appendix-c-every-model-by-row-group-dev-map3">Appendix C. Every model by row group (dev MAP@3)</a></li>
+<li><a href="#appendix-d-sources-of-the-numbers">Appendix D. Sources of the numbers</a></li>
+</ul>
+</div>
+<h2 id="1-how-to-read-this-report">1. How to read this report</h2>
+<ul>
+<li><strong>Sections 2–3</strong> explain the task and the system, from one data row up to the whole pipeline. Read these first if
+  you want to understand how a prediction is made.</li>
+<li><strong>Section 4</strong> explains how we measure, and how much a score can be trusted.</li>
+<li><strong>Section 5</strong> is the full experiment record in time order, with every score.</li>
+<li><strong>Section 6</strong> analyses where the points are lost.</li>
+<li><strong>Section 7</strong> covers the new designs tested on 12–13 November.</li>
+<li><strong>Section 8</strong> is my diagnosis: what the problem is.</li>
+<li><strong>Section 9</strong> lists open questions and untested ideas, clearly marked as untested.</li>
+<li><strong>Section 10</strong> is the cost ledger. The appendices hold a glossary, a file map and the raw tables.</li>
+</ul>
+<p>Three rules apply to every number here.</p>
+<ol>
+<li><strong>"Dev" means the 301-row development set</strong> (fold 0 of the 1,500 labelled rows). A dev score is not a
+   leaderboard score. Our dev scores have run about 0.02 above the public score.</li>
+<li><strong>One dev score has a standard error of about 0.023.</strong> A difference under about 0.02 between two models means
+   nothing unless it is a paired comparison with a range that stays above zero.</li>
+<li><strong>Ranges in square brackets</strong> are 95% ranges from a paired bootstrap over questions.</li>
+</ol>
+<p>No student's work is quoted in this report. All figures are aggregates.</p>
+<h2 id="2-the-task-the-data-and-the-metric">2. The task, the data and the metric</h2>
+<h3 id="21-the-task">2.1 The task</h3>
+<p>A student answers a maths question on paper. We get a photo of that working, the question text, the answer key, the
+grade and the topic. We must return up to three codes, in order, for the <strong>root</strong> misconception: the major error the
+rest of the working follows from. If there is no major error the answer is <code>NONE</code>.</p>
+<p>The competition is <em>Misconception Detection in K-12 Student Math Workings</em> on Kaggle. It is not a code competition:
+we upload a CSV of predictions. Final predictions must come from models that run offline. The deadline is
+17 November 2026, 00:00 UTC.</p>
+<h3 id="22-the-data">2.2 The data</h3>
+<table>
+<thead>
+<tr>
+<th>Set</th>
+<th>Rows</th>
+<th>Questions</th>
+<th>What we have</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Labelled training set</td>
+<td>1,500</td>
+<td>462</td>
+<td>Photo, question, answer key, teacher transcription, annotations, root code</td>
+</tr>
+<tr>
+<td>Test set</td>
+<td>3,498</td>
+<td>492</td>
+<td>Photo, question, answer key. No labels.</td>
+</tr>
+<tr>
+<td>Unlabelled pool</td>
+<td>50,000</td>
+<td>284</td>
+<td>Photos and question fields only</td>
+</tr>
+<tr>
+<td>Taxonomy</td>
+<td>75 codes + NONE</td>
+<td></td>
+<td>Code, name, description, section</td>
+</tr>
+</tbody>
+</table>
+<p>Facts that shape everything later:</p>
+<ul>
+<li><strong>About a third of rows are NONE</strong> (33.7% of the training set).</li>
+<li><strong>Few examples per question.</strong> The training set has about 3.2 rows per question; the test set has about 7.1.</li>
+<li><strong>95.7% of test rows are on a question that also appears in the training set.</strong> The question is usually familiar;
+  the particular mistake often is not.</li>
+<li><strong>Thirteen codes have one training example</strong>, and two have none.</li>
+<li><strong>The pool covers only 284 questions.</strong> 28% of test rows are on questions with no pool photos at all.</li>
+</ul>
+<figure><img src="../diagrams/01-train-row-anatomy.svg"><figcaption>Figure 1. One labelled training row. The fields
+in the lower part exist only for training rows; a test row has only the photo and the question fields.</figcaption></figure>
+
+<figure><img src="../diagrams/00-train-vs-test.svg"><figcaption>Figure 2. What is available at training time and at
+test time. Anything a model reads at test time must come from the photo and the question fields.</figcaption></figure>
+
+<h3 id="23-the-metric-map3">2.3 The metric: MAP@3</h3>
+<p>For each row we give up to three codes in order. The row scores 1 if the first is right, 1/2 if the second is right,
+1/3 if the third is right, and 0 otherwise. The final score is the average over rows.</p>
+<figure><img src="../diagrams/01-map3-zoom.svg" class="small"><figcaption>Figure 3. How one row is scored.</figcaption></figure>
+
+<p>Two consequences. Getting the right code into second place is worth half a point, so a model's second and third
+choices matter. And a model that is very sure and wrong loses more than a model that hedges.</p>
+<h2 id="3-the-system-from-the-smallest-part-to-the-whole">3. The system, from the smallest part to the whole</h2>
+<p>The deployed system has four steps. Figure 4 shows them in one line; the sections below open each box.</p>
+<figure><img src="fig/d4_deployed.svg"><figcaption>Figure 4. What runs on one test photo in the best submission
+(public 0.71716).</figcaption></figure>
+
+<h3 id="31-step-1-the-transcriber-photo-text">3.1 Step 1: the transcriber (photo → text)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td>Qwen3-VL-8B with a LoRA adapter (rank 32) on the language-model layers</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>The photo (longest side up to 1280 pixels), the question diagram if any, grade, topic, question, answer key</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>The working as numbered text lines (L1, L2, L3, ...), one per written line</td>
+</tr>
+<tr>
+<td>Training</td>
+<td>1,199 teacher transcriptions (the fit rows), 2 epochs, learning rate 1e-4</td>
+</tr>
+<tr>
+<td>Decoding</td>
+<td>Greedy, up to 512 new tokens, repetition penalty 1.05</td>
+</tr>
+<tr>
+<td>Quality on dev</td>
+<td>Recovers 88% of the numbers in the teacher transcript; 91% of the numbers it writes are right</td>
+</tr>
+<tr>
+<td>Code</td>
+<td><code>src/k12/transcriber.py</code>, <code>src/k12/vision.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>Weak points measured later: the annotated error text survives in only 55% of machine transcripts, and line order is
+sometimes scrambled. Earlier CPU readers were far worse (Tesseract recovered 12% of numbers).</p>
+<figure><img src="fig/d5_transcriber_simple.svg"><figcaption>Figure 5. The transcriber, simple view.</figcaption></figure>
+
+<figure><img src="../diagrams/tx-overview.svg" class="tall"><figcaption>Figure 6. The transcriber, detailed view with file and line references: training and use. This diagram is dense; zoom in to read it.</figcaption></figure>
+
+<h3 id="32-step-2a-the-text-models-question-transcript-76-probabilities">3.2 Step 2a: the text models (question + transcript → 76 probabilities)</h3>
+<p>Two models share one design: Qwen3-8B and Qwen3-32B (the 32B is loaded in 4-bit).</p>
+<p><strong>The prompt</strong> is plain text: the list of 76 codes with their names, then grade, topic, question, answer key, then
+the transcript, then the words <code>ROOT:</code>.</p>
+<p><strong>The readout.</strong> The model does not write an answer. We take the model's internal vector at the last prompt token and
+pass it through one linear layer with 76 outputs. A softmax turns those into probabilities.</p>
+<p><strong>Training.</strong> Cross-entropy on the root code with label smoothing 0.03; LoRA rank 32 on the attention and MLP
+projections; learning rate 1e-4 for the adapter and 1e-3 for the new head; batch size 4; 5% warm-up then cosine decay.
+Claude-labelled rows carry soft labels (0.7, 0.2, 0.1 for Claude's first, second and third code) and weight 0.8.
+An optional extra loss makes the model also write the teacher's explanation after the prompt.</p>
+<figure><img src="fig/d6_text_simple.svg"><figcaption>Figure 7. The text model, simple view.</figcaption></figure>
+
+<figure><img src="../diagrams/03-prompt-layout.svg" class="small"><figcaption>Figure 8. Layout of the text model's
+prompt. The decision is read at the final token, before the model has written anything.</figcaption></figure>
+
+<figure><img src="../diagrams/03-reasoner-pipeline.svg" class="tall"><figcaption>Figure 9. The text model end to end, detailed view (data preparation, model, training loop, outputs). Zoom in to read it.</figcaption></figure>
+
+<p>Two properties of this design matter for the diagnosis in section 8:</p>
+<ul>
+<li><strong>The decision is taken before any reasoning is written.</strong> Nothing forces the model to find the wrong line first.</li>
+<li><strong>Codes are 76 anonymous outputs.</strong> The model reads code names in the prompt, but the head that decides has no
+  link between "ALG-04 on question 17" and "ALG-04 on question 230" except what the training rows teach.</li>
+</ul>
+<h3 id="33-step-2b-the-image-model-photo-question-76-probabilities">3.3 Step 2b: the image model (photo + question → 76 probabilities)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td>Qwen3-VL-8B with LoRA (rank 32) on the language-model layers; the vision tower is frozen</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>The photo, the question diagram if any, grade, topic, question, answer key, a short instruction ending in <code>ROOT:</code></td>
+</tr>
+<tr>
+<td>Readout</td>
+<td>Last-token vector → one linear layer → 76 probabilities</td>
+</tr>
+<tr>
+<td>Training rows</td>
+<td>1,500 teacher rows + 3,427 Claude-labelled pool photos, 2 epochs</td>
+</tr>
+<tr>
+<td>Losses</td>
+<td>Cross-entropy on the code, plus 0.15 × a loss for writing the teacher's reading of the working</td>
+</tr>
+<tr>
+<td>Code</td>
+<td><code>src/k12/pod_train.py</code>, <code>src/k12/vision.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>This is the only member that sees the handwriting directly. It used 3,427 of the 26,202 Claude-labelled photos.</p>
+<figure><img src="fig/d7_image_simple.svg"><figcaption>Figure 10. The image model, simple view.</figcaption></figure>
+
+<figure><img src="../diagrams/04-vision-classifier-detailed.svg" class="tall"><figcaption>Figure 11. The image model, detailed view. Zoom in to read it.</figcaption></figure>
+
+<h3 id="34-the-teacher-claude-labels-training-time-only">3.4 The teacher: Claude labels (training time only)</h3>
+<p>Claude Opus was asked, for each training or pool photo, to transcribe the working, name the root line, explain, and
+give three ranked codes. It never saw a test photo. Its labels are used in two ways: as soft training targets for
+our models, and as a yardstick (0.819 on dev).</p>
+<figure><img src="../diagrams/05-teacher-pipeline.svg" class="tall"><figcaption>Figure 12. How teacher labels are produced, costed and turned into training rows (detailed view; zoom in).</figcaption></figure>
+
+<figure><img src="../diagrams/05-teacher-softlabel.svg" class="small"><figcaption>Figure 13. Turning Claude's three
+ranked codes into a soft training target.</figcaption></figure>
+
+<h3 id="35-step-3-the-blend">3.5 Step 3: the blend</h3>
+<p>Each member gives a probability for each of the 76 labels. We multiply them with fixed weights (a geometric blend):</p>
+<p class="eq">score(code) = P<sub>32B text</sub>(code)<sup>0.35</sup> × P<sub>8B text</sub>(code)<sup>0.30</sup> × P<sub>image</sub>(code)<sup>0.35</sup>, then rescaled so the 76 scores sum to 1</p>
+
+<p>A geometric blend rewards codes that every member finds plausible and punishes a code that any member rules out.</p>
+<figure><img src="../diagrams/06-ensemble-main.svg" class="tall"><figcaption>Figure 14. The blend, balancing and evaluation, detailed view (zoom in).</figcaption></figure>
+
+<h3 id="36-step-4-label-balancing-sinkhorn">3.6 Step 4: label balancing (Sinkhorn)</h3>
+<p>The blend predicts some codes too often and others too rarely. Balancing rescales the scores so that the share of
+each predicted label moves toward its share in the training set. It uses no test labels. With strength 0.5 it added
++0.019 on dev and +0.009 on the public board.</p>
+<figure><img src="../diagrams/06-ensemble-sinkhorn.svg" class="small"><figcaption>Figure 15. Label balancing.</figcaption></figure>
+
+<h3 id="37-the-whole-system">3.7 The whole system</h3>
+<figure><img src="fig/d0_whole_system.svg" class="tall"><figcaption>Figure 16. Every stage with its files. Dashed
+lines are training-time only. Stage 4 (the candidate student) was built and tested but is not part of the submission.</figcaption></figure>
+
+<h2 id="4-how-we-measure">4. How we measure</h2>
+<ul>
+<li><strong>Development set.</strong> The 1,500 labelled rows are split into 5 folds, keeping duplicate workings together. Fold 0
+  (301 rows) is the dev set; the other 1,199 rows are the fit set. Models for the leaderboard are retrained on all 1,500.</li>
+<li><strong>Row types.</strong> Every dev row falls in one of three types, by its true label and the fit set:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Row type</th>
+<th>Rows</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No error</td>
+<td>101</td>
+<td>True label is NONE</td>
+</tr>
+<tr>
+<td>Seen pair</td>
+<td>94</td>
+<td>An error whose code already appears for this question in the fit set</td>
+</tr>
+<tr>
+<td>Hard rows</td>
+<td>106</td>
+<td>An error whose code is new for the question (84), or a question not in the fit set (22)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Paired bootstrap over questions.</strong> To compare two models we resample whole questions, because rows of the same
+  question are not independent.</li>
+<li><strong>Cross-fitting.</strong> Any setting chosen on dev (a blend weight, a balancing strength) is chosen on four fifths of the
+  questions and scored on the remaining fifth. A number tuned and scored on the same rows is marked "in-sample".</li>
+<li><strong>Pass marks are written before the run.</strong> Each paid experiment had its gate fixed in advance.</li>
+</ul>
+<p><strong>How far to trust dev.</strong> The standard error of one score is 0.023, and the 95% range of the blend is 0.673–0.761.
+Several early ideas were accepted or dropped on differences smaller than that. Dev has also been used many times, so
+its best scores are slightly optimistic: 0.737 on dev became 0.717 on the public board.</p>
+<h2 id="5-the-complete-experiment-record">5. The complete experiment record</h2>
+<figure><img src="fig/d3_experiment_map.svg" class="tall"><figcaption>Figure 17. Map of every line of work.</figcaption></figure>
+
+<h3 id="51-submissions">5.1 Submissions</h3>
+<figure><img src="fig/c1_public_timeline.svg"><figcaption>Figure 18. Public score of each submission.</figcaption></figure>
+
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Date (UTC)</th>
+<th>What was submitted</th>
+<th>Dev</th>
+<th>Public</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>8 Nov</td>
+<td>Qwen3-VL-4B image classifier, epoch 3</td>
+<td>0.595</td>
+<td>0.58216</td>
+</tr>
+<tr>
+<td>2</td>
+<td>8 Nov</td>
+<td>The same, with temperature 2 and a 25% question/topic prior</td>
+<td>0.607</td>
+<td>0.59800</td>
+</tr>
+<tr>
+<td>3</td>
+<td>11 Nov</td>
+<td>8B image classifier with reading loss, blended 0.7/0.3 with the 4B, 10% prior</td>
+<td>0.647</td>
+<td>0.62383</td>
+</tr>
+<tr>
+<td>4</td>
+<td>11 Nov</td>
+<td>Read-then-diagnose: transcriber → 8B text model, blended 0.6/0.4 with the 8B image model</td>
+<td>0.684</td>
+<td>0.66183</td>
+</tr>
+<tr>
+<td>5</td>
+<td>11 Nov</td>
+<td>8B text model × image model distilled from Claude labels, 50/50</td>
+<td>0.693</td>
+<td>0.68283</td>
+</tr>
+<tr>
+<td>6</td>
+<td>11 Nov</td>
+<td>3-way blend: 32B text + 8B text + distilled image (0.35 / 0.30 / 0.35)</td>
+<td>0.718</td>
+<td>0.70850</td>
+</tr>
+<tr>
+<td>7</td>
+<td>12 Nov</td>
+<td>The 3-way blend with label balancing, strength 0.5</td>
+<td>0.737</td>
+<td><strong>0.71716</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Submission 6 was also uploaded a second time by accident (same file, same score). Nothing was submitted on 13 Nov.</p>
+<h3 id="52-phase-1-810-nov-free-kaggle-gpus-and-cpu">5.2 Phase 1 (8–10 Nov): free Kaggle GPUs and CPU</h3>
+<p>Budget: 10 hours of two T4 GPUs. 8.86 hours were used.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Experiment</th>
+<th>Result (dev unless stated)</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>Question/topic prior: predict the codes this question and topic usually get</td>
+<td>0.485 (5-fold), 0.497 on fold 0</td>
+<td>Reference</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>Qwen3-VL-4B image classifier, LoRA, 3 epochs</td>
+<td>0.434 → 0.586 → 0.595 by epoch</td>
+<td>Kept; public 0.582</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>Taxonomy ranker: untrained 4B scores every code</td>
+<td>0.385; says "error" on 85% of correct workings</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>Qwen3.5-9B untrained, 48-row pilot</td>
+<td>0.559 against prior 0.531, range spans zero</td>
+<td>Inconclusive</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>Qwen3.5-9B untrained, all 301 rows, code-only output</td>
+<td>0.455; calls 54% of error rows NONE</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>Qwen3.5-27B untrained (4-bit), brief evidence then 3 codes</td>
+<td>0.590; gate was 0.65</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td>Temperature 2 and 25% prior on the 4B outputs</td>
+<td>0.607 in-sample, 0.598 cross-fitted</td>
+<td>Kept; public 0.598</td>
+</tr>
+<tr>
+<td>1.8</td>
+<td>Small output adapters on frozen 4B features</td>
+<td>0.590 / 0.570 / 0.599 (three sizes)</td>
+<td>Rejected: over-fits</td>
+</tr>
+<tr>
+<td>1.9</td>
+<td>Feature memory: nearest neighbours in feature space</td>
+<td>0.577 alone, 0.599 gated</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>1.10</td>
+<td>Prior odds correction</td>
+<td>0.607, change 0.000</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>1.11</td>
+<td>Text prior blended in</td>
+<td>0.584 cross-fitted (−0.023)</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>1.12</td>
+<td>Diagnostic: word-and-character classifier on teacher transcripts</td>
+<td>0.534 (5-fold)</td>
+<td>Reading alone does not solve it</td>
+</tr>
+<tr>
+<td>1.13</td>
+<td>CPU readers: Tesseract; PP-FormulaNet on cropped regions</td>
+<td>Number recall 12% and 22%</td>
+<td>Rejected as readers</td>
+</tr>
+<tr>
+<td>1.14</td>
+<td>Rank fusion of 4B with the 27B; a learned re-ranker over both</td>
+<td>0.626; 0.650</td>
+<td>Dev-only; the 27B has no test predictions</td>
+</tr>
+<tr>
+<td>1.15</td>
+<td>Reading-supervised 4B run</td>
+<td>Cancelled while queued (quota conflict)</td>
+<td>No result</td>
+</tr>
+</tbody>
+</table>
+<p>Lessons from phase 1: a trained small model beat untrained larger ones; the 4B model's top-8 held the right code for
+89% of rows, so ranking, not recall, was the limit; and nothing done after the model (adapters, priors, memory) helped.</p>
+<h3 id="53-phase-2-1012-nov-rented-gpus-and-claude-labels">5.3 Phase 2 (10–12 Nov): rented GPUs and Claude labels</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Experiment</th>
+<th>Result (dev)</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>Qwen3-VL-8B image classifier ("A")</td>
+<td>0.550 → 0.604 → 0.619</td>
+<td>Baseline for this phase</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>A + loss for writing the teacher transcription ("B")</td>
+<td>0.557 → 0.615 → 0.632</td>
+<td>Kept</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>A + soft secondary labels and rare-code oversampling</td>
+<td>0.618</td>
+<td>No gain</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>A + error-family and has-error helper heads</td>
+<td>0.613</td>
+<td>No gain</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>B with evidence-first targets (dataset v3)</td>
+<td>0.627 at epoch 2</td>
+<td>No clear gain</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td>Qwen3-VL-32B image classifier, 4-bit</td>
+<td>0.403 after epoch 1, stopped</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td>Blend B<sup>0.7</sup> × 4B<sup>0.3</sup> with 10% prior</td>
+<td>0.647</td>
+<td>Public 0.624</td>
+</tr>
+<tr>
+<td>2.8</td>
+<td>Transcriber (section 3.1)</td>
+<td>Number recall 0.88, precision 0.91</td>
+<td>Kept</td>
+</tr>
+<tr>
+<td>2.9</td>
+<td>Qwen3-8B text model, 1 epoch</td>
+<td>0.570 on teacher transcripts, 0.542 on machine</td>
+<td>Kept</td>
+</tr>
+<tr>
+<td>2.10</td>
+<td>Qwen3-8B text model, 3 epochs, teacher labels only</td>
+<td>0.667 on machine transcripts</td>
+<td>Deployed member</td>
+</tr>
+<tr>
+<td>2.11</td>
+<td>Blend: text 0.6, image B 0.4</td>
+<td>0.684</td>
+<td>Public 0.662</td>
+</tr>
+<tr>
+<td>2.12</td>
+<td>Claude Opus on the 301 dev photos</td>
+<td><strong>0.819</strong>; hard rows 0.715</td>
+<td>Yardstick</td>
+</tr>
+<tr>
+<td>2.13</td>
+<td>Claude Fable on dev; Claude Opus with 4 examples in the prompt</td>
+<td>0.788; 0.811</td>
+<td>No better than plain Opus</td>
+</tr>
+<tr>
+<td>2.14</td>
+<td>Claude Opus labels for the pool</td>
+<td>26,202 photos labelled</td>
+<td>Teacher data</td>
+</tr>
+<tr>
+<td>2.15</td>
+<td>Image model distilled from Claude (1,500 + 3,427 rows)</td>
+<td>0.653</td>
+<td>Deployed member</td>
+</tr>
+<tr>
+<td>2.16</td>
+<td>Blend: 8B text × distilled image, 50/50</td>
+<td>0.693</td>
+<td>Public 0.683</td>
+</tr>
+<tr>
+<td>2.17</td>
+<td>Qwen3-32B text model, 4-bit, 1 epoch</td>
+<td>0.652 machine, 0.687 teacher transcripts</td>
+<td>Deployed member</td>
+</tr>
+<tr>
+<td>2.18</td>
+<td>3-way blend</td>
+<td>0.718 (0.706 with cross-fitted weights)</td>
+<td>Public 0.7085</td>
+</tr>
+<tr>
+<td>2.19</td>
+<td>Text 8B with 0 / 2,856 / 11,426 Claude rows</td>
+<td>0.553 / 0.666 / 0.692</td>
+<td>Best single model; no gain inside the blend</td>
+</tr>
+<tr>
+<td>2.20</td>
+<td>Untrained Qwen3-32B and Qwen3-235B on transcripts</td>
+<td>0.518 and 0.584; with 4 examples 0.596 and 0.650</td>
+<td>Not added</td>
+</tr>
+<tr>
+<td>2.21</td>
+<td>235B (with examples) as a fourth blend member</td>
+<td>+0.012, range −0.014 to +0.037</td>
+<td>Not added: range crosses zero, about $15</td>
+</tr>
+<tr>
+<td>2.22</td>
+<td>Label balancing (Sinkhorn), strength 0.5</td>
+<td>0.737 in-sample, 0.7337 cross-fitted</td>
+<td>Public <strong>0.71716</strong></td>
+</tr>
+<tr>
+<td>2.23</td>
+<td>32B text with explanation targets (v4); first candidate-student run</td>
+<td>Stopped unfinished when all pods were terminated</td>
+<td>No result</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-phase-3a-12-nov-diagnosis-on-cpu">5.4 Phase 3a (12 Nov): diagnosis on CPU</h3>
+<p>A large CPU-only study ranked six weaknesses and tested many repairs. Results that survived independent re-checking:</p>
+<table>
+<thead>
+<tr>
+<th>Idea tested</th>
+<th>Result</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Learned stackers and combiners over existing members</td>
+<td>−0.004 to +0.002</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Dividing out the question prior; a self-prior</td>
+<td>Best strength was zero; −0.008</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Nearest neighbours inside one question over teacher and Claude labels</td>
+<td>0.42–0.45 alone; −0.006 to 0 fused</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Masking the question text at training time (proxy)</td>
+<td>+0.005, range −0.021 to +0.027</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Symbolic step checker</td>
+<td>Checks 40% of lines; finds the root line 42% of the time</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Product-of-experts debiasing</td>
+<td>No-error and seen-pair rows collapse</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Programmatic mal-rule synthesis</td>
+<td>Supply ten times below estimate; no gain</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>"Prefer the specific code over the generic one" rule</td>
+<td>−0.006</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Appending examples from other questions to candidate cards</td>
+<td>−0.052 on new-pair matching</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Perfect teacher transcripts for the blend</td>
+<td>+0.012 to +0.016</td>
+<td>Reading is not the main gap for classifiers</td>
+</tr>
+</tbody>
+</table>
+<p>My own cross-checks the same day:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Our blend fused with Claude's real dev answers</td>
+<td>0.824, i.e. +0.005 over Claude [−0.009, +0.019]</td>
+</tr>
+<tr>
+<td>Claude + our memory of teacher labels; + learned stacker; + learned remap</td>
+<td>−0.003; −0.016; −0.002</td>
+</tr>
+<tr>
+<td>Claude's 79 wrong first answers</td>
+<td>Spread over 69 different (Claude code, teacher code) pairs: not systematic</td>
+</tr>
+<tr>
+<td>Simulated student that copies Claude on 50 / 70 / 80 / 90 / 100% of rows, fused</td>
+<td>0.760 / 0.780 / 0.795 / 0.810 / 0.824</td>
+</tr>
+<tr>
+<td>Final-answer lookup inside one question</td>
+<td>Covers 52 rows; 0.827 against the blend's 0.885 there</td>
+</tr>
+<tr>
+<td>"Answer key in the transcriber prompt leaks into transcripts" (my earlier claim)</td>
+<td>Not supported: 25.9% against 26.2%. Retracted.</td>
+</tr>
+</tbody>
+</table>
+<p>Free fixes applied: full code descriptions in the candidate-student data (7,378 of 9,705 prompts had a description
+cut mid-sentence); the text trainer now saves its weights.</p>
+<h3 id="55-phase-3b-1213-nov-paid-tests-of-new-designs">5.5 Phase 3b (12–13 Nov): paid tests of new designs</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Experiment</th>
+<th>Cost</th>
+<th>Result</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>Reason-first candidate student (Stage B), Qwen3-8B, 9,705 rows</td>
+<td>$2.14</td>
+<td>Dev 0.625; hard rows 0.417; fused −0.011 [−0.030, +0.009]</td>
+<td>Failed all four gates</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>Claude Opus without the photo, on our machine transcripts</td>
+<td>$1.79</td>
+<td>Dev 0.771; hard rows 0.637</td>
+<td>Text-only ceiling is under 0.80</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>Error catalogue, text matcher (CPU pilot, 1,503 synthetic workings)</td>
+<td>$0</td>
+<td>Blend −0.015 [−0.029, −0.002]</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>3.4</td>
+<td>Coverage-aware blend</td>
+<td>$0</td>
+<td>−0.005 [−0.023, +0.012] cross-fitted</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td>Error catalogue, trained: paired run with and without it</td>
+<td>$2.81</td>
+<td>Target rows +0.077; overall −0.018</td>
+<td>Pass mark not met</td>
+</tr>
+</tbody>
+</table>
+<p>Section 7 describes these five in detail.</p>
+<h2 id="6-where-the-points-are-lost">6. Where the points are lost</h2>
+<h3 id="61-the-gap-is-in-one-row-type">6.1 The gap is in one row type</h3>
+<figure><img src="fig/c2_row_types.svg"><figcaption>Figure 19. Our blend against Claude by row type.</figcaption></figure>
+
+<p>On no-error rows we match Claude. On seen-pair rows we beat it, because we have learned the annotators' habits for
+each question. On hard rows we are at 0.451 and Claude is at 0.715. Holding the other two fixed, reaching 0.80
+overall needs about 0.63 on hard rows.</p>
+<h3 id="62-no-open-model-does-well-on-hard-rows">6.2 No open model does well on hard rows</h3>
+<figure><img src="fig/c3_hard_rows_by_model.svg"><figcaption>Figure 20. Hard rows, every model.</figcaption></figure>
+
+<p>The best open result is 0.448, from Qwen3-235B with no training at all. Our training has never lifted the hard rows
+above what untrained models already do: the 32B text model scored 0.392 untrained and 0.357 after our training.</p>
+<h3 id="63-our-models-learn-pairs-not-codes">6.3 Our models learn pairs, not codes</h3>
+<figure><img src="fig/c4_pair_examples.svg"><figcaption>Figure 21. The memorisation step curve.</figcaption></figure>
+
+<p>With no example of the exact question-and-code pair the blend scores 0.45. With one example it scores 0.80; with two,
+0.92; with three or more, 1.00. Claude is nearly flat across these bins. The true code of a hard row exists on some
+<em>other</em> question in the fit set for 96% of hard rows, with a median of 24 examples, and that does not help.</p>
+<p>A label-free sign of the same thing on the test set: two students on the same question get the same first code from
+us 42% of the time. In the training labels that happens 27% of the time.</p>
+<h3 id="64-more-teacher-data-does-not-fix-it">6.4 More teacher data does not fix it</h3>
+<figure><img src="fig/c5_claude_data_scaling.svg"><figcaption>Figure 22. Growing the Claude-labelled training set.</figcaption></figure>
+
+<p>Going from 2,856 to 11,426 Claude rows moved the hard rows from 0.420 to 0.440. Inside the blend the gain vanished
+(0.715 → 0.718). Agreement with Claude's first answer on hard rows rose from 26% to 38% to 49%, about 11 points per
+fourfold increase. All 26,202 rows would give roughly 56% in this recipe.</p>
+<h3 id="65-reader-and-reasoner-separated">6.5 Reader and reasoner, separated</h3>
+<table>
+<thead>
+<tr>
+<th>Who reasons</th>
+<th>Reads the photo</th>
+<th>Reads a teacher transcript</th>
+<th>Reads our machine transcript</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Opus</td>
+<td>0.819 (hard 0.715)</td>
+<td>not run</td>
+<td>0.771 (hard 0.637)</td>
+</tr>
+<tr>
+<td>Our old 8B student</td>
+<td>cannot</td>
+<td>0.720</td>
+<td>0.692 (hard 0.440)</td>
+</tr>
+<tr>
+<td>Our 32B text model</td>
+<td>cannot</td>
+<td>0.687</td>
+<td>0.652 (hard 0.357)</td>
+</tr>
+</tbody>
+</table>
+<p>Reading the hard-row numbers down the last column: on the <em>same</em> transcripts, Claude scores 0.637 and our models
+about 0.44. So of the 0.27 gap on hard rows, about 0.19 is reasoning on identical input and about 0.08 is reading.
+Reading across the first row: no text-only model reading these transcripts can pass 0.771.</p>
+<h3 id="66-the-hard-rows-split-by-example-coverage">6.6 The hard rows split by example coverage</h3>
+<figure><img src="fig/d1_row_groups.svg"><figcaption>Figure 23. How the dev rows split.</figcaption></figure>
+
+<figure><img src="fig/c6_groups_abc.svg"><figcaption>Figure 24. Scores in groups A, B and C.</figcaption></figure>
+
+<ul>
+<li><strong>Group A (32 rows).</strong> Claude labelled this exact pair on another photo of the question. Our old student, trained
+  on those labels, scores 0.677: the same as Claude reading the same transcript (0.688).</li>
+<li><strong>Group B (31 rows).</strong> The question has about 81 labelled pool photos and none shows this error. Every open model
+  scores 0.16–0.29 here; Claude scores 0.505 from the transcript.</li>
+<li><strong>Group C (43 rows).</strong> The question has no pool photos. Our models score 0.43–0.48; untrained 235B scores 0.55.</li>
+</ul>
+<p>Only 30% of hard rows have their pair anywhere in Claude's pool labels.</p>
+<h2 id="7-new-designs-tested-on-1213-november">7. New designs tested on 12–13 November</h2>
+<h3 id="71-the-reason-first-candidate-student-stage-b">7.1 The reason-first candidate student (Stage B)</h3>
+<p><strong>Idea.</strong> Make the model reason before it decides, and let it read what each code means. The prompt shows the
+transcript and ten lettered candidate codes (the blend's top ten), each with its name, description and, where one
+exists, an example from the same question. The model writes the root line, a short explanation, then a letter. We read
+the probabilities of the letters after the explanation, average over two orderings of the candidates, and fuse with the blend.</p>
+<figure><img src="fig/d8_student_simple.svg"><figcaption>Figure 25. The candidate student, simple view.</figcaption></figure>
+
+<figure><img src="../diagrams/07-candidate-student-prompt.svg" class="small"><figcaption>Figure 26. The candidate
+student's prompt and target.</figcaption></figure>
+
+<figure><img src="../diagrams/07-candidate-student-main.svg" class="tall"><figcaption>Figure 27. The candidate student end to end, detailed view (zoom in).</figcaption></figure>
+
+<p><strong>Run.</strong> Qwen3-8B, LoRA rank 32, one epoch on 9,705 rows (6,107 Claude rows, 2,398 teacher rows, 1,200 contrast
+rows), RTX 6000 Ada, $2.14.</p>
+<figure><img src="fig/c8_student_vs_others.svg"><figcaption>Figure 28. The student against earlier models.</figcaption></figure>
+
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Needed</th>
+<th>Got</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fused gain over the cross-fitted reference</td>
+<td>≥ +0.015, range above 0</td>
+<td>−0.011 [−0.030, +0.009]</td>
+</tr>
+<tr>
+<td>Fused score on hard rows</td>
+<td>≥ 0.50</td>
+<td>0.462</td>
+</tr>
+<tr>
+<td>Agrees with Claude's first answer on hard rows</td>
+<td>≥ 0.65</td>
+<td>0.387</td>
+</tr>
+<tr>
+<td>Same, where blend and Claude disagree</td>
+<td>≥ 0.45</td>
+<td>0.255</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What the outputs show.</strong> The answers were well formed (99.7% parsed). The student gave one code at least 95%
+probability on 187 of 301 rows and was right on 69% of those, so its second and third choices carry little
+information. The two orderings picked the same code on 70% of rows. It named a root line within one line of the
+teacher's on 67% of error rows; accuracy was 0.50 when the line was right and 0.26 when it was wrong.</p>
+<p><strong>Conclusion.</strong> At this size and data volume, writing reasoning first did not make the model diagnose better than
+the plain classifier student.</p>
+<h3 id="72-claude-without-the-photo">7.2 Claude without the photo</h3>
+<p><strong>Question.</strong> Could any text-only model reading our transcripts reach 0.80? <strong>Method.</strong> Claude Opus on the 301 dev
+rows with no photo and no question diagram, given our machine transcript. <strong>Result.</strong> 0.771 against 0.819 with the
+photo: −0.048 [−0.076, −0.020]. The loss is spread evenly over well-read and badly-read rows and is not caused by
+the missing diagrams. <strong>Conclusion.</strong> The text route is capped under 0.80, and the bigger part of our gap is still
+reasoning (section 6.5).</p>
+<h3 id="73-the-error-catalogue">7.3 The error catalogue</h3>
+<p><strong>Idea.</strong> Group A shows that one example of the exact pair is enough. So manufacture the examples we lack: for each
+question, write in advance what each plausible mistake would look like on that exact question.</p>
+<figure><img src="fig/d2_error_catalogue.svg"><figcaption>Figure 29. The error catalogue.</figcaption></figure>
+
+<p><strong>Pilot build.</strong> For 115 dev questions, a writer model produced 1,503 synthetic student workings (10–12 codes per
+question). It saw only the question, answer key, taxonomy and correct workings from fit or pool rows; never a dev
+student's work or label.</p>
+<p><strong>Test A: text matcher (CPU).</strong> Compare each student's transcript with the catalogue workings of its question.</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Group A</th>
+<th>Group B</th>
+<th>Group C</th>
+<th>Seen pair</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>True code has a catalogue example</td>
+<td>0.97</td>
+<td>0.71</td>
+<td>0.84</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>Matcher alone, real examples</td>
+<td>0.609</td>
+<td>none exist</td>
+<td>none exist</td>
+<td>0.681</td>
+</tr>
+<tr>
+<td>Matcher alone, synthetic examples</td>
+<td>0.328</td>
+<td>0.269</td>
+<td>0.244</td>
+<td>0.446</td>
+</tr>
+<tr>
+<td>Blend → blend with synthetic matcher</td>
+<td>0.573 → 0.557</td>
+<td>0.290 → 0.269</td>
+<td>0.477 → 0.415</td>
+<td>0.848 → 0.844</td>
+</tr>
+</tbody>
+</table>
+<p>The catalogue contains the right code for most rows that had nothing, but synthetic workings do not look enough like
+real transcripts for a text comparison. Fusing the matcher lowered the blend by 0.015.</p>
+<p><strong>Test B: train on it (GPU, $2.81).</strong> The same recipe and seed twice: arm 1 on 1,199 teacher rows and 2,856 Claude
+rows; arm 2 the same plus the 1,503 catalogue rows at weight 0.5. Arm 1 reproduced an earlier run exactly (0.6661).</p>
+<figure><img src="fig/c7_catalogue_arms.svg"><figcaption>Figure 30. The paired training test.</figcaption></figure>
+
+<table>
+<thead>
+<tr>
+<th>Dev rows, machine transcripts</th>
+<th>Arm 1</th>
+<th>Arm 2</th>
+<th>Change</th>
+<th>Paired range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All 301</td>
+<td>0.666</td>
+<td>0.648</td>
+<td>−0.018</td>
+<td>[−0.054, +0.018]</td>
+</tr>
+<tr>
+<td>Target rows, B + C (74)</td>
+<td>0.360</td>
+<td>0.437</td>
+<td>+0.077</td>
+<td>[−0.013, +0.167]</td>
+</tr>
+<tr>
+<td>Group C (43)</td>
+<td>0.422</td>
+<td>0.527</td>
+<td>+0.105</td>
+<td></td>
+</tr>
+<tr>
+<td>Group B (31)</td>
+<td>0.274</td>
+<td>0.312</td>
+<td>+0.038</td>
+<td></td>
+</tr>
+<tr>
+<td>Group A (32)</td>
+<td>0.557</td>
+<td>0.375</td>
+<td>−0.182</td>
+<td>[−0.323, −0.049]</td>
+</tr>
+<tr>
+<td>Seen pair (94)</td>
+<td>0.681</td>
+<td>0.674</td>
+<td>−0.007</td>
+<td></td>
+</tr>
+<tr>
+<td>No error (101)</td>
+<td>0.911</td>
+<td>0.866</td>
+<td>−0.045</td>
+<td>[−0.085, −0.008]</td>
+</tr>
+</tbody>
+</table>
+<p>The pass mark was: target rows up by at least 0.08 with the range above zero, and seen-pair and no-error rows down by
+no more than 0.02. It was not met.</p>
+<p><strong>Reading of the result.</strong></p>
+<ul>
+<li>The catalogue did teach something real: target rows rose, 17 better against 9 worse. On teacher transcripts the
+  catalogue model is better overall (0.692 → 0.720) and group A is unchanged.</li>
+<li>The catalogue shows each question with about ten different codes. The model can then no longer answer from the
+  question alone. That helps where the usual code is wrong (B and C) and hurts where it is right (A), most of all on
+  noisy machine transcripts.</li>
+<li>The pilot added 1,503 error workings and no correct ones, which pushed the model away from NONE (30.6% of rows
+  predicted NONE against 35.2%). Full label balancing removes most of that loss, but the model stays 0.006 below arm 1.</li>
+<li>As a fourth blend member the catalogue model adds nothing (−0.003, cross-fitted).</li>
+</ul>
+<h3 id="74-the-coverage-aware-blend">7.4 The coverage-aware blend</h3>
+<p><strong>Idea.</strong> Choose the extra blend member by whether the question has pool photos, which is known at test time.
+<strong>Result.</strong> In-sample it looked like +0.008 on pool questions and +0.027 on the rest. Cross-fitted over 20 fold
+splits it was −0.005 [−0.023, +0.012]. <strong>Conclusion.</strong> The apparent gain was selection noise.</p>
+<h2 id="8-diagnosis-what-the-problem-is">8. Diagnosis: what the problem is</h2>
+<p>In order of importance, with the evidence for each.</p>
+<p><strong>1. We have a memoriser and no generalist.</strong> Our models decide from one vector, before any reasoning, and learn
+which codes go with which question. That makes them excellent on seen pairs (0.856, above Claude) and weak on new
+ones (0.45). Evidence: the step curve (Figure 21); the 42% against 27% same-question agreement on test; training
+never lifting hard rows above untrained models.</p>
+<p><strong>2. The thing that would fix it is a model that can diagnose a mistake it has not seen on that question, and no
+open model we can run does that.</strong> Evidence: Figure 20. The best open result on hard rows is 0.448 from a 235B model;
+Claude gets 0.637 from the same text. Teaching an 8B to reason first did not close the gap (0.417).</p>
+<p><strong>3. Where an example exists we are already at Claude's level; the missing ingredient is examples for the right
+pairs.</strong> Evidence: group A (0.677 against 0.688). Only 30% of hard rows have their pair in the pool labels, and 28%
+of test rows are on questions with no pool photos. Manufactured examples moved the target rows (+0.077) but harmed
+other rows; this is the only lever that has moved the hard rows at all.</p>
+<p><strong>4. Reading caps the text route.</strong> Evidence: Claude loses 0.048 without the photo; the annotated error text is in
+only 55% of machine transcripts. This is the smaller part of the gap (about 0.08 of 0.27 on hard rows) but it means
+the last points need a model that looks at the photo.</p>
+<p><strong>5. Little labelled data for a wide label space.</strong> 1,199 fit rows, 462 questions, 76 labels, 13 codes with one
+example. Teacher conventions are learned per question, three rows at a time.</p>
+<p><strong>6. The yardstick is noisy.</strong> 301 rows, standard error 0.023, used many times. Gains under 0.02 cannot be seen,
+which makes small honest improvements hard to confirm and easy to imagine.</p>
+<p><strong>What is <em>not</em> the problem</strong>, on the evidence: detecting whether there is an error at all (0.926 against 0.934);
+blend weights or calibration; the amount of Claude-labelled data in the current recipe; and the transcriber copying
+the answer key.</p>
+<p><strong>One-sentence version.</strong> We built a system that recognises mistakes it has met before on a question, and the
+competition is decided by mistakes it has not met.</p>
+<h2 id="9-open-questions-and-untested-ideas">9. Open questions and untested ideas</h2>
+<p>Nothing in this section has been measured. Each item says what would test it.</p>
+<table>
+<thead>
+<tr>
+<th>Open question</th>
+<th>Why it matters</th>
+<th>Cheapest test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does a repaired catalogue give a net gain? Add correct workings in the right share, and make synthetic workings look like machine transcripts.</td>
+<td>The only lever that moved the target rows</td>
+<td>One paired run, about $3</td>
+</tr>
+<tr>
+<td>Is catalogue damage to group A caused by transcript noise?</td>
+<td>Arm 2 is fine on teacher transcripts and bad on machine ones</td>
+<td>Score both arms on Claude's transcripts of the dev photos (already on disk), $0</td>
+</tr>
+<tr>
+<td>Does model size help inside a reason-first recipe?</td>
+<td>The "size does not matter" result compared unequal training</td>
+<td>Same candidate recipe on a larger open model; cost not estimated</td>
+</tr>
+<tr>
+<td>Can an image-reading student reach Claude-on-photo level?</td>
+<td>Reading caps text at 0.771</td>
+<td>Large run; no evidence it would work at 8B</td>
+</tr>
+<tr>
+<td>How much is the public board noise?</td>
+<td>We do not know the public share of the test set</td>
+<td>None that is safe; assume about ±0.01</td>
+</tr>
+<tr>
+<td>Why did balancing transfer at half its dev value?</td>
+<td>It is the last thing that worked</td>
+<td>Compare predicted label shares on test before and after, $0</td>
+</tr>
+<tr>
+<td>Would more teacher-quality labels per question help more than anything else?</td>
+<td>The step curve says one or two examples per pair are decisive</td>
+<td>Not available: test photos cannot be labelled</td>
+</tr>
+</tbody>
+</table>
+<p>Things I would not spend on again without new evidence: more Claude labels in the current recipe; stackers, routers
+and priors over the existing members; retrieval by text similarity; untrained large models as extra members.</p>
+<h2 id="10-cost-ledger">10. Cost ledger</h2>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Limit</th>
+<th>Used</th>
+<th>Left</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RunPod GPU rental</td>
+<td>$80</td>
+<td>$62.85</td>
+<td>$17.15</td>
+</tr>
+<tr>
+<td>Claude API</td>
+<td>$200</td>
+<td>$188.40</td>
+<td>$11.60</td>
+</tr>
+<tr>
+<td>Kaggle free GPU for this project</td>
+<td>10 hours</td>
+<td>8.86 hours</td>
+<td>about 1 hour</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Paid step on 12–13 Nov</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reason-first candidate student</td>
+<td>$2.14</td>
+</tr>
+<tr>
+<td>Claude without the photo</td>
+<td>$1.79</td>
+</tr>
+<tr>
+<td>Paired error-catalogue test</td>
+<td>$2.81</td>
+</tr>
+</tbody>
+</table>
+<p>Standing rules: nothing is launched or submitted without explicit approval for that one job; final predictions come
+from offline models; Claude is never given a test photo; no test row is labelled by hand.</p>
+<h2 id="appendix-a-glossary">Appendix A. Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAP@3</td>
+<td>The metric: 1, 1/2 or 1/3 for the right code in first, second or third place; average over rows</td>
+</tr>
+<tr>
+<td>Dev</td>
+<td>The 301-row development set (fold 0)</td>
+</tr>
+<tr>
+<td>Fit set</td>
+<td>The other 1,199 labelled rows</td>
+</tr>
+<tr>
+<td>Root code</td>
+<td>The code of the major error the rest of the working follows from</td>
+</tr>
+<tr>
+<td>NONE</td>
+<td>No major error</td>
+</tr>
+<tr>
+<td>Seen pair</td>
+<td>An error row whose code already appears on that question in the fit set</td>
+</tr>
+<tr>
+<td>Hard rows</td>
+<td>Error rows whose code is new for the question, or whose question is new</td>
+</tr>
+<tr>
+<td>Groups A / B / C</td>
+<td>Hard rows split by whether an example of the pair exists (section 6.6)</td>
+</tr>
+<tr>
+<td>Pool</td>
+<td>The 50,000 unlabelled photos</td>
+</tr>
+<tr>
+<td>Teacher transcript</td>
+<td>The annotators' transcription of a training photo</td>
+</tr>
+<tr>
+<td>Machine transcript</td>
+<td>Our transcriber's output</td>
+</tr>
+<tr>
+<td>LoRA / QLoRA</td>
+<td>Training a small adapter on a frozen model; QLoRA does this on a 4-bit model</td>
+</tr>
+<tr>
+<td>Last-token head</td>
+<td>Reading the decision from the model's internal vector at the end of the prompt</td>
+</tr>
+<tr>
+<td>Geometric blend</td>
+<td>Multiplying the members' probabilities, each raised to a weight</td>
+</tr>
+<tr>
+<td>Sinkhorn balancing</td>
+<td>Rescaling scores so predicted label shares move toward the training shares</td>
+</tr>
+<tr>
+<td>Cross-fitted</td>
+<td>A setting chosen on some questions and scored on others</td>
+</tr>
+<tr>
+<td>Gate / pass mark</td>
+<td>A threshold written before a run that decides whether its result is used</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix-b-file-map">Appendix B. File map</h2>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transcriber</td>
+<td><code>src/k12/transcriber.py</code>, <code>src/k12/vision.py</code></td>
+</tr>
+<tr>
+<td>Text models</td>
+<td><code>src/k12/text_diagnose.py</code> (option <code>--synthetic</code> adds catalogue rows)</td>
+</tr>
+<tr>
+<td>Image model</td>
+<td><code>src/k12/pod_train.py</code>, <code>src/k12/pod_predict.py</code></td>
+</tr>
+<tr>
+<td>Candidate student</td>
+<td><code>src/k12/candidate_student.py</code>, <code>scripts/build_candidate_dataset.py</code>, <code>scripts/fuse_candidate.py</code></td>
+</tr>
+<tr>
+<td>Claude labelling</td>
+<td><code>scripts/claude_label.py</code> (option <code>--transcripts</code> is the no-photo mode)</td>
+</tr>
+<tr>
+<td>Blend and submission</td>
+<td><code>scripts/blend_geometric.py</code>, <code>scripts/validate_submission.py</code>, <code>artifacts/submission-3way-sinkhorn/</code></td>
+</tr>
+<tr>
+<td>Pod control and budget</td>
+<td><code>scripts/runpod_pod.py</code>, <code>reports/runpod_budget.json</code>, <code>runs/deep/stageB/collect.py</code></td>
+</tr>
+<tr>
+<td>Stage B run and report</td>
+<td><code>runs/deep/stageB/</code>, <code>runs/deep/stageB/fuse_arm1.json</code></td>
+</tr>
+<tr>
+<td>Error catalogue</td>
+<td><code>runs/deep/catalog/</code>, <code>data/v6/synthetic_catalog_dev_pilot.jsonl</code></td>
+</tr>
+<tr>
+<td>Earlier deep study</td>
+<td><code>runs/deep/DEEP_PLAN.md</code>, <code>runs/arch/PLAN.md</code></td>
+</tr>
+<tr>
+<td>Running record of this audit</td>
+<td><code>docs/model_audit_plan_2026-11-12.md</code></td>
+</tr>
+<tr>
+<td>Code-level study guide</td>
+<td><code>docs/study/K12_STUDY_GUIDE.pdf</code></td>
+</tr>
+<tr>
+<td>Status and submissions</td>
+<td><code>reports/status.json</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix-c-every-model-by-row-group-dev-map3">Appendix C. Every model by row group (dev MAP@3)</h2>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>All</th>
+<th>No error</th>
+<th>Seen pair</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Opus, photo</td>
+<td>0.819</td>
+<td>0.934</td>
+<td>0.812</td>
+<td>0.839</td>
+<td>0.586</td>
+<td>0.717</td>
+</tr>
+<tr>
+<td>Claude Opus, our transcript</td>
+<td>0.771</td>
+<td>0.931</td>
+<td>0.752</td>
+<td>0.688</td>
+<td>0.505</td>
+<td>0.694</td>
+</tr>
+<tr>
+<td>Blend + balancing</td>
+<td>0.737</td>
+<td>0.926</td>
+<td>0.856</td>
+<td>0.573</td>
+<td>0.290</td>
+<td>0.477</td>
+</tr>
+<tr>
+<td>Old 8B student (11,426 Claude rows)</td>
+<td>0.692</td>
+<td>0.906</td>
+<td>0.746</td>
+<td>0.677</td>
+<td>0.204</td>
+<td>0.434</td>
+</tr>
+<tr>
+<td>Text 8B, teacher labels only, 3 epochs</td>
+<td>0.667</td>
+<td>0.866</td>
+<td>0.794</td>
+<td>0.385</td>
+<td>0.242</td>
+<td>0.434</td>
+</tr>
+<tr>
+<td>Image 8B, distilled</td>
+<td>0.653</td>
+<td>0.875</td>
+<td>0.743</td>
+<td>0.547</td>
+<td>0.156</td>
+<td>0.372</td>
+</tr>
+<tr>
+<td>Text 32B</td>
+<td>0.652</td>
+<td>0.931</td>
+<td>0.686</td>
+<td>0.490</td>
+<td>0.188</td>
+<td>0.380</td>
+</tr>
+<tr>
+<td>Qwen3-235B with 4 examples</td>
+<td>0.650</td>
+<td>0.810</td>
+<td>0.750</td>
+<td>0.464</td>
+<td>0.258</td>
+<td>0.473</td>
+</tr>
+<tr>
+<td>Reason-first student</td>
+<td>0.625</td>
+<td>0.822</td>
+<td>0.647</td>
+<td>0.531</td>
+<td>0.253</td>
+<td>0.450</td>
+</tr>
+<tr>
+<td>Qwen3-235B, untrained</td>
+<td>0.584</td>
+<td>0.782</td>
+<td>0.525</td>
+<td>0.510</td>
+<td>0.242</td>
+<td>0.550</td>
+</tr>
+<tr>
+<td>Qwen3-32B, untrained</td>
+<td>0.518</td>
+<td>0.734</td>
+<td>0.429</td>
+<td>0.568</td>
+<td>0.156</td>
+<td>0.430</td>
+</tr>
+</tbody>
+</table>
+<p>Row counts: no error 101, seen pair 94, A 32, B 31, C 43.</p>
+<h2 id="appendix-d-sources-of-the-numbers">Appendix D. Sources of the numbers</h2>
+<p>Every figure in this report comes from a file in the repository: <code>reports/status.json</code> (submissions and phase 1),
+<code>docs/handoff.md</code> (phase 2 dev table), <code>runs/pod/probe235/REPORT.md</code> (scale probe), <code>runs/deep/DEEP_PLAN.md</code> and
+<code>runs/arch/PLAN.md</code> (phase 3a), <code>runs/deep/stageB/fuse_arm1.json</code> (candidate student), <code>runs/claude/dev_opus*.jsonl</code>
+(Claude runs), <code>runs/deep/catalog/pod_out/</code> (paired test), and <code>docs/model_audit_plan_2026-11-12.md</code> sections 8–12,
+where the scripts and intermediate numbers are recorded. The charts are generated by <code>docs/study/report/build_figs.py</code>.</p></body></html>

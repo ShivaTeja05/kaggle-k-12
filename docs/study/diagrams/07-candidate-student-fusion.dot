@@ -1,0 +1,20 @@
+digraph fusion_gates {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  p0 [label="P0 = raw geometric blend\n(301 x 76), MAP@3 0.718"];
+  pb [label="P_B = student bundle\n(301 x 76), 1e-4 off-candidates"];
+  mul [label="normalize(P0 * P_B^w)"];
+  sk [label="Sinkhorn: learn per-class bias b\nso column means -> fit marginals\napply exp(lam x b)"];
+  grid [label="24 settings\n6 w x 4 lam"];
+  cf [label="5 question folds (seed 7)\nfor each fold: best (w,lam) on other 4\n-> cross-fitted predictions R"];
+  ref [label="Reference: blend + Sinkhorn lam=.5\nMAP@3 0.737"];
+  boot [label="question-grouped paired bootstrap\nB=4000 -> delta, 95% CI"];
+  claude [label="Claude dev top-1\n(runs/claude/dev_opus.jsonl)"];
+  g [shape=diamond, fillcolor="#fde8e8", label="gates a-d"];
+  p0 -> mul; pb -> mul -> sk -> grid -> cf -> boot; ref -> boot; boot -> g [label="gate a"];
+  pb -> g [label="student top-1 vs Claude top-1\n(gates c, d)"];
+  p0 -> g [label="102 rows where P0 top-1 != Claude (gate d)"];
+  claude -> g;
+  cf -> g [label="unseen-pair MAP@3 (gate b)"];
+}

@@ -1,0 +1,21 @@
+digraph tx_prompt {
+  rankdir=TB; fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+  label="What the transcriber sees (one training sequence, left to right)"; labelloc=t;
+
+  sys  [label="chat-template header\n(role marker for the 'user' turn,\ne.g. <|im_start|>user)", fillcolor="#f4f4f4"];
+  q    [label="'Question diagram:' + image tokens\n(only if question_image_file set)"];
+  s    [label="\"Student's handwritten working:\"\n+ image tokens (photo <= 1280 px side)"];
+  ctx  [label="Grade: ...\nTopic: ...\nQuestion: ...\nAnswer key: ..."];
+  ins  [label="Transcribe the visible student working\nverbatim, line by line in L1 | ... format.\nPreserve errors; do not solve or correct it."];
+  gp   [label="end of user turn + start of assistant turn\n(add_generation_prompt=True)\n= end of prompt, P = 'length' tokens", fillcolor="#f4f4f4"];
+  tgt  [label="TARGET (train only)\nL1 | ...\nL2 | ...\n... + EOS\n<= 512 tokens (T)", fillcolor="#e3f4e1"];
+
+  sys -> q -> s -> ctx -> ins -> gp -> tgt;
+
+  noloss [label="no loss on prompt tokens\n(everything left of the target)", shape=plaintext];
+  yesloss [label="cross-entropy on every\ntarget token", shape=plaintext];
+  noloss -> ctx [style=dotted, arrowhead=none];
+  yesloss -> tgt [style=dotted, arrowhead=none];
+}
