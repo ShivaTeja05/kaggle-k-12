@@ -24,3 +24,7 @@ __pycache__/
 reports/gpu_budget.lock
 kaggle/**/budget_check.json
 kaggle/**/launch_result.json
+
+# Third-party papers (not redistributed) and local session files
+research-papers-k12/
+last_ssh.txt
