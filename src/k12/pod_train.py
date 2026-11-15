@@ -75,19 +75,25 @@ def auxiliary(system, family_head, families, hidden, row):
 def loss_terms(system, row, data, ci, index, args, family_head=None, families=None, prefix=None):
     if prefix is None:
         prefix = encode_row(system, row, data)
-    if isinstance(row.get('soft'), dict):
-        # Pseudo-labelled photo: soft target only; it has no teacher transcription or annotations.
+    pseudo = isinstance(row.get('soft'), dict)
+    if pseudo:
+        # Pseudo-labelled photo: soft codes, plus the labeller's reading and reasoning when it wrote one.
         label = torch.zeros(1, len(ci), device='cuda')
         for code, share in row.soft.items():
             label[0, ci[code]] = share
-        hidden = system.hidden(prefix)[:, -1].float()
-        return F.cross_entropy(system.head(hidden), label), torch.zeros(()), torch.zeros(())
-    label = target(row, ci, args.secondary_weight)
+        text = row.get('target') if isinstance(row.get('target'), str) else None
+        if args.reading_weight <= 0 or not text:
+            hidden = system.hidden(prefix)[:, -1].float()
+            return F.cross_entropy(system.head(hidden), label), torch.zeros(()), torch.zeros(())
+        family_head = None
+    else:
+        label = target(row, ci, args.secondary_weight)
     if args.reading_weight <= 0:
         hidden = system.hidden(prefix)[:, -1].float()
         aux = auxiliary(system, family_head, families, hidden, row) if family_head else torch.zeros(())
         return F.cross_entropy(system.head(hidden), label, label_smoothing=.03), torch.zeros(()), aux
-    text = args.v3[row.trace_id]['target'] if getattr(args, 'v3', None) else teacher_response(row, index)
+    if not pseudo:
+        text = args.v3[row.trace_id]['target'] if getattr(args, 'v3', None) else teacher_response(row, index)
     encoded = system.processor.tokenizer(text, add_special_tokens=False, truncation=True,
                                          max_length=args.teacher_tokens, return_tensors='pt')['input_ids']
     joined, length = append_teacher(prefix, encoded)
@@ -155,6 +161,7 @@ def run(args):
         extra = extra[extra.trace_id.isin(pseudo)].copy()
         extra['soft'] = extra.trace_id.map(lambda t: pseudo[t]['soft'])
         extra['pseudo_weight'] = extra.trace_id.map(lambda t: pseudo[t]['weight'])
+        extra['target'] = extra.trace_id.map(lambda t: pseudo[t].get('target'))
         extra['root_code'] = extra.soft.map(lambda d: max(d, key=d.get))
         fit = pd.concat([fit, extra], ignore_index=True)
         print(json.dumps({'stage': 'pseudo_rows', 'added': len(extra)}), flush=True)
