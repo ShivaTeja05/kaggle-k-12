@@ -127,7 +127,24 @@
       "minutes": 7.5,
       "usd": 1.25,
       "result": "all-reduce fusion and GDN prefill JIT switched off; server still fails: another flashinfer JIT build needs nvcc; cancelled"
+    },
+    {
+      "name": "k12-image-check (cpu)",
+      "id": "6afa3a3323985fb9cd83e3c5",
+      "flavor": "cpu-upgrade",
+      "minutes": 1.5,
+      "usd": 0.01
+    },
+    {
+      "name": "k12-flash-dev attempt 3",
+      "id": "6afa3ac529dd05ff036956bb",
+      "flavor": "h200",
+      "started_utc": "2026-11-15T23:05:40",
+      "ended_utc": "2026-11-15T23:19:00",
+      "minutes": 13.4,
+      "usd": 1.12,
+      "result": "official vLLM nightly image, one H200, TP=1: server ready at 5.6 min; 158 sent dev photos, medium thinking, 455,540 tokens in 385 s (1,182 tok/s), 0 failed; cancelled during the remaining 143 rows once the result was clear"
     }
   ],
-  "spent_usd": 15.68
+  "spent_usd": 16.81
 }

@@ -1,8 +1,8 @@
 {
   "approved_at": "2026-11-10",
-  "approval": "User chose A100 80GB with a $40 cap, then asked to reduce the cap and accept similar or better GPUs: $20 total cap, Secure Cloud, rate at most $1.79/hr; 2026-11-11 user raised the total cap to $50 (\"i'll give you 50 dollars limit\") | 2026-11-11 user raised the GPU cap to $70 and asked to finish under it. | 2026-11-11 ~19:00 UTC user raised the GPU cap by $10 to $80 for overnight experiments (\"terminate and use them properly\"). | 2026-11-14 ~04:20 UTC user raised the cap to $88 for the Qwen3.8-27B test scoring (\"yes, run it\": about $7.80, working limit $9.50 on two RTX 6000 Ada pods). | 2026-11-14 ~08:35 UTC user raised the cap to $94 for the lean second-opinion plan (about $4.50 on one RTX 6000 Ada). | 2026-11-14 ~08:55 UTC user: the RunPod account holds $6.52 and everything must finish under it (about $6.01 left after the Stage 1 pod, by calculation). | 2026-11-15 ~01:15 UTC user: \"i have 5.97 credits in run pod ... check it progressive and tell me updates on it\" - read as a go-ahead for stage A of the 0.84 plan on one RTX 6000 Ada inside the account balance (spend at most $5.45; collector limit $5.20).",
+  "approval": "User chose A100 80GB with a $40 cap, then asked to reduce the cap and accept similar or better GPUs: $20 total cap, Secure Cloud, rate at most $1.79/hr; 2026-11-11 user raised the total cap to $50 (\"i'll give you 50 dollars limit\") | 2026-11-11 user raised the GPU cap to $70 and asked to finish under it. | 2026-11-11 ~19:00 UTC user raised the GPU cap by $10 to $80 for overnight experiments (\"terminate and use them properly\"). | 2026-11-14 ~04:20 UTC user raised the cap to $88 for the Qwen3.8-27B test scoring (\"yes, run it\": about $7.80, working limit $9.50 on two RTX 6000 Ada pods). | 2026-11-14 ~08:35 UTC user raised the cap to $94 for the lean second-opinion plan (about $4.50 on one RTX 6000 Ada). | 2026-11-14 ~08:55 UTC user: the RunPod account holds $6.52 and everything must finish under it (about $6.01 left after the Stage 1 pod, by calculation). | 2026-11-15 ~01:15 UTC user: \"i have 5.97 credits in run pod ... check it progressive and tell me updates on it\" - read as a go-ahead for stage A of the 0.84 plan on one RTX 6000 Ada inside the account balance (spend at most $5.45; collector limit $5.20). | 2026-11-15 ~23:30 UTC user: \"okay run the maximum thinking on the test photos\" (quoted about $9, needs a top-up): cap read as $100 for this run; the account balance ($1.86 at launch) is the real limit until the user tops up.",
   "max_cost_per_hr": 1.79,
-  "cap_usd": 94.0,
+  "cap_usd": 100.0,
   "watchdog_margin_usd": 1.0,
   "minimum_session_usd": 2.0,
   "gate": "Stage A: 8B LoRA trained on fold-fit rows only. Continue to full training only if best development fixed-calibration MAP@3 >= 0.68 on the 301 fold-0 rows.",
@@ -153,6 +153,13 @@
       "cost_per_hr": 1.09,
       "created_at": "2026-11-15T01:22:39.674654+00:00",
       "terminated_at": "2026-11-15T05:05:15.497806+00:00"
+    },
+    {
+      "id": "k7fuaolkb3n1gr",
+      "gpu": "RTX 6000 Ada",
+      "cost_per_hr": 1.09,
+      "created_at": "2026-11-15T23:42:07.969972+00:00",
+      "terminated_at": "2026-11-16T00:54:54.724373+00:00"
     }
   ],
   "gpu_types": [

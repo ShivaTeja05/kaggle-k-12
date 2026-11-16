@@ -28,3 +28,7 @@ kaggle/**/launch_result.json
 # Third-party papers (not redistributed) and local session files
 research-papers-k12/
 last_ssh.txt
+
+# Files that carry competition rows or row ids
+runs/deep/symbolic/scratch/t1.py
+kaggle/q35-9b-test/order.json

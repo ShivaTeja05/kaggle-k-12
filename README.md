@@ -6,7 +6,9 @@ system ranks three diagnoses from a taxonomy of 75 misconception codes plus `NON
 
 | | |
 |---|---|
-| **Best public score** | **0.76383 MAP@3**, about rank 60 of 448 teams (15 Nov 2026) |
+| **Best public score** | **0.76383 MAP@3**, about rank 65 of 481 teams (16 Nov 2026) |
+| **Kaggle notebook** | [Method, runnable fusion code and negative results](https://www.kaggle.com/code/shivateja005/k12-misconceptions-method-code-negative-results) |
+| **Licence** | [Apache 2.0](LICENSE) |
 | **Starting point** | 0.48533 (CPU baseline on question and topic priors), first submission 0.58216 |
 | **Experiments recorded** | more than 120, each with a pass mark written down before the run |
 | **Final inference** | fully offline, open-weight models only (a competition rule) |
@@ -117,7 +119,7 @@ src/k12/            Core library: data, folds, metric, models, training and infe
   q38_finetune.py     Qwen3.8-27B fine-tune with a classification head
   blend.py, router.py, slices.py, exemplars.py, prompts.py   fusion, routing, row types, prompts
 scripts/            Command-line tools: dataset builders, fusion, evaluation, launchers, budget guards
-kaggle/             Private offline Kaggle notebook bundles
+kaggle/             Offline Kaggle notebook bundles; `public-writeup/` is the public notebook
 runs/               Job scripts for pods and HF Jobs, plus analysis code (outputs are not committed)
 tests/              96 unit tests (folds, metric, prompts, routing, a submission reproduction check)
 reports/            Measured results as JSON, spending ledgers, submission history
@@ -168,6 +170,11 @@ PYTHONPATH=src python -m k12.baseline
 - No credentials are stored in the repository. API keys and tokens live in each tool's own credential store.
 - Test photos were only processed by open models on our own machines and private jobs, never by an outside API.
 - Third-party research PDFs are not redistributed; the notes in `docs/research_notes/` summarise them.
+
+## Licence
+
+The code and documents in this repository are released under the [Apache License 2.0](LICENSE). The competition data is
+not part of the repository and stays under the competition's own terms (competition use only).
 
 ## Tech stack
 

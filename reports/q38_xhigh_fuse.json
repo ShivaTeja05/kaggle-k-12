@@ -1,0 +1,68 @@
+{
+ "dev_rows": 301,
+ "rows_sent": 158,
+ "rows_with_xhigh": 142,
+ "current_fused": 0.796234772978959,
+ "with_xhigh": 0.8062015503875969,
+ "gain_ci": [
+  0.009966777408637873,
+  [
+   -0.005,
+   0.024823596586128146
+  ]
+ ],
+ "hard": {
+  "current": 0.6163522012578616,
+  "with_xhigh": 0.6556603773584906
+ },
+ "none": {
+  "current": 0.9290429042904291,
+  "with_xhigh": 0.9356435643564357
+ },
+ "on_xhigh_rows": {
+  "current": {
+   "rows": 142,
+   "map3": 0.7253521126760564
+  },
+  "with_xhigh": {
+   "rows": 142,
+   "map3": 0.7523474178403756
+  }
+ },
+ "least_certain_2.5pct_of_dev": {
+  "current": {
+   "rows": 7,
+   "map3": 0.6428571428571429
+  },
+  "with_xhigh": {
+   "rows": 7,
+   "map3": 0.5
+  }
+ },
+ "staged": {
+  "rows": 3498,
+  "base": "artifacts/submission-3way-pw14-q38 (public 0.76383)",
+  "rebuilt_base_matches_staged_file": true,
+  "xhigh": "Qwen/Qwen3.8-27B-FP8 zero-shot, reasoning_effort xhigh, least-certain test rows first, own pod",
+  "rows_with_xhigh": 76,
+  "xhigh_first_code_equals_current_top1": 0.6447368421052632,
+  "rows_top1_changed": 24,
+  "rows_top3_changed": 123,
+  "floor": 0.01,
+  "lambda": 0.5,
+  "development": {
+   "current_fused": 0.796234772978959,
+   "with_xhigh": 0.8062015503875969,
+   "gain_ci": [
+    0.009966777408637873,
+    [
+     -0.005,
+     0.024823596586128146
+    ]
+   ]
+  },
+  "script": "scripts/fuse_xhigh.py",
+  "submission_sha256": "87f3270007e635c6fd713c7b90f3bcf5f36a0584809eb8df04083cf6f75ef616",
+  "submitted": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "shivateja005/k12-misconceptions-method-code-negative-results",
+  "title": "K12 misconceptions: method, code, negative results",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "competition_sources": [
+    "misconception-detection-in-k-12-student-math-workings"
+  ],
+  "kernel_sources": [],
+  "model_sources": []
+}
